@@ -1,0 +1,25 @@
+{
+  "name": "smart-rowing-frontend",
+  "private": true,
+  "version": "0.2.0",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0 -p 5173",
+    "build": "next build",
+    "start": "next start -p 5173",
+    "lint": "next lint",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "next": "14.2.25",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "recharts": "^2.15.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "@types/node": "22.10.2",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
+    "typescript": "5.7.2"
+  }
+}

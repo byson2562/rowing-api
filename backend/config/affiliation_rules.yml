@@ -1,0 +1,39 @@
+default: &default
+  student_keywords:
+    - 大学
+    - 短期大学
+    - 大学校
+    - 高専
+    - 高校
+    - 高等学校
+    - 中学
+    - 中等
+    - 学園
+    - 学院
+    - 専門学校
+  student_mixed_abbrev_keywords:
+    - 一橋大
+    - 東京大
+    - 大阪大
+    - 神戸大
+    - 北大
+    - 名大
+    - 名工
+    - 南山
+    - 筑波
+    - 青学
+    - 海洋
+    - 東北
+    - 新潟
+    - 山形
+    - 国茶
+    - 大阪神戸
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+bundle exec rails db:prepare
+
+if [ "${SEED_SAMPLE_DATA}" = "true" ]; then
+  bundle exec rails db:seed
+fi
+
+exec "$@"
