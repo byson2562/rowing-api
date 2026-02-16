@@ -5,6 +5,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  LabelList,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -30,6 +31,7 @@ type StatPoint = { label: string; value: number };
 type StatsResponse = { group_by: string; data: StatPoint[] };
 type Pagination = { page: number; per_page: number; total_count: number; total_pages: number };
 type ResultsResponse = { data: Result[]; pagination: Pagination };
+type ActiveFilterChip = { key: string; text: string; onClear: () => void };
 type FilterOptionsResponse = {
   years: number[];
   genders: string[];
@@ -59,6 +61,11 @@ function formatSecondsForAxis(totalSeconds: number): string {
   const minutes = Math.floor(safeSeconds / 60);
   const seconds = Math.floor(safeSeconds % 60);
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function truncateLabel(label: string, max = 10): string {
+  if (label.length <= max) return label;
+  return `${label.slice(0, max)}…`;
 }
 
 export default function Page() {
@@ -94,6 +101,8 @@ export default function Page() {
   const [rank, setRank] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState("50");
+  const [pageInput, setPageInput] = useState("1");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
   const genderTabOptions = useMemo(() => {
@@ -139,6 +148,7 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      setIsRefreshing(true);
       try {
         const [resultsRes, yearCountRes, orgMedalRes, orgGoldRes, winnerTrendRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/v1/results?${resultsQuery}`),
@@ -172,6 +182,7 @@ export default function Page() {
         }
       } finally {
         setLoading(false);
+        setIsRefreshing(false);
       }
     };
 
@@ -201,6 +212,10 @@ export default function Page() {
     setPage(1);
   }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
 
+  useEffect(() => {
+    setPageInput(page.toString());
+  }, [page]);
+
   const clearFilters = () => {
     setQ("");
     setYear("");
@@ -226,17 +241,32 @@ export default function Page() {
   };
 
   const activeFilters = useMemo(() => {
-    const chips: string[] = [];
-    if (year) chips.push(`年: ${year}`);
-    if (gender) chips.push(`性別: ${gender}`);
-    if (affiliationType) chips.push(`区分: ${affiliationType}`);
-    if (competition) chips.push(`大会: ${competition}`);
-    if (competitionCategory) chips.push(`大会カテゴリ: ${competitionCategory}`);
-    if (event) chips.push(`種目: ${event}`);
-    if (finalGroup) chips.push(`Final: ${finalGroup}`);
-    if (organization) chips.push(`所属: ${organization}`);
-    if (rank) chips.push(`順位: ${rank}`);
-    if (q) chips.push(`検索: ${q}`);
+    const chips: ActiveFilterChip[] = [];
+    if (year) chips.push({ key: "year", text: `年: ${year}`, onClear: () => setYear("") });
+    if (gender) chips.push({ key: "gender", text: `性別: ${gender}`, onClear: () => setGender("") });
+    if (affiliationType) chips.push({ key: "affiliationType", text: `区分: ${affiliationType}`, onClear: () => setAffiliationType("") });
+    if (competition) chips.push({ key: "competition", text: `大会: ${competition}`, onClear: () => setCompetition("") });
+    if (competitionCategory) {
+      chips.push({
+        key: "competitionCategory",
+        text: `大会カテゴリ: ${competitionCategory}`,
+        onClear: () => setCompetitionCategory("")
+      });
+    }
+    if (event) chips.push({ key: "event", text: `種目: ${event}`, onClear: () => setEvent("") });
+    if (finalGroup) chips.push({ key: "finalGroup", text: `Final: ${finalGroup}`, onClear: () => setFinalGroup("") });
+    if (organization) {
+      chips.push({
+        key: "organization",
+        text: `所属: ${organization}`,
+        onClear: () => {
+          setOrganization("");
+          setOrganizationSearch("");
+        }
+      });
+    }
+    if (rank) chips.push({ key: "rank", text: `順位: ${rank}`, onClear: () => setRank("") });
+    if (q) chips.push({ key: "q", text: `検索: ${q}`, onClear: () => setQ("") });
     return chips;
   }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
 
@@ -258,11 +288,47 @@ export default function Page() {
     return options.filter((option) => option.toLowerCase().includes(keyword));
   }, [filterOptions.organizations, organizationSearch]);
 
+  const pageNumbers = useMemo(() => {
+    const total = pagination.total_pages;
+    const current = pagination.page;
+    if (total <= 0) return [] as number[];
+
+    const pages = new Set<number>();
+    pages.add(1);
+    pages.add(total);
+    for (let value = current - 2; value <= current + 2; value += 1) {
+      if (value >= 1 && value <= total) pages.add(value);
+    }
+
+    return Array.from(pages).sort((a, b) => a - b);
+  }, [pagination.page, pagination.total_pages]);
+
+  const goToPage = (nextPage: number) => {
+    if (pagination.total_pages <= 0) return;
+    const clamped = Math.min(Math.max(nextPage, 1), pagination.total_pages);
+    setPage(clamped);
+  };
+
   const chooseOrganization = (value: string) => {
     setOrganization(value);
     setOrganizationSearch(value);
     setOrganizationMenuOpen(false);
     setPage(1);
+  };
+
+  const noResultMessage = useMemo(() => {
+    if (loading) return "読み込み中...";
+    if (results.length > 0) return "";
+    if (activeFilters.length === 0) return "No data";
+    return "現在のフィルタ条件では該当データがありません。条件を一部解除してください。";
+  }, [activeFilters.length, loading, results.length]);
+
+  const isInitialEmptyState = !loading && results.length === 0 && activeFilters.length === 0;
+
+  const applyLatestYearFilter = () => {
+    if (filterOptions.years.length === 0) return;
+    const latestYear = Math.max(...filterOptions.years);
+    setYear(String(latestYear));
   };
 
   const jsonLd = {
@@ -325,6 +391,7 @@ export default function Page() {
                 className={active ? "active" : ""}
                 onClick={() => setGender(option)}
                 data-testid={`gender-tab-${label}`}
+                aria-pressed={active}
               >
                 {label}
               </button>
@@ -333,9 +400,9 @@ export default function Page() {
         </section>
 
         <section className="filters">
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="キーワード" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="キーワード" aria-label="キーワード" />
 
-          <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)}>
+          <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年">
             <option value="">年(すべて)</option>
             {filterOptions.years.map((option) => (
               <option key={option} value={option.toString()}>
@@ -344,7 +411,7 @@ export default function Page() {
             ))}
           </select>
 
-          <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)}>
+          <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名">
             <option value="">大会名(すべて)</option>
             {filterOptions.competitions.map((option) => (
               <option key={option} value={option}>
@@ -357,6 +424,7 @@ export default function Page() {
             data-testid="competition-category-select"
             value={competitionCategory}
             onChange={(e) => setCompetitionCategory(e.target.value)}
+            aria-label="大会カテゴリ"
           >
             <option value="">大会カテゴリ(すべて)</option>
             {filterOptions.competition_categories.map((option) => (
@@ -370,6 +438,7 @@ export default function Page() {
             data-testid="affiliation-type-select"
             value={affiliationType}
             onChange={(e) => setAffiliationType(e.target.value)}
+            aria-label="区分"
           >
             <option value="">区分(すべて)</option>
             {filterOptions.affiliation_types.map((option) => (
@@ -379,7 +448,7 @@ export default function Page() {
             ))}
           </select>
 
-          <select data-testid="event-select" value={event} onChange={(e) => setEvent(e.target.value)}>
+          <select data-testid="event-select" value={event} onChange={(e) => setEvent(e.target.value)} aria-label="種目">
             <option value="">種目(すべて)</option>
             {filterOptions.events.map((option) => (
               <option key={option} value={option}>
@@ -388,7 +457,7 @@ export default function Page() {
             ))}
           </select>
 
-          <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)}>
+          <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final">
             <option value="">Final(すべて)</option>
             {filterOptions.final_groups.map((option) => (
               <option key={option} value={option}>
@@ -403,6 +472,15 @@ export default function Page() {
               value={organizationSearch}
               onFocus={() => setOrganizationMenuOpen(true)}
               onBlur={() => window.setTimeout(() => setOrganizationMenuOpen(false), 120)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  setOrganizationMenuOpen(false);
+                }
+                if (e.key === "Enter" && organizationMenuOpen && filteredOrganizations.length > 0) {
+                  e.preventDefault();
+                  chooseOrganization(filteredOrganizations[0]);
+                }
+              }}
               onChange={(e) => {
                 const value = e.target.value;
                 setOrganizationSearch(value);
@@ -411,11 +489,23 @@ export default function Page() {
                 setOrganizationMenuOpen(true);
               }}
               placeholder="所属を検索して選択"
+              aria-label="所属"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={organizationMenuOpen}
+              aria-controls="organization-listbox"
             />
             {organizationMenuOpen && (
-              <div className="organization-combobox-menu" data-testid="organization-combobox-menu">
+              <div
+                id="organization-listbox"
+                role="listbox"
+                className="organization-combobox-menu"
+                data-testid="organization-combobox-menu"
+              >
                 <button
                   type="button"
+                  role="option"
+                  aria-selected={!organization}
                   className={!organization ? "active" : ""}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
@@ -430,6 +520,8 @@ export default function Page() {
                 {filteredOrganizations.slice(0, 50).map((option) => (
                   <button
                     type="button"
+                    role="option"
+                    aria-selected={organization === option}
                     data-testid={`organization-option-${option}`}
                     className={organization === option ? "active" : ""}
                     key={option}
@@ -443,7 +535,7 @@ export default function Page() {
             )}
           </div>
 
-          <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)}>
+          <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位">
             <option value="">順位(すべて)</option>
             {rankOptions.map((option) => (
               <option key={option} value={option}>
@@ -459,6 +551,7 @@ export default function Page() {
               setPerPage(e.target.value);
               setPage(1);
             }}
+            aria-label="1ページ件数"
           >
             <option value="25">25件/ページ</option>
             <option value="50">50件/ページ</option>
@@ -473,20 +566,48 @@ export default function Page() {
           </button>
         </div>
 
+        <div className="filter-summary" aria-live="polite">
+          <p className="filter-hit-count">{loading ? "検索中..." : `${pagination.total_count}件ヒット`}</p>
+          <p className="filter-hit-subtext">
+            {activeFilters.length === 0 ? "条件なし" : `${activeFilters.length}条件で絞り込み中（×で個別解除）`}
+          </p>
+        </div>
+
         <div className="active-filter-chips">
           {activeFilters.length === 0 ? (
             <span className="chip chip-empty">フィルタ未指定</span>
           ) : (
             activeFilters.map((chip) => (
-              <span className="chip" key={chip}>
-                {chip}
-              </span>
+              <button key={chip.key} type="button" className="chip chip-clearable" onClick={chip.onClear}>
+                <span>{chip.text}</span>
+                <span className="chip-clear" aria-hidden="true">
+                  ×
+                </span>
+              </button>
             ))
           )}
         </div>
       </section>
 
-      <section className="cards">
+      {isInitialEmptyState && (
+        <section className="empty-state-guide" aria-live="polite">
+          <h2>まずは条件を1つ選んで検索を始めましょう</h2>
+          <p>おすすめ: 年、Final、種目の順で絞り込むと目的の結果に早く到達できます。</p>
+          <div className="empty-state-guide-actions">
+            <button type="button" onClick={applyLatestYearFilter} disabled={filterOptions.years.length === 0}>
+              最新年を選択
+            </button>
+            <button type="button" onClick={() => setFinalGroup("Final A")}>
+              Final Aのみ
+            </button>
+            <button type="button" onClick={() => setCompetitionCategory("全日本大学選手権")}>
+              全日本大学選手権
+            </button>
+          </div>
+        </section>
+      )}
+
+      <section className={`cards${isRefreshing ? " is-refreshing" : ""}`}>
         <article className="chart-card">
           <div className="chart-card-head">
             <h2>所属別金メダル数(上位10)</h2>
@@ -494,12 +615,20 @@ export default function Page() {
           </div>
           <div className="chart-wrap">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={organizationGolds} layout="vertical" margin={{ left: 8, right: 16 }}>
+              <BarChart data={organizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
-                <YAxis type="category" dataKey="label" width={160} interval={0} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#f59e0b" />
+                <YAxis
+                  type="category"
+                  dataKey="label"
+                  width={170}
+                  interval={0}
+                  tickFormatter={(value: string) => truncateLabel(value, 10)}
+                />
+                <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `所属: ${label}`} />
+                <Bar dataKey="value" fill="#f59e0b">
+                  <LabelList dataKey="value" position="right" formatter={(value: number) => `${value}`} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -512,12 +641,20 @@ export default function Page() {
           </div>
           <div className="chart-wrap">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={organizationMedals} layout="vertical" margin={{ left: 8, right: 16 }}>
+              <BarChart data={organizationMedals} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
-                <YAxis type="category" dataKey="label" width={160} interval={0} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#ef6c00" />
+                <YAxis
+                  type="category"
+                  dataKey="label"
+                  width={170}
+                  interval={0}
+                  tickFormatter={(value: string) => truncateLabel(value, 10)}
+                />
+                <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `所属: ${label}`} />
+                <Bar dataKey="value" fill="#ef6c00">
+                  <LabelList dataKey="value" position="right" formatter={(value: number) => `${value}`} />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -564,63 +701,162 @@ export default function Page() {
         </article>
       </section>
 
-      <section className="table-card">
+      <section className={`table-card${isRefreshing ? " is-refreshing" : ""}`}>
         <h2>
           検索結果 {loading ? "(読み込み中...)" : `(${pagination.total_count}件)`}{" "}
           {pagination.total_count > 0 && !loading ? ` ${pageStart}-${pageEnd}件を表示` : ""}
         </h2>
         <div className="table-scroll">
-          <table>
+          <table className="results-table">
             <thead>
               <tr>
-                <th>年</th>
-                <th>大会</th>
-                <th>種目</th>
-                <th>Final</th>
-                <th>クルー</th>
-                <th>所属</th>
-                <th>順位</th>
-                <th>タイム</th>
+                <th className="col-year">年</th>
+                <th className="col-competition">大会</th>
+                <th className="col-event">種目</th>
+                <th className="col-final">Final</th>
+                <th className="col-crew">クルー</th>
+                <th className="col-organization">所属</th>
+                <th className="col-rank">順位</th>
+                <th className="col-time">タイム</th>
               </tr>
             </thead>
             <tbody>
               {results.length === 0 ? (
                 <tr>
                   <td className="table-empty" colSpan={8}>
-                    No data
+                    {noResultMessage}
                   </td>
                 </tr>
               ) : (
                 results.map((row) => (
                   <tr key={row.id}>
-                    <td>{row.year}</td>
-                    <td>{row.competition_name}</td>
-                    <td>{row.event_name}</td>
-                    <td>{row.final_group}</td>
-                    <td>{row.crew_name}</td>
-                    <td>{row.organization}</td>
-                    <td className={rankCellClassName(row)}>{row.rank}</td>
-                    <td>{row.time_display}</td>
+                    <td className="col-year">{row.year}</td>
+                    <td className="col-competition" title={row.competition_name}>
+                      <div className="cell-competition">{row.competition_name}</div>
+                    </td>
+                    <td className="col-event" title={row.event_name}>
+                      <div className="cell-event">{row.event_name}</div>
+                    </td>
+                    <td className="col-final">{row.final_group}</td>
+                    <td className="col-crew" title={row.crew_name}>
+                      <div className="cell-ellipsis">{row.crew_name}</div>
+                    </td>
+                    <td className="col-organization" title={row.organization}>
+                      <div className="cell-ellipsis">{row.organization}</div>
+                    </td>
+                    <td className={`col-rank ${rankCellClassName(row)}`}>{row.rank}</td>
+                    <td className="col-time">{row.time_display}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+
+        <div className="results-mobile-cards" aria-label="検索結果（モバイル表示）">
+          {results.length === 0 ? (
+            <div className="result-card-empty">{noResultMessage}</div>
+          ) : (
+            results.map((row) => (
+              <article className="result-card" key={`mobile-${row.id}`}>
+                <header className="result-card-head">
+                  <span className="result-card-year">{row.year}</span>
+                  <span className="result-card-final">{row.final_group}</span>
+                  <span className={`result-card-rank ${rankCellClassName(row)}`}>{row.rank}位</span>
+                </header>
+                <p className="result-card-event">{row.event_name}</p>
+                <p className="result-card-competition" title={row.competition_name}>
+                  {row.competition_name}
+                </p>
+                <dl className="result-card-meta">
+                  <div>
+                    <dt>クルー</dt>
+                    <dd>{row.crew_name}</dd>
+                  </div>
+                  <div>
+                    <dt>所属</dt>
+                    <dd>{row.organization}</dd>
+                  </div>
+                  <div>
+                    <dt>タイム</dt>
+                    <dd>{row.time_display}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))
+          )}
+        </div>
+
         <div className="pagination-controls">
-          <button type="button" disabled={pagination.page <= 1 || loading} onClick={() => setPage((prev) => prev - 1)}>
+          <button type="button" disabled={pagination.page <= 1 || loading} onClick={() => goToPage(1)}>
+            先頭
+          </button>
+          <button type="button" disabled={pagination.page <= 1 || loading} onClick={() => goToPage(pagination.page - 1)}>
             前へ
           </button>
-          <span data-testid="pagination-indicator">
-            {pagination.total_pages === 0 ? "0 / 0" : `${pagination.page} / ${pagination.total_pages}`}
-          </span>
+
+          <div className="pagination-pages" aria-label="ページ番号">
+            {pagination.total_pages <= 0 ? (
+              <span className="pagination-empty">0 / 0</span>
+            ) : (
+              pageNumbers.map((pageNumber, index) => {
+                const previous = index > 0 ? pageNumbers[index - 1] : null;
+                const showEllipsis = previous !== null && pageNumber - previous > 1;
+
+                return (
+                  <span key={`page-${pageNumber}`}>
+                    {showEllipsis ? <span className="pagination-ellipsis">…</span> : null}
+                    <button
+                      type="button"
+                      className={pageNumber === pagination.page ? "page-number active" : "page-number"}
+                      onClick={() => goToPage(pageNumber)}
+                      disabled={loading}
+                    >
+                      {pageNumber}
+                    </button>
+                  </span>
+                );
+              })
+            )}
+          </div>
+
           <button
             type="button"
             disabled={pagination.total_pages === 0 || pagination.page >= pagination.total_pages || loading}
-            onClick={() => setPage((prev) => prev + 1)}
+            onClick={() => goToPage(pagination.page + 1)}
           >
             次へ
           </button>
+          <button
+            type="button"
+            disabled={pagination.total_pages === 0 || pagination.page >= pagination.total_pages || loading}
+            onClick={() => goToPage(pagination.total_pages)}
+          >
+            末尾
+          </button>
+
+          <form
+            className="pagination-jump"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const parsed = Number(pageInput);
+              if (!Number.isFinite(parsed)) return;
+              goToPage(parsed);
+            }}
+          >
+            <label htmlFor="page-jump-input">移動</label>
+            <input
+              id="page-jump-input"
+              type="number"
+              min={1}
+              max={Math.max(1, pagination.total_pages)}
+              value={pageInput}
+              onChange={(event) => setPageInput(event.target.value)}
+            />
+            <button type="submit" disabled={loading || pagination.total_pages <= 0}>
+              Go
+            </button>
+          </form>
         </div>
       </section>
     </main>
