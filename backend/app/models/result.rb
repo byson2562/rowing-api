@@ -75,6 +75,55 @@ class Result < ApplicationRecord
   end
 
   class << self
+    def competition_category_for(competition_name)
+      name = competition_name.to_s
+      rule = competition_category_rules.find do |category_rule|
+        category_rule[:keywords].any? { |keyword| name.include?(keyword) }
+      end
+      rule&.fetch(:label, nil)
+    end
+
+    def filter_by_competition_category(relation, competition_category)
+      return relation unless competition_category.present?
+
+      matched_names = relation
+        .distinct
+        .pluck(:competition_name)
+        .select { |name| competition_category_for(name) == competition_category }
+
+      relation.where(competition_name: matched_names)
+    end
+
+    def available_competition_categories(relation)
+      categories = relation
+        .distinct
+        .pluck(:competition_name)
+        .map { |name| competition_category_for(name) }
+        .compact
+        .uniq
+
+      competition_categories.select { |category| categories.include?(category) }
+    end
+
+    def competition_categories
+      competition_category_rules.map { |rule| rule[:label] }
+    end
+
+    def competition_category_rules
+      @competition_category_rules ||= begin
+        rules = Rails.application.config_for(:competition_category_rules)
+        categories = rules["categories"] || rules[:categories]
+
+        Array(categories).filter_map do |row|
+          label = (row["label"] || row[:label]).to_s
+          keywords = Array(row["keywords"] || row[:keywords]).map(&:to_s).reject(&:blank?)
+          next if label.blank? || keywords.empty?
+
+          { label: label, keywords: keywords }
+        end
+      end
+    end
+
     def affiliation_rules
       @affiliation_rules ||= begin
         rules = Rails.application.config_for(:affiliation_rules)

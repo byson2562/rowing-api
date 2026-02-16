@@ -28,7 +28,7 @@ class ResultsFiltersTest < ActionDispatch::IntegrationTest
 
     @other_competition = Result.create!(
       year: 2025,
-      competition_name: "第52回全日本大学ローイング選手権大会",
+      competition_name: "第52回全日本大学ローイング選手権大会／第65回オックスフォード盾レガッタ／第2回ジャパンオープンレガッタ",
       event_name: "男子シングルスカル",
       final_group: "Final B",
       crew_name: "Cクルー",
@@ -50,13 +50,24 @@ class ResultsFiltersTest < ActionDispatch::IntegrationTest
 
     @abbr_student_mixed = Result.create!(
       year: 2025,
-      competition_name: "第52回全日本大学ローイング選手権大会",
+      competition_name: "第52回全日本大学ローイング選手権大会／第65回オックスフォード盾レガッタ／第2回ジャパンオープンレガッタ",
       event_name: "男子シングルスカル",
       final_group: "Final B",
       crew_name: "Eクルー",
       organization: "一橋大・東京大混成",
       rank: 5,
       time_seconds: 545.0
+    )
+
+    @rookie_competition = Result.create!(
+      year: 2025,
+      competition_name: "第66回全日本新人ローイング選手権大会",
+      event_name: "男子シングルスカル",
+      final_group: "Final A",
+      crew_name: "Fクルー",
+      organization: "関西電力",
+      rank: 1,
+      time_seconds: 515.0
     )
   end
 
@@ -82,6 +93,20 @@ class ResultsFiltersTest < ActionDispatch::IntegrationTest
     assert_includes ids, @m1x_a.id
     assert_includes ids, @pr1.id
     assert_not_includes ids, @other_competition.id
+  end
+
+  test "competition category filter works with sequence/name inference" do
+    get "/api/v1/results", params: { competition_category: "全日本大学選手権" }
+    assert_response :success
+    university_ids = JSON.parse(response.body)["data"].map { |row| row["id"] }
+    assert_includes university_ids, @other_competition.id
+    assert_includes university_ids, @abbr_student_mixed.id
+    assert_not_includes university_ids, @m1x_a.id
+
+    get "/api/v1/results", params: { competition_category: "全日本新人選手権" }
+    assert_response :success
+    rookie_ids = JSON.parse(response.body)["data"].map { |row| row["id"] }
+    assert_equal [@rookie_competition.id], rookie_ids
   end
 
   test "organization filter is exact match" do
@@ -114,15 +139,17 @@ class ResultsFiltersTest < ActionDispatch::IntegrationTest
     assert_response :success
     worker_ids = JSON.parse(response.body)["data"].map { |row| row["id"] }
     assert_includes worker_ids, @worker_team.id
+    assert_includes worker_ids, @rookie_competition.id
     assert_not_includes worker_ids, @m1x_a.id
     assert_not_includes worker_ids, @abbr_student_mixed.id
   end
 
-  test "filters endpoint returns affiliation types options" do
+  test "filters endpoint returns affiliation types and competition categories options" do
     get "/api/v1/results/filters"
     assert_response :success
 
     payload = JSON.parse(response.body)
+    assert_equal ["全日本大学選手権", "全日本選手権", "全日本新人選手権"], payload["competition_categories"]
     assert_equal ["学生", "社会人"], payload["affiliation_types"]
   end
 
@@ -147,6 +174,17 @@ class ResultsFiltersTest < ActionDispatch::IntegrationTest
     assert_equal 1, meiji["value"]
   end
 
+  test "winner time trend uses only Final A winners" do
+    get "/api/v1/results/stats", params: { group_by: "winner_time_trend", year: 2025 }
+    assert_response :success
+
+    data = JSON.parse(response.body)["data"]
+    point_2025 = data.find { |row| row["label"] == "2025" }
+
+    # Final A rank=1 are 500.0 and 515.0, Final B rank=1 (not included) are 530.0 and 540.0
+    assert_equal 507.5, point_2025["value"]
+  end
+
   test "results index returns pagination metadata" do
     get "/api/v1/results", params: { per_page: 2, page: 2 }
     assert_response :success
@@ -156,7 +194,7 @@ class ResultsFiltersTest < ActionDispatch::IntegrationTest
 
     assert_equal 2, pagination["page"]
     assert_equal 2, pagination["per_page"]
-    assert_equal 5, pagination["total_count"]
+    assert_equal 6, pagination["total_count"]
     assert_equal 3, pagination["total_pages"]
     assert_equal 2, payload["data"].size
   end

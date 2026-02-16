@@ -34,6 +34,7 @@ type FilterOptionsResponse = {
   years: number[];
   genders: string[];
   affiliation_types: string[];
+  competition_categories: string[];
   final_groups: string[];
   competitions: string[];
   events: string[];
@@ -41,6 +42,7 @@ type FilterOptionsResponse = {
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
 
 function formatSecondsToTime(totalSeconds: number): string {
   const safeSeconds = Number.isFinite(totalSeconds) ? totalSeconds : 0;
@@ -70,6 +72,7 @@ export default function Page() {
     years: [],
     genders: [],
     affiliation_types: [],
+    competition_categories: [],
     final_groups: [],
     competitions: [],
     events: [],
@@ -84,6 +87,7 @@ export default function Page() {
   const [event, setEvent] = useState("");
   const [finalGroup, setFinalGroup] = useState("");
   const [competition, setCompetition] = useState("");
+  const [competitionCategory, setCompetitionCategory] = useState("");
   const [organization, setOrganization] = useState("");
   const [organizationSearch, setOrganizationSearch] = useState("");
   const [organizationMenuOpen, setOrganizationMenuOpen] = useState(false);
@@ -106,10 +110,11 @@ export default function Page() {
     if (event) params.set("event", event);
     if (finalGroup) params.set("final_group", finalGroup);
     if (competition) params.set("competition", competition);
+    if (competitionCategory) params.set("competition_category", competitionCategory);
     if (organization) params.set("organization", organization);
     if (rank) params.set("rank", rank);
     return params.toString();
-  }, [affiliationType, competition, event, finalGroup, gender, organization, q, rank, year]);
+  }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
 
   const resultsQuery = useMemo(() => {
     const params = new URLSearchParams(baseQuery);
@@ -124,11 +129,12 @@ export default function Page() {
     if (gender) params.set("gender", gender);
     if (affiliationType) params.set("affiliation_type", affiliationType);
     if (competition) params.set("competition", competition);
+    if (competitionCategory) params.set("competition_category", competitionCategory);
     if (event) params.set("event", event);
     if (finalGroup) params.set("final_group", finalGroup);
     if (organization) params.set("organization", organization);
     return params.toString();
-  }, [affiliationType, competition, event, finalGroup, gender, organization, year]);
+  }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, year]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -180,6 +186,7 @@ export default function Page() {
         years: payload.years ?? [],
         genders: payload.genders ?? [],
         affiliation_types: payload.affiliation_types ?? [],
+        competition_categories: payload.competition_categories ?? [],
         final_groups: payload.final_groups ?? [],
         competitions: payload.competitions ?? [],
         events: payload.events ?? [],
@@ -192,7 +199,7 @@ export default function Page() {
 
   useEffect(() => {
     setPage(1);
-  }, [affiliationType, competition, event, finalGroup, gender, organization, q, rank, year]);
+  }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
 
   const clearFilters = () => {
     setQ("");
@@ -202,6 +209,7 @@ export default function Page() {
     setEvent("");
     setFinalGroup("");
     setCompetition("");
+    setCompetitionCategory("");
     setOrganization("");
     setOrganizationSearch("");
     setOrganizationMenuOpen(false);
@@ -223,13 +231,14 @@ export default function Page() {
     if (gender) chips.push(`性別: ${gender}`);
     if (affiliationType) chips.push(`区分: ${affiliationType}`);
     if (competition) chips.push(`大会: ${competition}`);
+    if (competitionCategory) chips.push(`大会カテゴリ: ${competitionCategory}`);
     if (event) chips.push(`種目: ${event}`);
     if (finalGroup) chips.push(`Final: ${finalGroup}`);
     if (organization) chips.push(`所属: ${organization}`);
     if (rank) chips.push(`順位: ${rank}`);
     if (q) chips.push(`検索: ${q}`);
     return chips;
-  }, [affiliationType, competition, event, finalGroup, gender, organization, q, rank, year]);
+  }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
 
   const yearRangeLabel = useMemo(() => {
     if (yearCount.length === 0) return "-";
@@ -256,8 +265,31 @@ export default function Page() {
     setPage(1);
   };
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: "RowingAPI",
+        url: SITE_URL,
+        inLanguage: "ja"
+      },
+      {
+        "@type": "Dataset",
+        name: "RowingAPI 大会記録データセット",
+        description: "日本ローイング協会の大会結果データを検索・可視化できるデータセット",
+        url: SITE_URL,
+        creator: {
+          "@type": "Organization",
+          name: "RowingAPI"
+        }
+      }
+    ]
+  };
+
   return (
     <main className="container">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="hero">
         <div>
           <h1>RowingAPI</h1>
@@ -315,6 +347,19 @@ export default function Page() {
           <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)}>
             <option value="">大会名(すべて)</option>
             {filterOptions.competitions.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <select
+            data-testid="competition-category-select"
+            value={competitionCategory}
+            onChange={(e) => setCompetitionCategory(e.target.value)}
+          >
+            <option value="">大会カテゴリ(すべて)</option>
+            {filterOptions.competition_categories.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>

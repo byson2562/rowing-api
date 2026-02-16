@@ -40,6 +40,8 @@ services:
     container_name: smart_rowing_frontend
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:5173}
+      VERCEL_URL: ${VERCEL_URL:-localhost:5173}
     volumes:
       - ./frontend:/app
       - /app/node_modules

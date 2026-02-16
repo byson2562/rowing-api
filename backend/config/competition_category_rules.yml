@@ -1,0 +1,23 @@
+default: &default
+  categories:
+    - label: "全日本大学選手権"
+      keywords:
+        - "全日本大学選手権"
+        - "全日本大学ローイング"
+    - label: "全日本選手権"
+      keywords:
+        - "全日本選手権"
+        - "全日本ローイング"
+    - label: "全日本新人選手権"
+      keywords:
+        - "全日本新人選手権"
+        - "全日本新人ローイング"
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

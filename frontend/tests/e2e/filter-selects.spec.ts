@@ -8,6 +8,7 @@ test("filter selects can change directly without resetting to all", async ({ pag
         years: [2025, 2024],
         genders: ["男子", "女子"],
         affiliation_types: ["学生", "社会人"],
+        competition_categories: ["全日本選手権", "全日本大学選手権", "全日本新人選手権"],
         final_groups: ["Final A", "Final B"],
         competitions: ["第103回全日本ローイング選手権大会", "第66回全日本新人ローイング選手権大会"],
         events: ["男子シングルスカル", "女子シングルスカル"],
@@ -38,6 +39,7 @@ test("filter selects can change directly without resetting to all", async ({ pag
   const yearSelect = page.getByTestId("year-select");
   const competitionSelect = page.getByTestId("competition-select");
   const affiliationTypeSelect = page.getByTestId("affiliation-type-select");
+  const competitionCategorySelect = page.getByTestId("competition-category-select");
   const eventSelect = page.getByTestId("event-select");
   const organizationComboboxInput = page.getByTestId("organization-combobox-input");
   const rankSelect = page.getByTestId("rank-select");
@@ -46,6 +48,7 @@ test("filter selects can change directly without resetting to all", async ({ pag
   await expect(yearSelect).toBeVisible();
   await expect(competitionSelect).toBeVisible();
   await expect(affiliationTypeSelect).toBeVisible();
+  await expect(competitionCategorySelect).toBeVisible();
   await expect(organizationComboboxInput).toBeVisible();
   await expect(rankSelect).toBeVisible();
   await expect(perPageSelect).toBeVisible();
@@ -62,6 +65,9 @@ test("filter selects can change directly without resetting to all", async ({ pag
   await expect(affiliationTypeSelect).toHaveValue("学生");
   await affiliationTypeSelect.selectOption({ label: "社会人" });
   await expect(affiliationTypeSelect).toHaveValue("社会人");
+
+  await competitionCategorySelect.selectOption({ label: "全日本大学選手権" });
+  await expect(competitionCategorySelect).toHaveValue("全日本大学選手権");
 
   await eventSelect.selectOption({ label: "男子シングルスカル" });
   await expect(eventSelect).toHaveValue("男子シングルスカル");

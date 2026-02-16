@@ -22,8 +22,8 @@ module Scrapers
         competition_doc = fetch_html(competition_url)
         competition_name = text_at(competition_doc, "h1.title")
 
-        event_urls_for_competition(competition_doc, competition_url).each do |event_url|
-          rows.concat(extract_event_rows(event_url, competition_name))
+        event_urls_for_competition(competition_doc, competition_url).each do |event|
+          rows.concat(extract_event_rows(event[:url], competition_name, event[:name]))
         end
       end
 
@@ -42,20 +42,29 @@ module Scrapers
     end
 
     def event_urls_for_competition(competition_doc, competition_url)
-      panel = competition_doc.css("div.panel.panel-info").find do |node|
+      result_panels = competition_doc.css("div.panel.panel-info").select do |node|
         text_at(node, ".panel-heading").include?("レース結果")
       end
-      return [] unless panel
+      return [] if result_panels.empty?
 
-      panel.css("a[href]").map { |a| absolutize(competition_url, a["href"]) }
-        .select { |url| url.match?(/\.html\z/i) }
-        .reject { |url| url.match?(/_(tt|et)\.html\z/i) }
-        .uniq
+      links = result_panels.flat_map do |panel|
+        panel.css("a[href]").map do |a|
+          {
+            url: absolutize(competition_url, a["href"]),
+            name: normalize_space(a.text)
+          }
+        end
+      end
+
+      links.select { |event| event[:url].match?(/\.html\z/i) }
+        .reject { |event| event[:url].match?(/_(tt|et)\.html\z/i) }
+        .uniq { |event| event[:url] }
     end
 
-    def extract_event_rows(event_url, competition_name)
+    def extract_event_rows(event_url, competition_name, event_name_hint = nil)
       doc = fetch_html(event_url)
-      event_name = text_at(doc, "ol.race-breadcrumb li:last-child")
+      event_name = normalize_space(event_name_hint)
+      event_name = text_at(doc, "ol.race-breadcrumb li:last-child") if event_name.empty?
       return [] if event_name.empty?
 
       rows = []
@@ -116,14 +125,16 @@ module Scrapers
 
     def extract_final_group(race_group)
       normalized = normalize_space(race_group)
-      # Examples:
-      # - "組別: Final A組"
-      # - "組別: SemiFinalA組"
-      # We only accept exact Final A/B groups.
+      # Newer pages: "Final A/B"
+      # Older pages: "決勝" (A final), "順決" (B final)
       group_label = normalized.split(":").last.to_s.strip
-      return nil unless group_label.match?(/\AFinal\s*[AB]組?\z/i)
 
-      group_label.match?(/\AFinal\s*A組?\z/i) ? "Final A" : "Final B"
+      return "Final A" if group_label.match?(/\AFinal\s*A組?\z/i)
+      return "Final B" if group_label.match?(/\AFinal\s*B組?\z/i)
+      return "Final A" if group_label.match?(/\A決勝\z/)
+      return "Final B" if group_label.match?(/\A順決\z/) || group_label.match?(/\A順位決定\z/)
+
+      nil
     end
 
     def write_csv(rows)

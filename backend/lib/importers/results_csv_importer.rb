@@ -13,6 +13,7 @@ module Importers
       "W8+" => "女子エイト"
     }.freeze
 
+
     def initialize(path:)
       @path = path
     end
@@ -24,6 +25,7 @@ module Importers
 
       CSV.foreach(@path, headers: true, encoding: "UTF-8") do |row|
         attrs = map_row(row)
+        next if attrs.nil?
 
         record = Result.find_or_initialize_by(
           year: attrs[:year],
@@ -46,10 +48,14 @@ module Importers
     private
 
     def map_row(row)
+      competition_name = row.fetch("competition_name").strip
+      event_name = normalize_event(row.fetch("event_name"))
+      return nil if ignored_university_oxford_eight?(competition_name, event_name)
+
       {
         year: row.fetch("year").to_i,
-        competition_name: row.fetch("competition_name").strip,
-        event_name: normalize_event(row.fetch("event_name")),
+        competition_name: competition_name,
+        event_name: event_name,
         final_group: row["final_group"].to_s.strip.presence || "Final A",
         crew_name: row.fetch("crew_name").strip,
         organization: normalize_organization(row.fetch("organization")),
@@ -77,6 +83,16 @@ module Importers
       # - 〇〇大学D 以降も統合対象
       # Keep labels like TeamSSP intact by only collapsing suffixes after Japanese/number endings.
       name.sub(/(?<=[一-龯ぁ-んァ-ヶー々〆〤0-9０-９])[[:space:]]*[A-ZＡ-Ｚ]\z/, "")
+    end
+
+    def ignored_university_oxford_eight?(competition_name, event_name)
+      competition_name.include?("全日本大学") &&
+        competition_name.include?("オックスフォード盾") &&
+        normalize_event_label_for_match(event_name) == "オックスフォード盾エイト"
+    end
+
+    def normalize_event_label_for_match(event_name)
+      event_name.to_s.gsub(/[[:space:]]+/, "")
     end
 
     def parse_time_to_seconds(value)
