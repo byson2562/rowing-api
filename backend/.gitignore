@@ -27,3 +27,12 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Test/coverage artifacts
+/coverage/
+
+# Local debug history
+.byebug_history
+
+# Bundler vendor dir
+/vendor/bundle/
