@@ -235,18 +235,47 @@ SKIP_BACKUP=1 bash deploy/scripts/import_all_results_prod.sh
 ENV_FILE=/path/to/.env.prod bash deploy/scripts/import_all_results_prod.sh
 ```
 
-### 8) GitHub Actionsで自動デプロイ
+### 8) GitHub Actionsで自動デプロイ（self-hosted runner）
 
-`main` へ push すると `.github/workflows/deploy-prod.yml` が実行され、EC2へSSHしてデプロイします。
+`main` へ push すると `.github/workflows/deploy-prod.yml` が実行され、EC2上の self-hosted runner でデプロイします。
 
-GitHubリポジトリの `Settings > Secrets and variables > Actions` に以下を登録してください。
+#### 8-1) EC2にrunnerを登録
 
-- `PROD_HOST`: EC2のパブリックIPまたはドメイン
-- `PROD_USER`: SSHユーザー（例: `ec2-user`）
-- `PROD_SSH_KEY`: 秘密鍵の内容（PEM全文）
-- `PROD_PORT`: SSHポート（通常 `22`）
+1. GitHubリポジトリで `Settings > Actions > Runners > New self-hosted runner` を開く
+2. OS=`Linux`, Architecture=`x64` を選択し、表示されるコマンドをEC2で実行
 
-デプロイ処理はEC2上で以下を実行します。
+例（`ec2-user` で実行）:
+
+```bash
+mkdir -p /home/ec2-user/actions-runner && cd /home/ec2-user/actions-runner
+curl -o actions-runner-linux-x64.tar.gz -L https://github.com/actions/runner/releases/download/v2.323.0/actions-runner-linux-x64-2.323.0.tar.gz
+tar xzf ./actions-runner-linux-x64.tar.gz
+./config.sh --url https://github.com/byson2562/rowing-api --token <RUNNER_TOKEN> --labels rowing-api-prod --unattended
+sudo ./svc.sh install ec2-user
+sudo ./svc.sh start
+```
+
+#### 8-2) runnerユーザーにDocker実行権限を付与
+
+```bash
+sudo usermod -aG docker ec2-user
+sudo systemctl restart actions.runner.byson2562-rowing-api.* || true
+```
+
+#### 8-3) セキュリティグループを戻す
+
+self-hosted 化後は `22/tcp` の一時開放（`0.0.0.0/0`）を必ず閉じてください。
+
+#### 8-4) 不要になったSecrets
+
+SSH方式で使っていた以下は不要です（削除可）。
+
+- `PROD_HOST`
+- `PROD_USER`
+- `PROD_SSH_KEY`
+- `PROD_PORT`
+
+デプロイ処理は runner 上で以下を実行します。
 
 ```bash
 cd /opt/rowing-api
