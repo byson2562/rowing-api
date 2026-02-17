@@ -115,6 +115,8 @@ export default function Page() {
   const [winnerTrendChartWidth, setWinnerTrendChartWidth] = useState(0);
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
+  const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 5), [organizationGolds]);
+  const topOrganizationMedals = useMemo(() => organizationMedals.slice(0, 5), [organizationMedals]);
   const genderTabOptions = useMemo(() => {
     const options = filterOptions.genders.filter((value) => value === "男子" || value === "女子");
     return ["", ...options];
@@ -654,12 +656,12 @@ export default function Page() {
       <section className={`cards${isRefreshing ? " is-refreshing" : ""}`}>
         <article className="chart-card">
           <div className="chart-card-head">
-            <h2>団体別金メダル数(上位10)</h2>
+            <h2>団体別金メダル数(上位5)</h2>
             <span>Final A golds</span>
           </div>
           <div className="chart-wrap" ref={organizationGoldChartRef}>
             {organizationGoldChartWidth > 0 ? (
-              <BarChart width={organizationGoldChartWidth} height={260} data={organizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
+              <BarChart width={organizationGoldChartWidth} height={260} data={topOrganizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
                 <YAxis
@@ -678,7 +680,7 @@ export default function Page() {
 
         <article className="chart-card">
           <div className="chart-card-head">
-            <h2>団体別メダル数(上位10)</h2>
+            <h2>団体別メダル数(上位5)</h2>
             <span>Final A medals</span>
           </div>
           <div className="chart-wrap" ref={organizationMedalChartRef}>
@@ -686,7 +688,7 @@ export default function Page() {
               <BarChart
                 width={organizationMedalChartWidth}
                 height={260}
-                data={organizationMedals}
+                data={topOrganizationMedals}
                 layout="vertical"
                 margin={{ left: 8, right: 28 }}
               >
