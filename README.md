@@ -151,6 +151,10 @@ cp deploy/.env.prod.example deploy/.env.prod
 - `MYSQL_USER`
 - `MYSQL_PASSWORD`
 
+任意（計測を有効化する場合）:
+
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID`（例: `G-XXXXXXXXXX`）
+
 `SECRET_KEY_BASE` は以下で生成できます。
 
 ```bash
@@ -162,6 +166,9 @@ docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod run --rm b
 ```bash
 docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
 ```
+
+GA4を有効化した場合は、デプロイ後にブラウザの開発者ツールで
+`https://www.googletagmanager.com/gtag/js?id=...` が読み込まれていることを確認してください。
 
 DBマイグレーション:
 
