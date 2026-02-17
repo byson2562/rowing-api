@@ -16,7 +16,6 @@ jobs:
       - self-hosted
       - linux
       - ARM64
-      - rowing-api-prod
 
     steps:
       - name: Validate deploy prerequisites
