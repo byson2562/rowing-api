@@ -133,6 +133,7 @@ EC2で構築する場合は以下を利用してください。
 - `deploy/scripts/deploy_prod.sh`
 - `deploy/scripts/backup_mysql.sh`
 - `deploy/scripts/restore_mysql.sh`
+- `deploy/scripts/import_all_results_prod.sh`
 
 ### 1) 初期設定
 
@@ -210,7 +211,31 @@ ENV_FILE=/path/to/.env.prod bash deploy/scripts/backup_mysql.sh
 0 3 * * * cd /home/ubuntu/rowing-api && bash deploy/scripts/backup_mysql.sh >> /var/log/rowing_backup.log 2>&1
 ```
 
-### 7) systemdで自動起動
+### 7) 本番データ再投入（CSV一括）
+
+バックアップ -> 全削除 -> 年次CSV再投入までを一括実行:
+
+```bash
+bash deploy/scripts/import_all_results_prod.sh
+```
+
+オプション例:
+
+```bash
+# 2015〜2025のみ再投入
+YEAR_FROM=2015 YEAR_TO=2025 bash deploy/scripts/import_all_results_prod.sh
+
+# バックアップをスキップ
+SKIP_BACKUP=1 bash deploy/scripts/import_all_results_prod.sh
+```
+
+`/etc/rowing-api/.env.prod` 以外を使う場合:
+
+```bash
+ENV_FILE=/path/to/.env.prod bash deploy/scripts/import_all_results_prod.sh
+```
+
+### 8) systemdで自動起動
 
 ```bash
 sudo cp deploy/rowing-api.service /etc/systemd/system/rowing-api.service
