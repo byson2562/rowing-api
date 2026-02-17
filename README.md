@@ -170,6 +170,8 @@ docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod exec -T ba
 
 ### 3) デプロイ更新
 
+`/etc/rowing-api/.env.prod` を優先利用します。
+
 ```bash
 bash deploy/scripts/deploy_prod.sh
 ```
@@ -186,6 +188,12 @@ bash deploy/scripts/backup_mysql.sh
 
 ```bash
 bash deploy/scripts/restore_mysql.sh deploy/backups/mysql_smart_rowing_production_YYYYMMDD_HHMMSS.sql.gz
+```
+
+`/etc/rowing-api/.env.prod` 以外を使う場合は `ENV_FILE` で上書きできます。
+
+```bash
+ENV_FILE=/path/to/.env.prod bash deploy/scripts/backup_mysql.sh
 ```
 
 ### 5) Lightsail 側の推奨設定
