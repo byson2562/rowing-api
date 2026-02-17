@@ -7,7 +7,6 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
@@ -108,6 +107,12 @@ export default function Page() {
   const [perPage, setPerPage] = useState("50");
   const [pageInput, setPageInput] = useState("1");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const organizationGoldChartRef = useRef<HTMLDivElement | null>(null);
+  const organizationMedalChartRef = useRef<HTMLDivElement | null>(null);
+  const winnerTrendChartRef = useRef<HTMLDivElement | null>(null);
+  const [organizationGoldChartWidth, setOrganizationGoldChartWidth] = useState(0);
+  const [organizationMedalChartWidth, setOrganizationMedalChartWidth] = useState(0);
+  const [winnerTrendChartWidth, setWinnerTrendChartWidth] = useState(0);
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
   const genderTabOptions = useMemo(() => {
@@ -244,6 +249,41 @@ export default function Page() {
       controller.abort();
     };
   }, [filterQuery]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateChartWidths = () => {
+      setOrganizationGoldChartWidth(Math.floor(organizationGoldChartRef.current?.clientWidth ?? 0));
+      setOrganizationMedalChartWidth(Math.floor(organizationMedalChartRef.current?.clientWidth ?? 0));
+      setWinnerTrendChartWidth(Math.floor(winnerTrendChartRef.current?.clientWidth ?? 0));
+    };
+
+    updateChartWidths();
+
+    const observers: ResizeObserver[] = [];
+    const observe = (element: HTMLDivElement | null) => {
+      if (!element || typeof ResizeObserver === "undefined") return;
+      const observer = new ResizeObserver(() => {
+        updateChartWidths();
+      });
+      observer.observe(element);
+      observers.push(observer);
+    };
+
+    observe(organizationGoldChartRef.current);
+    observe(organizationMedalChartRef.current);
+    observe(winnerTrendChartRef.current);
+
+    window.addEventListener("resize", updateChartWidths);
+    window.addEventListener("orientationchange", updateChartWidths);
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+      window.removeEventListener("resize", updateChartWidths);
+      window.removeEventListener("orientationchange", updateChartWidths);
+    };
+  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -617,9 +657,9 @@ export default function Page() {
             <h2>団体別金メダル数(上位10)</h2>
             <span>Final A golds</span>
           </div>
-          <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%" minHeight={260}>
-              <BarChart data={organizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
+          <div className="chart-wrap" ref={organizationGoldChartRef}>
+            {organizationGoldChartWidth > 0 ? (
+              <BarChart width={organizationGoldChartWidth} height={260} data={organizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
                 <YAxis
@@ -632,7 +672,7 @@ export default function Page() {
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
               </BarChart>
-            </ResponsiveContainer>
+            ) : null}
           </div>
         </article>
 
@@ -641,9 +681,15 @@ export default function Page() {
             <h2>団体別メダル数(上位10)</h2>
             <span>Final A medals</span>
           </div>
-          <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%" minHeight={260}>
-              <BarChart data={organizationMedals} layout="vertical" margin={{ left: 8, right: 28 }}>
+          <div className="chart-wrap" ref={organizationMedalChartRef}>
+            {organizationMedalChartWidth > 0 ? (
+              <BarChart
+                width={organizationMedalChartWidth}
+                height={260}
+                data={organizationMedals}
+                layout="vertical"
+                margin={{ left: 8, right: 28 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
                 <YAxis
@@ -656,7 +702,7 @@ export default function Page() {
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
               </BarChart>
-            </ResponsiveContainer>
+            ) : null}
           </div>
         </article>
 
@@ -665,17 +711,17 @@ export default function Page() {
             <h2>優勝タイム推移</h2>
             <span>{event ? event : "種目を選択"}</span>
           </div>
-          <div className="chart-wrap">
+          <div className="chart-wrap" ref={winnerTrendChartRef}>
             {event && winnerTrend.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%" minHeight={260}>
-                <LineChart data={winnerTrend}>
+              winnerTrendChartWidth > 0 ? (
+                <LineChart width={winnerTrendChartWidth} height={260} data={winnerTrend}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="label" />
                   <YAxis tickFormatter={formatSecondsForAxis} />
                   <Tooltip formatter={(value) => formatSecondsToTime(Number(value))} />
                   <Line type="monotone" dataKey="value" stroke="#2e7d32" strokeWidth={3} dot isAnimationActive={false} />
                 </LineChart>
-              </ResponsiveContainer>
+              ) : null
             ) : (
               <div className="chart-empty-state">{event ? "No data" : "種目を選択してください (No data)"}</div>
             )}
