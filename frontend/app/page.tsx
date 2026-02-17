@@ -66,9 +66,40 @@ function formatSecondsForAxis(totalSeconds: number): string {
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
-function truncateLabel(label: string, max = 10): string {
-  if (label.length <= max) return label;
-  return `${label.slice(0, max)}…`;
+type WrappedYAxisTickProps = {
+  x?: number;
+  y?: number;
+  payload?: { value?: string };
+};
+
+function renderWrappedYAxisTick({ x = 0, y = 0, payload }: WrappedYAxisTickProps) {
+  const label = String(payload?.value ?? "");
+  const maxCharsPerLine = 7;
+  const maxLines = 2;
+  const lines: string[] = [];
+
+  for (let index = 0; index < label.length && lines.length < maxLines; index += maxCharsPerLine) {
+    const chunk = label.slice(index, index + maxCharsPerLine);
+    lines.push(chunk);
+  }
+
+  if (label.length > maxCharsPerLine * maxLines && lines.length > 0) {
+    const lastIndex = lines.length - 1;
+    const trimmed = lines[lastIndex].slice(0, Math.max(0, maxCharsPerLine - 1));
+    lines[lastIndex] = `${trimmed}…`;
+  }
+
+  const firstLineDy = lines.length === 1 ? 4 : -6;
+
+  return (
+    <text x={x} y={y} textAnchor="end" fill="#6b7280" fontSize={12} dominantBaseline="central">
+      {lines.map((line, index) => (
+        <tspan key={`${line}-${index}`} x={x} dy={index === 0 ? firstLineDy : 14}>
+          {line}
+        </tspan>
+      ))}
+    </text>
+  );
 }
 
 export default function Page() {
@@ -669,7 +700,7 @@ export default function Page() {
                   dataKey="label"
                   width={170}
                   interval={0}
-                  tickFormatter={(value: string) => truncateLabel(value, 10)}
+                  tick={renderWrappedYAxisTick}
                 />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
@@ -699,7 +730,7 @@ export default function Page() {
                   dataKey="label"
                   width={170}
                   interval={0}
-                  tickFormatter={(value: string) => truncateLabel(value, 10)}
+                  tick={renderWrappedYAxisTick}
                 />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
