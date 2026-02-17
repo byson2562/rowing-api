@@ -54,7 +54,8 @@ test("mobile layout shows cards instead of table", async ({ page }) => {
   const tableDisplay = await page.locator(".table-scroll").evaluate((el) => window.getComputedStyle(el).display);
   expect(tableDisplay).toBe("none");
 
-  await expect(page.locator(".results-mobile-cards")).toBeVisible();
+  const mobileCards = page.locator(".results-mobile-cards");
+  await expect(mobileCards).toBeVisible();
   await expect(page.locator(".result-card")).toHaveCount(1);
-  await expect(page.getByText("男子エイト")).toBeVisible();
+  await expect(mobileCards.locator(".result-card-event", { hasText: "男子エイト" })).toBeVisible();
 });

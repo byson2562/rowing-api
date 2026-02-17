@@ -71,35 +71,6 @@ body {
   text-transform: uppercase;
 }
 
-.kpi-grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 14px 0 16px;
-}
-
-.kpi-card {
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.95), rgba(244, 249, 255, 0.95));
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 12px 16px;
-  box-shadow: var(--shadow);
-}
-
-.kpi-label {
-  margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.kpi-value {
-  margin: 6px 0 0;
-  font-size: 1.7rem;
-  font-weight: 800;
-  line-height: 1.1;
-}
-
 .filters-panel {
   position: relative;
   z-index: 30;
@@ -255,24 +226,6 @@ body {
 .filter-actions button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-}
-
-.filter-summary {
-  margin-top: 10px;
-}
-
-.filter-hit-count {
-  margin: 0;
-  color: #153a67;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.filter-hit-subtext {
-  margin: 2px 0 0;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
 }
 
 .active-filter-chips {
@@ -720,12 +673,6 @@ th {
 .medal-rank-bronze {
   background: #f5d0a9;
   color: #7c2d12;
-}
-
-@media (max-width: 900px) {
-  .kpi-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 768px) {

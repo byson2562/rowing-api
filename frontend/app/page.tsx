@@ -5,7 +5,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  LabelList,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -70,7 +69,6 @@ function truncateLabel(label: string, max = 10): string {
 
 export default function Page() {
   const [results, setResults] = useState<Result[]>([]);
-  const [yearCount, setYearCount] = useState<StatPoint[]>([]);
   const [organizationMedals, setOrganizationMedals] = useState<StatPoint[]>([]);
   const [organizationGolds, setOrganizationGolds] = useState<StatPoint[]>([]);
   const [winnerTrend, setWinnerTrend] = useState<StatPoint[]>([]);
@@ -150,16 +148,14 @@ export default function Page() {
       setLoading(true);
       setIsRefreshing(true);
       try {
-        const [resultsRes, yearCountRes, orgMedalRes, orgGoldRes, winnerTrendRes] = await Promise.all([
+        const [resultsRes, orgMedalRes, orgGoldRes, winnerTrendRes] = await Promise.all([
           fetch(`${API_BASE_URL}/api/v1/results?${resultsQuery}`),
-          fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=year_count&${baseQuery}`),
           fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_medals&${baseQuery}`),
           fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_golds&${baseQuery}`),
           event ? fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=winner_time_trend&${baseQuery}`) : Promise.resolve(null)
         ]);
 
         const resultsData = (await resultsRes.json()) as ResultsResponse;
-        const yearCountData = (await yearCountRes.json()) as StatsResponse;
         const orgMedalData = (await orgMedalRes.json()) as StatsResponse;
         const orgGoldData = (await orgGoldRes.json()) as StatsResponse;
         setResults(Array.isArray(resultsData.data) ? resultsData.data : []);
@@ -171,7 +167,6 @@ export default function Page() {
             total_pages: 0
           }
         );
-        setYearCount(yearCountData.data ?? []);
         setOrganizationMedals(orgMedalData.data ?? []);
         setOrganizationGolds(orgGoldData.data ?? []);
         if (winnerTrendRes) {
@@ -258,7 +253,7 @@ export default function Page() {
     if (organization) {
       chips.push({
         key: "organization",
-        text: `所属: ${organization}`,
+        text: `団体: ${organization}`,
         onClear: () => {
           setOrganization("");
           setOrganizationSearch("");
@@ -269,15 +264,6 @@ export default function Page() {
     if (q) chips.push({ key: "q", text: `検索: ${q}`, onClear: () => setQ("") });
     return chips;
   }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
-
-  const yearRangeLabel = useMemo(() => {
-    if (yearCount.length === 0) return "-";
-    const labels = yearCount.map((point) => Number(point.label)).filter((value) => Number.isFinite(value));
-    if (labels.length === 0) return "-";
-    const min = Math.min(...labels);
-    const max = Math.max(...labels);
-    return min === max ? `${min}` : `${min}-${max}`;
-  }, [yearCount]);
 
   const pageStart = pagination.total_count === 0 ? 0 : (pagination.page - 1) * pagination.per_page + 1;
   const pageEnd = pagination.total_count === 0 ? 0 : pageStart + results.length - 1;
@@ -317,11 +303,10 @@ export default function Page() {
   };
 
   const noResultMessage = useMemo(() => {
-    if (loading) return "読み込み中...";
     if (results.length > 0) return "";
     if (activeFilters.length === 0) return "No data";
     return "現在のフィルタ条件では該当データがありません。条件を一部解除してください。";
-  }, [activeFilters.length, loading, results.length]);
+  }, [activeFilters.length, results.length]);
 
   const isInitialEmptyState = !loading && results.length === 0 && activeFilters.length === 0;
 
@@ -359,25 +344,9 @@ export default function Page() {
       <header className="hero">
         <div>
           <h1>RowingAPI</h1>
-          <p className="subtitle">大会記録を検索し、件数・メダル傾向・優勝タイム推移を可視化</p>
+          <p className="subtitle">大会記録を検索し、メダル傾向・優勝タイム推移を可視化</p>
         </div>
-        <div className="hero-badge">{loading ? "Loading..." : "Live Dashboard"}</div>
       </header>
-
-      <section className="kpi-grid">
-        <article className="kpi-card">
-          <p className="kpi-label">検索結果</p>
-          <p className="kpi-value">{pagination.total_count}</p>
-        </article>
-        <article className="kpi-card">
-          <p className="kpi-label">集計年レンジ</p>
-          <p className="kpi-value">{yearRangeLabel}</p>
-        </article>
-        <article className="kpi-card">
-          <p className="kpi-label">有効フィルタ</p>
-          <p className="kpi-value">{activeFilters.length}</p>
-        </article>
-      </section>
 
       <section className="filters-panel">
         <section className="gender-tabs" aria-label="性別フィルタ">
@@ -488,8 +457,8 @@ export default function Page() {
                 setPage(1);
                 setOrganizationMenuOpen(true);
               }}
-              placeholder="所属を検索して選択"
-              aria-label="所属"
+              placeholder="団体を検索して選択"
+              aria-label="団体"
               role="combobox"
               aria-autocomplete="list"
               aria-expanded={organizationMenuOpen}
@@ -515,9 +484,9 @@ export default function Page() {
                     setPage(1);
                   }}
                 >
-                  所属(すべて)
+                  団体(すべて)
                 </button>
-                {filteredOrganizations.slice(0, 50).map((option) => (
+                {filteredOrganizations.map((option) => (
                   <button
                     type="button"
                     role="option"
@@ -566,13 +535,6 @@ export default function Page() {
           </button>
         </div>
 
-        <div className="filter-summary" aria-live="polite">
-          <p className="filter-hit-count">{loading ? "検索中..." : `${pagination.total_count}件ヒット`}</p>
-          <p className="filter-hit-subtext">
-            {activeFilters.length === 0 ? "条件なし" : `${activeFilters.length}条件で絞り込み中（×で個別解除）`}
-          </p>
-        </div>
-
         <div className="active-filter-chips">
           {activeFilters.length === 0 ? (
             <span className="chip chip-empty">フィルタ未指定</span>
@@ -610,7 +572,7 @@ export default function Page() {
       <section className={`cards${isRefreshing ? " is-refreshing" : ""}`}>
         <article className="chart-card">
           <div className="chart-card-head">
-            <h2>所属別金メダル数(上位10)</h2>
+            <h2>団体別金メダル数(上位10)</h2>
             <span>Final A golds</span>
           </div>
           <div className="chart-wrap">
@@ -625,10 +587,8 @@ export default function Page() {
                   interval={0}
                   tickFormatter={(value: string) => truncateLabel(value, 10)}
                 />
-                <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `所属: ${label}`} />
-                <Bar dataKey="value" fill="#f59e0b">
-                  <LabelList dataKey="value" position="right" formatter={(value: number) => `${value}`} />
-                </Bar>
+                <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
+                <Bar dataKey="value" fill="#f59e0b" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -636,7 +596,7 @@ export default function Page() {
 
         <article className="chart-card">
           <div className="chart-card-head">
-            <h2>所属別メダル数(上位10)</h2>
+            <h2>団体別メダル数(上位10)</h2>
             <span>Final A medals</span>
           </div>
           <div className="chart-wrap">
@@ -651,10 +611,8 @@ export default function Page() {
                   interval={0}
                   tickFormatter={(value: string) => truncateLabel(value, 10)}
                 />
-                <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `所属: ${label}`} />
-                <Bar dataKey="value" fill="#ef6c00">
-                  <LabelList dataKey="value" position="right" formatter={(value: number) => `${value}`} />
-                </Bar>
+                <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
+                <Bar dataKey="value" fill="#ef6c00" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -682,29 +640,12 @@ export default function Page() {
           </div>
         </article>
 
-        <article className="chart-card">
-          <div className="chart-card-head">
-            <h2>年別レコード件数</h2>
-            <span>Records by year</span>
-          </div>
-          <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={yearCount}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="label" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#1976d2" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </article>
       </section>
 
       <section className={`table-card${isRefreshing ? " is-refreshing" : ""}`}>
         <h2>
-          検索結果 {loading ? "(読み込み中...)" : `(${pagination.total_count}件)`}{" "}
-          {pagination.total_count > 0 && !loading ? ` ${pageStart}-${pageEnd}件を表示` : ""}
+          検索結果 ({pagination.total_count}件){" "}
+          {pagination.total_count > 0 ? ` ${pageStart}-${pageEnd}件を表示` : ""}
         </h2>
         <div className="table-scroll">
           <table className="results-table">
@@ -715,7 +656,7 @@ export default function Page() {
                 <th className="col-event">種目</th>
                 <th className="col-final">Final</th>
                 <th className="col-crew">クルー</th>
-                <th className="col-organization">所属</th>
+                <th className="col-organization">団体</th>
                 <th className="col-rank">順位</th>
                 <th className="col-time">タイム</th>
               </tr>
@@ -774,7 +715,7 @@ export default function Page() {
                     <dd>{row.crew_name}</dd>
                   </div>
                   <div>
-                    <dt>所属</dt>
+                    <dt>団体</dt>
                     <dd>{row.organization}</dd>
                   </div>
                   <div>
