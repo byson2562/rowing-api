@@ -108,12 +108,8 @@ export default function Page() {
   const [perPage, setPerPage] = useState("50");
   const [pageInput, setPageInput] = useState("1");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
-  const chartYAxisWidth = isMobile ? 92 : 170;
-  const chartLabelMaxLength = isMobile ? 6 : 10;
-  const chartMinHeight = isMobile ? 280 : 260;
   const genderTabOptions = useMemo(() => {
     const options = filterOptions.genders.filter((value) => value === "男子" || value === "女子");
     return ["", ...options];
@@ -248,21 +244,6 @@ export default function Page() {
       controller.abort();
     };
   }, [filterQuery]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-    const updateMobileState = () => setIsMobile(mediaQuery.matches);
-    updateMobileState();
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", updateMobileState);
-      return () => mediaQuery.removeEventListener("change", updateMobileState);
-    }
-
-    mediaQuery.addListener(updateMobileState);
-    return () => mediaQuery.removeListener(updateMobileState);
-  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -637,16 +618,16 @@ export default function Page() {
             <span>Final A golds</span>
           </div>
           <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%" minHeight={chartMinHeight}>
+            <ResponsiveContainer width="100%" height="100%" minHeight={260}>
               <BarChart data={organizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
                 <YAxis
                   type="category"
                   dataKey="label"
-                  width={chartYAxisWidth}
+                  width={170}
                   interval={0}
-                  tickFormatter={(value: string) => truncateLabel(value, chartLabelMaxLength)}
+                  tickFormatter={(value: string) => truncateLabel(value, 10)}
                 />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
@@ -661,16 +642,16 @@ export default function Page() {
             <span>Final A medals</span>
           </div>
           <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%" minHeight={chartMinHeight}>
+            <ResponsiveContainer width="100%" height="100%" minHeight={260}>
               <BarChart data={organizationMedals} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
                 <YAxis
                   type="category"
                   dataKey="label"
-                  width={chartYAxisWidth}
+                  width={170}
                   interval={0}
-                  tickFormatter={(value: string) => truncateLabel(value, chartLabelMaxLength)}
+                  tickFormatter={(value: string) => truncateLabel(value, 10)}
                 />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
@@ -686,7 +667,7 @@ export default function Page() {
           </div>
           <div className="chart-wrap">
             {event && winnerTrend.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%" minHeight={chartMinHeight}>
+              <ResponsiveContainer width="100%" height="100%" minHeight={260}>
                 <LineChart data={winnerTrend}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="label" />
