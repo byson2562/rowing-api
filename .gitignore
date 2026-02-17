@@ -12,3 +12,14 @@
 .env
 .env.local
 .env.*.local
+deploy/.env.prod
+
+# Runtime backups
+deploy/backups/
+
+# Terraform local state
+infra/ec2/.terraform/
+infra/ec2/.terraform.lock.hcl
+infra/ec2/terraform.tfstate
+infra/ec2/terraform.tfstate.backup
+infra/ec2/terraform.tfvars

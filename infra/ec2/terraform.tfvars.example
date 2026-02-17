@@ -1,0 +1,18 @@
+aws_region     = "ap-northeast-1"
+name_prefix    = "rowing-api"
+vpc_id         = "vpc-xxxxxxxx"
+subnet_id      = "subnet-xxxxxxxx"
+instance_type  = "t4g.small"
+root_volume_size = 40
+key_name       = "your-keypair-name"
+ssh_cidr       = "x.x.x.x/32"
+
+repo_url       = "https://github.com/byson2562/rowing-api.git"
+repo_branch    = "main"
+deploy_user    = "ec2-user"
+app_dir        = "/opt/rowing-api"
+
+tags = {
+  Project = "rowing-api"
+  Env     = "prod"
+}

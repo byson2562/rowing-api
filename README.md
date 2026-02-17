@@ -109,3 +109,103 @@ docker compose exec backend bundle exec rails test
 docker compose exec frontend npx playwright install --with-deps chromium
 docker compose exec frontend npm run e2e
 ```
+
+## EC2 Terraform定義
+
+EC2で構築する場合は以下を利用してください。
+
+- `infra/ec2/main.tf`
+- `infra/ec2/variables.tf`
+- `infra/ec2/outputs.tf`
+- `infra/ec2/templates/user_data.sh.tftpl`
+- `infra/ec2/terraform.tfvars.example`
+- `infra/ec2/README.md`
+
+## Lightsail向け本番構成
+
+追加した本番用ファイル:
+
+- `docker-compose.prod.yml`
+- `deploy/Caddyfile`
+- `deploy/.env.prod.example`
+- `frontend/Dockerfile.prod`
+- `backend/Dockerfile.prod`
+- `deploy/scripts/deploy_prod.sh`
+- `deploy/scripts/backup_mysql.sh`
+- `deploy/scripts/restore_mysql.sh`
+
+### 1) 初期設定
+
+```bash
+cp deploy/.env.prod.example deploy/.env.prod
+# deploy/.env.prod の値を本番用に編集
+```
+
+必須で設定する値:
+
+- `DOMAIN`
+- `SECRET_KEY_BASE`
+- `RAILS_MASTER_KEY`
+- `MYSQL_ROOT_PASSWORD`
+- `MYSQL_USER`
+- `MYSQL_PASSWORD`
+
+`SECRET_KEY_BASE` は以下で生成できます。
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod run --rm backend bundle exec rails secret
+```
+
+### 2) 起動
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
+```
+
+DBマイグレーション:
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod exec -T backend bundle exec rails db:migrate
+```
+
+### 3) デプロイ更新
+
+```bash
+bash deploy/scripts/deploy_prod.sh
+```
+
+### 4) バックアップ/リストア
+
+バックアップ:
+
+```bash
+bash deploy/scripts/backup_mysql.sh
+```
+
+リストア:
+
+```bash
+bash deploy/scripts/restore_mysql.sh deploy/backups/mysql_smart_rowing_production_YYYYMMDD_HHMMSS.sql.gz
+```
+
+### 5) Lightsail 側の推奨設定
+
+- インスタンス: Linux 2GB以上
+- 静的IPを割り当て
+- ポート開放: `80`, `443`, `22`
+- DNS: `A` レコードを静的IPへ向ける
+- SSL: Caddyが自動で取得/更新
+
+### 6) Cron例（毎日3:00にバックアップ）
+
+```bash
+0 3 * * * cd /home/ubuntu/rowing-api && bash deploy/scripts/backup_mysql.sh >> /var/log/rowing_backup.log 2>&1
+```
+
+### 7) systemdで自動起動
+
+```bash
+sudo cp deploy/rowing-api.service /etc/systemd/system/rowing-api.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now rowing-api.service
+```

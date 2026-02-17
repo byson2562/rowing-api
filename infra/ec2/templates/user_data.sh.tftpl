@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euxo pipefail
+
+dnf update -y
+dnf install -y docker git
+systemctl enable --now docker
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "docker install failed" >&2
+  exit 1
+fi
+
+usermod -aG docker ${deploy_user}
+
+mkdir -p ${app_dir}
+chown -R ${deploy_user}:${deploy_user} ${app_dir}
+
+if [ ! -d "${app_dir}/.git" ]; then
+  sudo -u ${deploy_user} git clone ${repo_url} ${app_dir}
+fi
+
+cd ${app_dir}
+sudo -u ${deploy_user} git fetch --all
+sudo -u ${deploy_user} git checkout ${branch}
+sudo -u ${deploy_user} git pull origin ${branch}
+
+if [ ! -f "${app_dir}/deploy/.env.prod" ] && [ -f "${app_dir}/deploy/.env.prod.example" ]; then
+  cp ${app_dir}/deploy/.env.prod.example ${app_dir}/deploy/.env.prod
+  chown ${deploy_user}:${deploy_user} ${app_dir}/deploy/.env.prod
+fi
