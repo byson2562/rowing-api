@@ -8,11 +8,11 @@ const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "RowingAPI",
+    default: "ローイング記録検索 | RowingAPI",
     template: "%s | RowingAPI"
   },
-  description: "日本ローイング大会記録の検索・可視化",
-  keywords: ["ローイング", "ボート", "大会結果", "日本ローイング協会", "レース記録"],
+  description: "ローイング記録を年度・大会・種目・団体で検索できるRowingAPI。日本の大会結果を横断して可視化できます。",
+  keywords: ["ローイング 記録", "ローイング", "ボート", "大会結果", "日本ローイング協会", "レース記録"],
   alternates: {
     canonical: "/"
   },
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     locale: "ja_JP",
     url: "/",
     siteName: "RowingAPI",
-    title: "RowingAPI",
-    description: "日本ローイング大会記録の検索・可視化",
+    title: "ローイング記録検索 | RowingAPI",
+    description: "ローイング記録を年度・大会・種目・団体で検索できるRowingAPI。",
     images: [
       {
         url: `${siteUrl}/og`,
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "RowingAPI",
-    description: "日本ローイング大会記録の検索・可視化",
+    title: "ローイング記録検索 | RowingAPI",
+    description: "ローイング記録を年度・大会・種目・団体で検索できるRowingAPI。",
     images: [`${siteUrl}/og`]
   },
   robots: {

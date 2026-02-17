@@ -369,7 +369,7 @@ export default function Page() {
       },
       {
         "@type": "Dataset",
-        name: "RowingAPI 大会記録データセット",
+        name: "RowingAPI ローイング記録データセット",
         description: "日本ローイング協会の大会結果データを検索・可視化できるデータセット",
         url: SITE_URL,
         creator: {
@@ -385,8 +385,8 @@ export default function Page() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="hero">
         <div>
-          <h1>RowingAPI</h1>
-          <p className="subtitle">大会記録を検索し、メダル傾向・優勝タイム推移を可視化</p>
+          <h1>ローイング記録検索 | RowingAPI</h1>
+          <p className="subtitle">ローイング記録を検索し、メダル傾向・優勝タイム推移を可視化</p>
         </div>
       </header>
 

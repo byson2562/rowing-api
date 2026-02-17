@@ -9,6 +9,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1
+    },
+    {
+      url: `${siteUrl}/rowing-records`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8
     }
   ];
 }

@@ -1,0 +1,22 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mark-bg-gradient" x1="78" y1="42" x2="429" y2="468" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B1F52" />
+      <stop offset="1" stop-color="#1976D2" />
+    </linearGradient>
+    <linearGradient id="mark-wave-gradient" x1="90" y1="348" x2="423" y2="348" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00A4E4" />
+      <stop offset="1" stop-color="#36C2FF" />
+    </linearGradient>
+  </defs>
+
+  <rect x="64" y="36" width="384" height="440" rx="84" fill="url(#mark-bg-gradient)" />
+
+  <path d="M160 180L270 294" stroke="#F4C644" stroke-width="24" stroke-linecap="round" />
+  <rect x="263" y="287" width="56" height="18" rx="9" transform="rotate(45 263 287)" fill="#F4C644" />
+
+  <path d="M352 180L242 294" stroke="#F4C644" stroke-width="24" stroke-linecap="round" />
+  <rect x="355" y="180" width="56" height="18" rx="9" transform="rotate(135 355 180)" fill="#F4C644" />
+
+  <path d="M114 352C145 324 176 324 207 352C238 380 269 380 300 352C331 324 362 324 393 352" stroke="url(#mark-wave-gradient)" stroke-width="20" stroke-linecap="round" />
+</svg>
