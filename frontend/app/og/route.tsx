@@ -10,25 +10,39 @@ export async function GET() {
       <div
         style={{
           alignItems: "center",
-          background: "linear-gradient(135deg, #f4f8ff 0%, #e7f0ff 100%)",
-          color: "#10203A",
+          background: "radial-gradient(circle at 18% 22%, #1f2a44 0%, #0b1020 55%, #070b16 100%)",
+          color: "#ffffff",
           display: "flex",
-          flexDirection: "column",
           height: "100%",
           justifyContent: "center",
-          padding: "56px",
+          padding: "64px",
           width: "100%"
         }}
       >
-        <img
-          src={`${siteUrl}/rowingapi-logo-horizontal.svg`}
-          alt="RowingAPI"
-          width={820}
-          height={205}
-          style={{ objectFit: "contain" }}
-        />
-        <div style={{ fontSize: 34, marginTop: 24, fontWeight: 700, letterSpacing: "0.01em", color: "#2B4B75" }}>
-          日本ローイング大会記録の検索・可視化
+        <div
+          style={{
+            alignItems: "center",
+            display: "flex",
+            gap: "28px"
+          }}
+        >
+          <img
+            src={`${siteUrl}/rowingapi-logo-mark.svg`}
+            alt="RowingAPI"
+            width={128}
+            height={128}
+            style={{ borderRadius: "28px" }}
+          />
+          <div
+            style={{
+              fontSize: 98,
+              fontWeight: 800,
+              letterSpacing: "0.02em",
+              lineHeight: 1
+            }}
+          >
+            RowingAPI
+          </div>
         </div>
       </div>
     ),
