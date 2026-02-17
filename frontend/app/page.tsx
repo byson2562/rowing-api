@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -84,6 +84,8 @@ export default function Page() {
     organizations: []
   });
   const [loading, setLoading] = useState(false);
+  const resultsRequestRef = useRef(0);
+  const filtersRequestRef = useRef(0);
 
   const [q, setQ] = useState("");
   const [year, setYear] = useState("");
@@ -144,20 +146,29 @@ export default function Page() {
   }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, year]);
 
   useEffect(() => {
+    const requestId = resultsRequestRef.current + 1;
+    resultsRequestRef.current = requestId;
+    const controller = new AbortController();
+
     const fetchData = async () => {
       setLoading(true);
       setIsRefreshing(true);
       try {
         const [resultsRes, orgMedalRes, orgGoldRes, winnerTrendRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/v1/results?${resultsQuery}`),
-          fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_medals&${baseQuery}`),
-          fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_golds&${baseQuery}`),
-          event ? fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=winner_time_trend&${baseQuery}`) : Promise.resolve(null)
+          fetch(`${API_BASE_URL}/api/v1/results?${resultsQuery}`, { signal: controller.signal }),
+          fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_medals&${baseQuery}`, { signal: controller.signal }),
+          fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_golds&${baseQuery}`, { signal: controller.signal }),
+          event
+            ? fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=winner_time_trend&${baseQuery}`, { signal: controller.signal })
+            : Promise.resolve(null)
         ]);
 
         const resultsData = (await resultsRes.json()) as ResultsResponse;
         const orgMedalData = (await orgMedalRes.json()) as StatsResponse;
         const orgGoldData = (await orgGoldRes.json()) as StatsResponse;
+
+        if (requestId !== resultsRequestRef.current) return;
+
         setResults(Array.isArray(resultsData.data) ? resultsData.data : []);
         setPagination(
           resultsData.pagination ?? {
@@ -175,32 +186,58 @@ export default function Page() {
         } else {
           setWinnerTrend([]);
         }
+      } catch (error) {
+        if ((error as DOMException).name !== "AbortError") {
+          console.error(error);
+        }
       } finally {
-        setLoading(false);
-        setIsRefreshing(false);
+        if (requestId === resultsRequestRef.current) {
+          setLoading(false);
+          setIsRefreshing(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      controller.abort();
+    };
   }, [baseQuery, event, page, perPage, resultsQuery]);
 
   useEffect(() => {
+    const requestId = filtersRequestRef.current + 1;
+    filtersRequestRef.current = requestId;
+    const controller = new AbortController();
+
     const fetchFilterOptions = async () => {
-      const response = await fetch(`${API_BASE_URL}/api/v1/results/filters?${filterQuery}`);
-      const payload = (await response.json()) as FilterOptionsResponse;
-      setFilterOptions({
-        years: payload.years ?? [],
-        genders: payload.genders ?? [],
-        affiliation_types: payload.affiliation_types ?? [],
-        competition_categories: payload.competition_categories ?? [],
-        final_groups: payload.final_groups ?? [],
-        competitions: payload.competitions ?? [],
-        events: payload.events ?? [],
-        organizations: payload.organizations ?? []
-      });
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/results/filters?${filterQuery}`, { signal: controller.signal });
+        const payload = (await response.json()) as FilterOptionsResponse;
+        if (requestId !== filtersRequestRef.current) return;
+
+        setFilterOptions({
+          years: payload.years ?? [],
+          genders: payload.genders ?? [],
+          affiliation_types: payload.affiliation_types ?? [],
+          competition_categories: payload.competition_categories ?? [],
+          final_groups: payload.final_groups ?? [],
+          competitions: payload.competitions ?? [],
+          events: payload.events ?? [],
+          organizations: payload.organizations ?? []
+        });
+      } catch (error) {
+        if ((error as DOMException).name !== "AbortError") {
+          console.error(error);
+        }
+      }
     };
 
     fetchFilterOptions();
+
+    return () => {
+      controller.abort();
+    };
   }, [filterQuery]);
 
   useEffect(() => {
