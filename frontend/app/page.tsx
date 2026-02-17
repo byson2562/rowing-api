@@ -108,8 +108,12 @@ export default function Page() {
   const [perPage, setPerPage] = useState("50");
   const [pageInput, setPageInput] = useState("1");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
+  const chartYAxisWidth = isMobile ? 92 : 170;
+  const chartLabelMaxLength = isMobile ? 6 : 10;
+  const chartMinHeight = isMobile ? 280 : 260;
   const genderTabOptions = useMemo(() => {
     const options = filterOptions.genders.filter((value) => value === "男子" || value === "女子");
     return ["", ...options];
@@ -244,6 +248,21 @@ export default function Page() {
       controller.abort();
     };
   }, [filterQuery]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const updateMobileState = () => setIsMobile(mediaQuery.matches);
+    updateMobileState();
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateMobileState);
+      return () => mediaQuery.removeEventListener("change", updateMobileState);
+    }
+
+    mediaQuery.addListener(updateMobileState);
+    return () => mediaQuery.removeListener(updateMobileState);
+  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -618,19 +637,19 @@ export default function Page() {
             <span>Final A golds</span>
           </div>
           <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minHeight={chartMinHeight}>
               <BarChart data={organizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
                 <YAxis
                   type="category"
                   dataKey="label"
-                  width={170}
+                  width={chartYAxisWidth}
                   interval={0}
-                  tickFormatter={(value: string) => truncateLabel(value, 10)}
+                  tickFormatter={(value: string) => truncateLabel(value, chartLabelMaxLength)}
                 />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
-                <Bar dataKey="value" fill="#f59e0b" />
+                <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -642,19 +661,19 @@ export default function Page() {
             <span>Final A medals</span>
           </div>
           <div className="chart-wrap">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minHeight={chartMinHeight}>
               <BarChart data={organizationMedals} layout="vertical" margin={{ left: 8, right: 28 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" allowDecimals={false} />
                 <YAxis
                   type="category"
                   dataKey="label"
-                  width={170}
+                  width={chartYAxisWidth}
                   interval={0}
-                  tickFormatter={(value: string) => truncateLabel(value, 10)}
+                  tickFormatter={(value: string) => truncateLabel(value, chartLabelMaxLength)}
                 />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
-                <Bar dataKey="value" fill="#ef6c00" />
+                <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -667,13 +686,13 @@ export default function Page() {
           </div>
           <div className="chart-wrap">
             {event && winnerTrend.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={chartMinHeight}>
                 <LineChart data={winnerTrend}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="label" />
                   <YAxis tickFormatter={formatSecondsForAxis} />
                   <Tooltip formatter={(value) => formatSecondsToTime(Number(value))} />
-                  <Line type="monotone" dataKey="value" stroke="#2e7d32" strokeWidth={3} dot />
+                  <Line type="monotone" dataKey="value" stroke="#2e7d32" strokeWidth={3} dot isAnimationActive={false} />
                 </LineChart>
               </ResponsiveContainer>
             ) : (

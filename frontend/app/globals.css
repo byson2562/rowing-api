@@ -326,7 +326,6 @@ body {
 
 .cards.is-refreshing {
   opacity: 0.7;
-  transform: translateY(2px);
 }
 
 .chart-card,
@@ -381,7 +380,6 @@ body {
 
 .table-card.is-refreshing {
   opacity: 0.7;
-  transform: translateY(2px);
 }
 
 .table-scroll {
