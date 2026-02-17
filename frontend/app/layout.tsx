@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     description: "日本ローイング大会記録の検索・可視化",
     images: [
       {
-        url: `${siteUrl}/api/og`,
+        url: `${siteUrl}/og`,
         width: 1200,
         height: 630,
         alt: "RowingAPI"
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "RowingAPI",
     description: "日本ローイング大会記録の検索・可視化",
-    images: [`${siteUrl}/api/og`]
+    images: [`${siteUrl}/og`]
   },
   robots: {
     index: true,
