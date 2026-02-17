@@ -235,7 +235,25 @@ SKIP_BACKUP=1 bash deploy/scripts/import_all_results_prod.sh
 ENV_FILE=/path/to/.env.prod bash deploy/scripts/import_all_results_prod.sh
 ```
 
-### 8) systemdで自動起動
+### 8) GitHub Actionsで自動デプロイ
+
+`main` へ push すると `.github/workflows/deploy-prod.yml` が実行され、EC2へSSHしてデプロイします。
+
+GitHubリポジトリの `Settings > Secrets and variables > Actions` に以下を登録してください。
+
+- `PROD_HOST`: EC2のパブリックIPまたはドメイン
+- `PROD_USER`: SSHユーザー（例: `ec2-user`）
+- `PROD_SSH_KEY`: 秘密鍵の内容（PEM全文）
+- `PROD_PORT`: SSHポート（通常 `22`）
+
+デプロイ処理はEC2上で以下を実行します。
+
+```bash
+cd /opt/rowing-api
+ENV_FILE=/etc/rowing-api/.env.prod bash deploy/scripts/deploy_prod.sh
+```
+
+### 9) systemdで自動起動
 
 ```bash
 sudo cp deploy/rowing-api.service /etc/systemd/system/rowing-api.service
