@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/"
   },
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg"
+  },
   openGraph: {
     type: "website",
     locale: "ja_JP",
