@@ -350,7 +350,7 @@ export default function Page() {
     return "現在のフィルタ条件では該当データがありません。条件を一部解除してください。";
   }, [activeFilters.length, results.length]);
 
-  const isInitialEmptyState = !loading && results.length === 0 && activeFilters.length === 0;
+  const shouldShowFilterGuide = activeFilters.length === 0;
 
   const applyLatestYearFilter = () => {
     if (filterOptions.years.length === 0) return;
@@ -593,7 +593,7 @@ export default function Page() {
         </div>
       </section>
 
-      {isInitialEmptyState && (
+      {shouldShowFilterGuide && (
         <section className="empty-state-guide" aria-live="polite">
           <h2>まずは条件を1つ選んで検索を始めましょう</h2>
           <p>おすすめ: 年、Final、種目の順で絞り込むと目的の結果に早く到達できます。</p>
