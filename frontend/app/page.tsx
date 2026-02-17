@@ -42,8 +42,13 @@ type FilterOptionsResponse = {
   organizations: string[];
 };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+const API_PREFIX = API_BASE_URL.endsWith("/api") ? API_BASE_URL : `${API_BASE_URL}/api`;
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
+
+function apiUrl(path: string): string {
+  return `${API_PREFIX}${path}`;
+}
 
 function formatSecondsToTime(totalSeconds: number): string {
   const safeSeconds = Number.isFinite(totalSeconds) ? totalSeconds : 0;
@@ -155,11 +160,11 @@ export default function Page() {
       setIsRefreshing(true);
       try {
         const [resultsRes, orgMedalRes, orgGoldRes, winnerTrendRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/v1/results?${resultsQuery}`, { signal: controller.signal }),
-          fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_medals&${baseQuery}`, { signal: controller.signal }),
-          fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=organization_golds&${baseQuery}`, { signal: controller.signal }),
+          fetch(apiUrl(`/v1/results?${resultsQuery}`), { signal: controller.signal }),
+          fetch(apiUrl(`/v1/results/stats?group_by=organization_medals&${baseQuery}`), { signal: controller.signal }),
+          fetch(apiUrl(`/v1/results/stats?group_by=organization_golds&${baseQuery}`), { signal: controller.signal }),
           event
-            ? fetch(`${API_BASE_URL}/api/v1/results/stats?group_by=winner_time_trend&${baseQuery}`, { signal: controller.signal })
+            ? fetch(apiUrl(`/v1/results/stats?group_by=winner_time_trend&${baseQuery}`), { signal: controller.signal })
             : Promise.resolve(null)
         ]);
 
@@ -212,7 +217,7 @@ export default function Page() {
 
     const fetchFilterOptions = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/results/filters?${filterQuery}`, { signal: controller.signal });
+        const response = await fetch(apiUrl(`/v1/results/filters?${filterQuery}`), { signal: controller.signal });
         const payload = (await response.json()) as FilterOptionsResponse;
         if (requestId !== filtersRequestRef.current) return;
 
