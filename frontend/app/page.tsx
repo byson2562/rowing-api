@@ -72,19 +72,19 @@ type WrappedXAxisTickProps = {
   payload?: { value?: string };
 };
 
-function truncateLabel(label: string, maxChars = 8): string {
+function truncateLabel(label: string, maxChars = 6): string {
   if (label.length <= maxChars) return label;
   return `${label.slice(0, maxChars)}…`;
 }
 
 function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps) {
-  const label = truncateLabel(String(payload?.value ?? ""), 8);
+  const label = truncateLabel(String(payload?.value ?? ""), 6);
   const chars = Array.from(label);
 
   return (
     <text x={x} y={y} textAnchor="middle" fill="#6b7280" fontSize={11} dominantBaseline="hanging">
       {chars.map((char, index) => (
-        <tspan key={`${char}-${index}`} x={x} dy={index === 0 ? 10 : 12}>
+        <tspan key={`${char}-${index}`} x={x} dy={index === 0 ? 8 : 11}>
           {char}
         </tspan>
       ))}
@@ -136,9 +136,9 @@ export default function Page() {
   const [winnerTrendChartWidth, setWinnerTrendChartWidth] = useState(0);
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
-  const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 5), [organizationGolds]);
-  const topOrganizationMedals = useMemo(() => organizationMedals.slice(0, 5), [organizationMedals]);
-  const organizationBarChartHeight = 300;
+  const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 8), [organizationGolds]);
+  const topOrganizationMedals = useMemo(() => organizationMedals.slice(0, 8), [organizationMedals]);
+  const organizationBarChartHeight = 260;
   const genderTabOptions = useMemo(() => {
     const options = filterOptions.genders.filter((value) => value === "男子" || value === "女子");
     return ["", ...options];
@@ -511,8 +511,6 @@ export default function Page() {
         </section>
 
         <section className="filters">
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="キーワード" aria-label="キーワード" />
-
           <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年">
             <option value="">年(すべて)</option>
             {filterOptions.years.map((option) => (
@@ -654,21 +652,6 @@ export default function Page() {
               </option>
             ))}
           </select>
-
-          <select
-            data-testid="per-page-select"
-            value={perPage}
-            onChange={(e) => {
-              setPerPage(e.target.value);
-              setPage(1);
-            }}
-            aria-label="1ページ件数"
-          >
-            <option value="25">25件/ページ</option>
-            <option value="50">50件/ページ</option>
-            <option value="100">100件/ページ</option>
-            <option value="200">200件/ページ</option>
-          </select>
         </section>
 
         <div className="filter-actions">
@@ -714,7 +697,7 @@ export default function Page() {
       <section className={`cards${isRefreshing ? " is-refreshing" : ""}`}>
         <article className="chart-card">
           <div className="chart-card-head">
-            <h2>団体別金メダル数(上位5)</h2>
+            <h2>団体別金メダル数(Top8)</h2>
             <span>Final A golds</span>
           </div>
           <div className="chart-wrap" ref={organizationGoldChartRef} style={{ height: organizationBarChartHeight }}>
@@ -724,11 +707,11 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationGolds}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 92 }}
+                margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={96} tick={renderWrappedXAxisTick} />
-                <YAxis type="number" allowDecimals={false} />
+                <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
+                <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" />
               </BarChart>
@@ -738,7 +721,7 @@ export default function Page() {
 
         <article className="chart-card">
           <div className="chart-card-head">
-            <h2>団体別メダル数(上位5)</h2>
+            <h2>団体別メダル数(Top8)</h2>
             <span>Final A medals</span>
           </div>
           <div className="chart-wrap" ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
@@ -748,11 +731,11 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationMedals}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 92 }}
+                margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={96} tick={renderWrappedXAxisTick} />
-                <YAxis type="number" allowDecimals={false} />
+                <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
+                <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" />
               </BarChart>
@@ -785,10 +768,29 @@ export default function Page() {
       </section>
 
       <section className={`table-card${isRefreshing ? " is-refreshing" : ""}`}>
-        <h2>
-          検索結果 ({pagination.total_count}件){" "}
-          {pagination.total_count > 0 ? ` ${pageStart}-${pageEnd}件を表示` : ""}
-        </h2>
+        <div className="table-head">
+          <h2>
+            検索結果 ({pagination.total_count}件){" "}
+            {pagination.total_count > 0 ? ` ${pageStart}-${pageEnd}件を表示` : ""}
+          </h2>
+          <label className="results-per-page">
+            <span>表示件数</span>
+            <select
+              data-testid="per-page-select"
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(e.target.value);
+                setPage(1);
+              }}
+              aria-label="1ページ件数"
+            >
+              <option value="25">25件/ページ</option>
+              <option value="50">50件/ページ</option>
+              <option value="100">100件/ページ</option>
+              <option value="200">200件/ページ</option>
+            </select>
+          </label>
+        </div>
         <div className="table-scroll">
           <table className="results-table">
             <thead>
