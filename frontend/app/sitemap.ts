@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1
     },
     {
-      url: `${siteUrl}/rowing-records`,
+      url: `${siteUrl}/rowing-results`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8
