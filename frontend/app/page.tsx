@@ -81,7 +81,7 @@ function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps
   const label = truncateLabel(String(payload?.value ?? ""), 8);
 
   return (
-    <text x={x} y={y} dx={-2} dy={12} textAnchor="end" fill="#6b7280" fontSize={11} transform={`rotate(-35 ${x} ${y})`}>
+    <text x={x} y={y} dx={0} dy={14} textAnchor="end" fill="#6b7280" fontSize={11} transform={`rotate(-90 ${x} ${y})`}>
       {label}
     </text>
   );
@@ -719,10 +719,10 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationGolds}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 58 }}
+                margin={{ left: 8, right: 8, bottom: 72 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={64} tick={renderWrappedXAxisTick} />
+                <XAxis type="category" dataKey="label" interval={0} height={78} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
@@ -743,10 +743,10 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationMedals}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 58 }}
+                margin={{ left: 8, right: 8, bottom: 72 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={64} tick={renderWrappedXAxisTick} />
+                <XAxis type="category" dataKey="label" interval={0} height={78} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
