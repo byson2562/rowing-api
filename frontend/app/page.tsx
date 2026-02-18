@@ -81,7 +81,16 @@ function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps
   const label = truncateLabel(String(payload?.value ?? ""), 8);
 
   return (
-    <text x={x} y={y} dx={0} dy={14} textAnchor="end" fill="#6b7280" fontSize={11} transform={`rotate(-90 ${x} ${y})`}>
+    <text
+      x={x}
+      y={y}
+      dx={0}
+      dy={8}
+      textAnchor="middle"
+      fill="#6b7280"
+      fontSize={11}
+      style={{ writingMode: "vertical-rl", textOrientation: "upright" }}
+    >
       {label}
     </text>
   );
