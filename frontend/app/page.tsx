@@ -79,19 +79,15 @@ function truncateLabel(label: string, maxChars = 8): string {
 
 function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps) {
   const label = truncateLabel(String(payload?.value ?? ""), 8);
+  const chars = Array.from(label);
 
   return (
-    <text
-      x={x}
-      y={y}
-      dx={0}
-      dy={8}
-      textAnchor="middle"
-      fill="#6b7280"
-      fontSize={11}
-      style={{ writingMode: "vertical-rl", textOrientation: "upright" }}
-    >
-      {label}
+    <text x={x} y={y} textAnchor="middle" fill="#6b7280" fontSize={11} dominantBaseline="hanging">
+      {chars.map((char, index) => (
+        <tspan key={`${char}-${index}`} x={x} dy={index === 0 ? 10 : 12}>
+          {char}
+        </tspan>
+      ))}
     </text>
   );
 }
@@ -728,13 +724,13 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationGolds}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 72 }}
+                margin={{ left: 8, right: 8, bottom: 92 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={78} tick={renderWrappedXAxisTick} />
+                <XAxis type="category" dataKey="label" interval={0} height={96} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
-                <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
+                <Bar dataKey="value" fill="#f59e0b" />
               </BarChart>
             ) : null}
           </div>
@@ -752,13 +748,13 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationMedals}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 72 }}
+                margin={{ left: 8, right: 8, bottom: 92 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={78} tick={renderWrappedXAxisTick} />
+                <XAxis type="category" dataKey="label" interval={0} height={96} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
-                <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
+                <Bar dataKey="value" fill="#ef6c00" />
               </BarChart>
             ) : null}
           </div>
@@ -777,7 +773,7 @@ export default function Page() {
                   <XAxis dataKey="label" />
                   <YAxis tickFormatter={formatSecondsForAxis} />
                   <Tooltip formatter={(value) => formatSecondsToTime(Number(value))} />
-                  <Line type="monotone" dataKey="value" stroke="#2e7d32" strokeWidth={3} dot isAnimationActive={false} />
+                  <Line type="monotone" dataKey="value" stroke="#2e7d32" strokeWidth={3} dot />
                 </LineChart>
               ) : null
             ) : (
