@@ -381,7 +381,9 @@ export default function Page() {
     const chips: ActiveFilterChip[] = [];
     if (year) chips.push({ key: "year", text: `年: ${year}`, onClear: () => setYear("") });
     if (gender) chips.push({ key: "gender", text: `性別: ${gender}`, onClear: () => setGender("") });
-    if (affiliationType) chips.push({ key: "affiliationType", text: `区分: ${affiliationType}`, onClear: () => setAffiliationType("") });
+    if (affiliationType) {
+      chips.push({ key: "affiliationType", text: `団体区分: ${affiliationType}`, onClear: () => setAffiliationType("") });
+    }
     if (competition) chips.push({ key: "competition", text: `大会: ${competition}`, onClear: () => setCompetition("") });
     if (competitionCategory) {
       chips.push({
@@ -547,9 +549,9 @@ export default function Page() {
             data-testid="affiliation-type-select"
             value={affiliationType}
             onChange={(e) => setAffiliationType(e.target.value)}
-            aria-label="区分"
+            aria-label="団体区分"
           >
-            <option value="">区分(すべて)</option>
+            <option value="">団体区分(すべて)</option>
             {filterOptions.affiliation_types.map((option) => (
               <option key={option} value={option}>
                 {option}
