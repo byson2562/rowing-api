@@ -319,6 +319,42 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined" || typeof navigator === "undefined") return;
+    if (!("serviceWorker" in navigator)) return;
+
+    const refreshKey = "sw-refresh-once-v1";
+
+    const clearStaleCaches = async () => {
+      try {
+        if ("caches" in window) {
+          const cacheKeys = await caches.keys();
+          await Promise.all(cacheKeys.map((cacheKey) => caches.delete(cacheKey)));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const unregisterWorkers = async () => {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        if (registrations.length === 0) return;
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+        await clearStaleCaches();
+
+        if (!sessionStorage.getItem(refreshKey)) {
+          sessionStorage.setItem(refreshKey, "1");
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    unregisterWorkers();
+  }, []);
+
+  useEffect(() => {
     setPage(1);
   }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
 
