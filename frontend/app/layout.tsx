@@ -66,9 +66,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               RowingAPI
             </Link>
             <nav className="site-nav" aria-label="グローバルナビゲーション">
-              <Link href="/" className="site-nav-link">
-                検索
-              </Link>
               <Link href="/rowing-results" className="site-nav-link">
                 RowingAPIとは
               </Link>

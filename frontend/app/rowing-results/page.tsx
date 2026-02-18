@@ -26,6 +26,13 @@ export default function RowingResultsPage() {
           年度・大会名・種目・Final・団体を横断して検索し、メダル傾向と優勝タイム推移までまとめて確認できます。
           日本の主要大会記録を、比較しやすい形で素早くたどれます。
         </p>
+        <img
+          className="lp-hero-preview"
+          src="/lp-fv-screenshot.png"
+          alt="RowingAPI検索画面のプレビュー"
+          width={1446}
+          height={1138}
+        />
         <div className="lp-hero-actions">
           <Link href="/" className="lp-btn lp-btn-primary">
             今すぐ検索を始める
@@ -37,15 +44,15 @@ export default function RowingResultsPage() {
         <h2 id="lp-features-heading" className="lp-section-title">主な特徴</h2>
         <div className="lp-value-grid">
         <article className="lp-value-card">
-          <h3>🔎 横断検索</h3>
+          <h3><span className="lp-heading-icon" aria-hidden="true">🔎</span>横断検索</h3>
           <p>大会・年・種目・団体の条件を組み合わせて、目的のレース結果を素早く絞り込み。</p>
         </article>
         <article className="lp-value-card">
-          <h3>📊 可視化</h3>
+          <h3><span className="lp-heading-icon" aria-hidden="true">📊</span>可視化</h3>
           <p>団体別の金メダル数・メダル数をグラフで確認し、勢力図の変化を把握。</p>
         </article>
         <article className="lp-value-card">
-          <h3>⏱ 時系列比較</h3>
+          <h3><span className="lp-heading-icon" aria-hidden="true">⏱</span>時系列比較</h3>
           <p>種目ごとの優勝タイム推移を追い、記録トレンドを直感的に分析。</p>
         </article>
         </div>
@@ -67,7 +74,7 @@ export default function RowingResultsPage() {
           <dl className="lp-summary-list">
             <div>
               <dt>収録データ</dt>
-              <dd>現在は2009年から2025年までの大会記録を掲載しています。</dd>
+              <dd>現在は2009年から2025年までの大会記録を掲載しています（Final B以上が対象）。</dd>
             </div>
             <div>
               <dt>集計対象大会</dt>
@@ -80,28 +87,63 @@ export default function RowingResultsPage() {
         </aside>
       </section>
 
-      <section className="lp-author" aria-labelledby="lp-author-heading">
-        <h2 id="lp-author-heading">開発者について</h2>
-        <p>
-          本サービスは <strong>中村匠</strong> が開発・運営しています。データ整備と検索体験の改善を継続し、
-          ローイング記録を調べやすい形で提供することを目指しています。
-        </p>
-        <dl className="lp-author-meta">
-          <div>
-            <dt>連絡先</dt>
-            <dd>
-              <a href="mailto:takumi.nakamura.by@gmail.com">takumi.nakamura.by@gmail.com</a>
-            </dd>
-          </div>
-          <div>
-            <dt>経歴</dt>
-            <dd>
-              早稲田大学漕艇部OB（2015年卒）
-              <br />
-              関東学連OB（2014 - 2015年 水路部長）
-            </dd>
-          </div>
-        </dl>
+      <section className="lp-author-section" aria-labelledby="lp-author-heading">
+        <h2 id="lp-author-heading" className="lp-section-title">開発者について</h2>
+        <div className="lp-author">
+          <h3>プロフィール</h3>
+          <p>
+            本サービスは <strong>中村匠</strong> が開発・運営しています。データ整備と検索体験の改善を継続し、
+            ローイング記録を調べやすい形で提供することを目指しています。
+          </p>
+          <dl className="lp-author-meta">
+            <div>
+              <dt>連絡先</dt>
+              <dd>
+                <a href="mailto:takumi.nakamura.by@gmail.com">takumi.nakamura.by@gmail.com</a>
+              </dd>
+            </div>
+            <div>
+              <dt>経歴</dt>
+              <dd>
+                早稲田大学漕艇部OB（2015年卒）
+                <br />
+                関東学連OB（2014 - 2015年 水路部長）
+              </dd>
+            </div>
+          </dl>
+          <h3 className="lp-tech-heading">技術スタック</h3>
+          <ul className="lp-tech-list" aria-label="技術スタック">
+            <li>
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rails/rails-plain.svg" alt="" width={18} height={18} />
+              <span>Ruby on Rails</span>
+            </li>
+            <li>
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="" width={18} height={18} />
+              <span>MySQL</span>
+            </li>
+            <li>
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" alt="" width={18} height={18} />
+              <span>Next.js</span>
+            </li>
+            <li>
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="" width={18} height={18} />
+              <span>TypeScript</span>
+            </li>
+            <li>
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="" width={18} height={18} />
+              <span>Docker</span>
+            </li>
+            <li>
+              <img
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+                alt=""
+                width={22}
+                height={18}
+              />
+              <span>AWS</span>
+            </li>
+          </ul>
+        </div>
       </section>
 
     </main>
