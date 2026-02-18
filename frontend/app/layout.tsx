@@ -9,11 +9,21 @@ const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "ローイング記録検索 | RowingAPI",
+    default: "ローイング・ボート記録検索 | RowingAPI",
     template: "%s | RowingAPI"
   },
-  description: "ローイング記録を年度・大会・種目・団体で検索できるRowingAPI。日本の大会結果を横断して可視化できます。",
-  keywords: ["ローイング 記録", "ローイング", "ボート", "大会結果", "日本ローイング協会", "レース記録"],
+  description:
+    "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。日本の大会結果を横断して可視化できます。",
+  keywords: [
+    "ローイング 記録",
+    "ボート 記録",
+    "ボート 大会結果",
+    "ローイング",
+    "ボート",
+    "大会結果",
+    "日本ローイング協会",
+    "レース記録"
+  ],
   alternates: {
     canonical: "/"
   },
@@ -26,8 +36,8 @@ export const metadata: Metadata = {
     locale: "ja_JP",
     url: "/",
     siteName: "RowingAPI",
-    title: "ローイング記録検索 | RowingAPI",
-    description: "ローイング記録を年度・大会・種目・団体で検索できるRowingAPI。",
+    title: "ローイング・ボート記録検索 | RowingAPI",
+    description: "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。",
     images: [
       {
         url: `${siteUrl}/og`,
@@ -39,8 +49,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ローイング記録検索 | RowingAPI",
-    description: "ローイング記録を年度・大会・種目・団体で検索できるRowingAPI。",
+    title: "ローイング・ボート記録検索 | RowingAPI",
+    description: "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。",
     images: [`${siteUrl}/og`]
   },
   robots: {
