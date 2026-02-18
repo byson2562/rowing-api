@@ -4,14 +4,14 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "ローイング・ボート記録・大会結果",
   description:
-    "ローイング（ボート）記録を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。日本の主要大会結果を横断して確認できます。",
+    "ローイング（ボート）記録を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果を横断して確認できます。",
   alternates: {
     canonical: "/rowing-results"
   },
   openGraph: {
     title: "ローイング・ボート記録・大会結果 | RowingAPI",
     description:
-      "ローイング（ボート）記録を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。",
+      "ローイング（ボート）記録を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
     url: "/rowing-results"
   }
 };
@@ -79,8 +79,13 @@ export default function RowingResultsPage() {
             <div>
               <dt>集計対象大会</dt>
               <dd>
-                集計対象は全日本級の大会です。大会カテゴリで選択できる
-                「全日本選手権」「全日本大学選手権」「全日本軽量級選手権」「全日本新人選手権」の4大会を対象としています。
+                集計対象は全日本級の大会です。
+                <ul>
+                  <li>全日本ローイング選手権（全日本選手権）</li>
+                  <li>全日本大学ローイング選手権（全日本大学選手権）</li>
+                  <li>全日本新人ローイング選手権（全日本新人選手権）</li>
+                  <li>全日本軽量級選手権</li>
+                </ul>
               </dd>
             </div>
           </dl>

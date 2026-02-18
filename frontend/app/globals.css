@@ -1018,6 +1018,11 @@ th {
   line-height: 1.65;
 }
 
+.lp-summary-list dd ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
 .lp-author {
   background: var(--surface-solid);
   border: 1px solid var(--border);
