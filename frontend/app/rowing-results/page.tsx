@@ -33,24 +33,28 @@ export default function RowingResultsPage() {
         </div>
       </section>
 
-      <section className="lp-value-grid" aria-label="主な特徴">
+      <section aria-labelledby="lp-features-heading">
+        <h2 id="lp-features-heading" className="lp-section-title">主な特徴</h2>
+        <div className="lp-value-grid">
         <article className="lp-value-card">
-          <h2>横断検索</h2>
+          <h3>🔎 横断検索</h3>
           <p>大会・年・種目・団体の条件を組み合わせて、目的のレース結果を素早く絞り込み。</p>
         </article>
         <article className="lp-value-card">
-          <h2>可視化</h2>
+          <h3>📊 可視化</h3>
           <p>団体別の金メダル数・メダル数をグラフで確認し、勢力図の変化を把握。</p>
         </article>
         <article className="lp-value-card">
-          <h2>時系列比較</h2>
+          <h3>⏱ 時系列比較</h3>
           <p>種目ごとの優勝タイム推移を追い、記録トレンドを直感的に分析。</p>
         </article>
+        </div>
       </section>
 
-      <section className="lp-detail">
+      <section className="lp-detail" aria-labelledby="lp-detail-heading">
+        <h2 id="lp-detail-heading" className="lp-section-title">機能とデータ概要</h2>
         <div className="lp-detail-main">
-          <h2>RowingAPIでできること</h2>
+          <h3>RowingAPIでできること</h3>
           <ul>
             <li>ローイング記録の検索（年・大会・種目・団体）</li>
             <li>Final A基準での団体別メダル傾向の可視化</li>
@@ -59,15 +63,25 @@ export default function RowingResultsPage() {
           </ul>
         </div>
         <aside className="lp-detail-side">
-          <h3>収録データ</h3>
-          <p>現在は2009年から2025年までの大会記録を掲載しています。</p>
-          <h3>おすすめの使い方</h3>
-          <p>まず「年」と「Final」で絞り込んでから、種目や団体で比較すると探しやすくなります。</p>
+          <h3>データ概要</h3>
+          <dl className="lp-summary-list">
+            <div>
+              <dt>収録データ</dt>
+              <dd>現在は2009年から2025年までの大会記録を掲載しています。</dd>
+            </div>
+            <div>
+              <dt>集計対象大会</dt>
+              <dd>
+                集計対象は全日本級の大会です。大会カテゴリで選択できる
+                「全日本選手権」「全日本大学選手権」「全日本軽量級選手権」「全日本新人選手権」の4大会を対象としています。
+              </dd>
+            </div>
+          </dl>
         </aside>
       </section>
 
-      <section className="lp-author">
-        <h2>開発者について</h2>
+      <section className="lp-author" aria-labelledby="lp-author-heading">
+        <h2 id="lp-author-heading">開発者について</h2>
         <p>
           本サービスは <strong>中村匠</strong> が開発・運営しています。データ整備と検索体験の改善を継続し、
           ローイング記録を調べやすい形で提供することを目指しています。

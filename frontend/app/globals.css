@@ -499,7 +499,7 @@ th {
 }
 
 .col-competition {
-  width: 420px;
+  width: 360px;
 }
 
 .col-event {
@@ -852,6 +852,11 @@ th {
   gap: 16px;
 }
 
+.lp-section-title {
+  margin: 0 0 8px;
+  font-size: 1.08rem;
+}
+
 .lp-hero {
   background:
     radial-gradient(420px 180px at 92% -10%, #d8e7ff 0%, transparent 72%),
@@ -927,7 +932,7 @@ th {
   padding: 14px;
 }
 
-.lp-value-card h2 {
+.lp-value-card h3 {
   margin: 0;
   font-size: 1.05rem;
 }
@@ -944,6 +949,11 @@ th {
   gap: 12px;
 }
 
+.lp-detail > .lp-section-title {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+
 .lp-detail-main,
 .lp-detail-side {
   background: var(--surface-solid);
@@ -953,7 +963,7 @@ th {
   padding: 16px;
 }
 
-.lp-detail-main h2,
+.lp-detail-main h3,
 .lp-detail-side h3 {
   margin: 0;
 }
@@ -966,6 +976,31 @@ th {
 
 .lp-detail-side p {
   margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.lp-summary-list {
+  margin: 10px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.lp-summary-list div {
+  margin: 0;
+  padding-left: 10px;
+  border-left: 3px solid #d7e2f2;
+}
+
+.lp-summary-list dt {
+  margin: 0;
+  color: #1f3d64;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.lp-summary-list dd {
+  margin: 4px 0 0;
   color: var(--muted);
   line-height: 1.65;
 }
