@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Script from "next/script";
+import Link from "next/link";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -59,6 +60,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <body>
+        <header className="site-header">
+          <div className="site-header-inner">
+            <Link href="/" className="site-brand">
+              RowingAPI
+            </Link>
+            <nav className="site-nav" aria-label="グローバルナビゲーション">
+              <Link href="/" className="site-nav-link">
+                検索
+              </Link>
+              <Link href="/rowing-results" className="site-nav-link">
+                RowingAPIとは
+              </Link>
+            </nav>
+          </div>
+        </header>
         {children}
         {gaMeasurementId ? (
           <>
