@@ -72,34 +72,17 @@ type WrappedXAxisTickProps = {
   payload?: { value?: string };
 };
 
-function splitLabelToTwoLines(label: string, maxCharsPerLine = 6): string[] {
-  const maxLines = 2;
-  const lines: string[] = [];
-
-  for (let index = 0; index < label.length && lines.length < maxLines; index += maxCharsPerLine) {
-    lines.push(label.slice(index, index + maxCharsPerLine));
-  }
-
-  if (label.length > maxCharsPerLine * maxLines && lines.length > 0) {
-    const lastIndex = lines.length - 1;
-    lines[lastIndex] = `${lines[lastIndex].slice(0, Math.max(0, maxCharsPerLine - 1))}…`;
-  }
-
-  return lines;
+function truncateLabel(label: string, maxChars = 8): string {
+  if (label.length <= maxChars) return label;
+  return `${label.slice(0, maxChars)}…`;
 }
 
 function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps) {
-  const label = String(payload?.value ?? "");
-  const lines = splitLabelToTwoLines(label);
-  const firstLineDy = lines.length === 1 ? 14 : 6;
+  const label = truncateLabel(String(payload?.value ?? ""), 8);
 
   return (
-    <text x={x} y={y} textAnchor="middle" fill="#6b7280" fontSize={11}>
-      {lines.map((line, index) => (
-        <tspan key={`${line}-${index}`} x={x} dy={index === 0 ? firstLineDy : 13}>
-          {line}
-        </tspan>
-      ))}
+    <text x={x} y={y} dx={-2} dy={12} textAnchor="end" fill="#6b7280" fontSize={11} transform={`rotate(-35 ${x} ${y})`}>
+      {label}
     </text>
   );
 }
@@ -736,10 +719,10 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationGolds}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 48 }}
+                margin={{ left: 8, right: 8, bottom: 58 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={56} tick={renderWrappedXAxisTick} />
+                <XAxis type="category" dataKey="label" interval={0} height={64} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
@@ -760,10 +743,10 @@ export default function Page() {
                 height={organizationBarChartHeight}
                 data={topOrganizationMedals}
                 layout="horizontal"
-                margin={{ left: 8, right: 8, bottom: 48 }}
+                margin={{ left: 8, right: 8, bottom: 58 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={56} tick={renderWrappedXAxisTick} />
+                <XAxis type="category" dataKey="label" interval={0} height={64} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
