@@ -66,35 +66,37 @@ function formatSecondsForAxis(totalSeconds: number): string {
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
-type WrappedYAxisTickProps = {
+type WrappedXAxisTickProps = {
   x?: number;
   y?: number;
   payload?: { value?: string };
 };
 
-function renderWrappedYAxisTick({ x = 0, y = 0, payload }: WrappedYAxisTickProps) {
-  const label = String(payload?.value ?? "");
-  const maxCharsPerLine = 7;
+function splitLabelToTwoLines(label: string, maxCharsPerLine = 6): string[] {
   const maxLines = 2;
   const lines: string[] = [];
 
   for (let index = 0; index < label.length && lines.length < maxLines; index += maxCharsPerLine) {
-    const chunk = label.slice(index, index + maxCharsPerLine);
-    lines.push(chunk);
+    lines.push(label.slice(index, index + maxCharsPerLine));
   }
 
   if (label.length > maxCharsPerLine * maxLines && lines.length > 0) {
     const lastIndex = lines.length - 1;
-    const trimmed = lines[lastIndex].slice(0, Math.max(0, maxCharsPerLine - 1));
-    lines[lastIndex] = `${trimmed}…`;
+    lines[lastIndex] = `${lines[lastIndex].slice(0, Math.max(0, maxCharsPerLine - 1))}…`;
   }
 
-  const firstLineDy = lines.length === 1 ? 4 : -6;
+  return lines;
+}
+
+function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps) {
+  const label = String(payload?.value ?? "");
+  const lines = splitLabelToTwoLines(label);
+  const firstLineDy = lines.length === 1 ? 14 : 6;
 
   return (
-    <text x={x} y={y} textAnchor="end" fill="#6b7280" fontSize={12} dominantBaseline="central">
+    <text x={x} y={y} textAnchor="middle" fill="#6b7280" fontSize={11}>
       {lines.map((line, index) => (
-        <tspan key={`${line}-${index}`} x={x} dy={index === 0 ? firstLineDy : 14}>
+        <tspan key={`${line}-${index}`} x={x} dy={index === 0 ? firstLineDy : 13}>
           {line}
         </tspan>
       ))}
@@ -148,6 +150,7 @@ export default function Page() {
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
   const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 5), [organizationGolds]);
   const topOrganizationMedals = useMemo(() => organizationMedals.slice(0, 5), [organizationMedals]);
+  const organizationBarChartHeight = 300;
   const genderTabOptions = useMemo(() => {
     const options = filterOptions.genders.filter((value) => value === "男子" || value === "女子");
     return ["", ...options];
@@ -726,18 +729,18 @@ export default function Page() {
             <h2>団体別金メダル数(上位5)</h2>
             <span>Final A golds</span>
           </div>
-          <div className="chart-wrap" ref={organizationGoldChartRef}>
+          <div className="chart-wrap" ref={organizationGoldChartRef} style={{ height: organizationBarChartHeight }}>
             {organizationGoldChartWidth > 0 ? (
-              <BarChart width={organizationGoldChartWidth} height={260} data={topOrganizationGolds} layout="vertical" margin={{ left: 8, right: 28 }}>
+              <BarChart
+                width={organizationGoldChartWidth}
+                height={organizationBarChartHeight}
+                data={topOrganizationGolds}
+                layout="horizontal"
+                margin={{ left: 8, right: 8, bottom: 48 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" allowDecimals={false} />
-                <YAxis
-                  type="category"
-                  dataKey="label"
-                  width={170}
-                  interval={0}
-                  tick={renderWrappedYAxisTick}
-                />
+                <XAxis type="category" dataKey="label" interval={0} height={56} tick={renderWrappedXAxisTick} />
+                <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" isAnimationActive={false} />
               </BarChart>
@@ -750,24 +753,18 @@ export default function Page() {
             <h2>団体別メダル数(上位5)</h2>
             <span>Final A medals</span>
           </div>
-          <div className="chart-wrap" ref={organizationMedalChartRef}>
+          <div className="chart-wrap" ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
             {organizationMedalChartWidth > 0 ? (
               <BarChart
                 width={organizationMedalChartWidth}
-                height={260}
+                height={organizationBarChartHeight}
                 data={topOrganizationMedals}
-                layout="vertical"
-                margin={{ left: 8, right: 28 }}
+                layout="horizontal"
+                margin={{ left: 8, right: 8, bottom: 48 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" allowDecimals={false} />
-                <YAxis
-                  type="category"
-                  dataKey="label"
-                  width={170}
-                  interval={0}
-                  tick={renderWrappedYAxisTick}
-                />
+                <XAxis type="category" dataKey="label" interval={0} height={56} tick={renderWrappedXAxisTick} />
+                <YAxis type="number" allowDecimals={false} />
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" isAnimationActive={false} />
               </BarChart>
