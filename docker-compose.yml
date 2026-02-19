@@ -41,6 +41,7 @@ services:
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:5173}
+      NEXT_PUBLIC_DONATION_URL: ${NEXT_PUBLIC_DONATION_URL:-mailto:takumi.nakamura.by@gmail.com?subject=RowingAPI%20%E5%AF%84%E4%BB%98%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6}
       VERCEL_URL: ${VERCEL_URL:-localhost:5173}
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"

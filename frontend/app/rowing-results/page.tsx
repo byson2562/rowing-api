@@ -123,7 +123,13 @@ export default function RowingResultsPage() {
             寄付・協賛でのサポートを募集しています。
           </p>
           <div className="lp-hero-actions">
-            <Link href="/support" className="lp-btn lp-btn-primary">
+            <Link
+              href="/support"
+              className="lp-btn lp-btn-primary"
+              data-ga-event="support_cta_click"
+              data-ga-label="lp_support_detail"
+              data-ga-location="/rowing-results"
+            >
               サポート・協賛の詳細を見る
             </Link>
           </div>

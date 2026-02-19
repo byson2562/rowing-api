@@ -17,6 +17,11 @@ export const metadata: Metadata = {
 };
 
 export default function SupportPage() {
+  const donationUrl =
+    process.env.NEXT_PUBLIC_DONATION_URL ??
+    "mailto:takumi.nakamura.by@gmail.com?subject=RowingAPI%20%E5%AF%84%E4%BB%98%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6";
+  const donationIsExternal = /^https?:\/\//.test(donationUrl);
+
   return (
     <main className="container lp-page">
       <section className="lp-hero">
@@ -31,7 +36,24 @@ export default function SupportPage() {
             <Link href="/" className="lp-btn lp-btn-primary">
               検索画面を見る
             </Link>
-            <a className="lp-btn lp-btn-secondary" href="mailto:takumi.nakamura.by@gmail.com?subject=RowingAPI%20%E5%8D%94%E8%B3%9B%E3%83%BB%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6">
+            <a
+              className="lp-btn lp-btn-primary"
+              href={donationUrl}
+              target={donationIsExternal ? "_blank" : undefined}
+              rel={donationIsExternal ? "noopener noreferrer" : undefined}
+              data-ga-event="donation_click"
+              data-ga-label="support_donation_button"
+              data-ga-location="/support"
+            >
+              寄付でサポートする
+            </a>
+            <a
+              className="lp-btn lp-btn-secondary"
+              href="mailto:takumi.nakamura.by@gmail.com?subject=RowingAPI%20%E5%8D%94%E8%B3%9B%E3%83%BB%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"
+              data-ga-event="sponsor_inquiry_click"
+              data-ga-label="support_inquiry_button"
+              data-ga-location="/support"
+            >
               問い合わせる
             </a>
           </div>
@@ -92,7 +114,14 @@ RowingAPI運営者様
             <div>
               <dt>メール</dt>
               <dd>
-                <a href="mailto:takumi.nakamura.by@gmail.com">takumi.nakamura.by@gmail.com</a>
+                <a
+                  href="mailto:takumi.nakamura.by@gmail.com"
+                  data-ga-event="sponsor_inquiry_click"
+                  data-ga-label="support_contact_mail"
+                  data-ga-location="/support"
+                >
+                  takumi.nakamura.by@gmail.com
+                </a>
               </dd>
             </div>
           </dl>

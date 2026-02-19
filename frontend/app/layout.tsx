@@ -103,6 +103,65 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 `
               }}
             />
+            <Script
+              id="ga4-custom-events"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  (function () {
+                    function sendEvent(name, params) {
+                      if (typeof window.gtag !== 'function') return;
+                      window.gtag('event', name, params || {});
+                    }
+
+                    function trackSupportPageView() {
+                      if (window.location.pathname !== '/support') return;
+                      sendEvent('support_page_view', {
+                        page_path: window.location.pathname,
+                        page_title: document.title
+                      });
+                    }
+
+                    trackSupportPageView();
+
+                    var previousPath = window.location.pathname;
+                    function trackRouteChange() {
+                      if (window.location.pathname === previousPath) return;
+                      previousPath = window.location.pathname;
+                      trackSupportPageView();
+                    }
+
+                    var pushState = history.pushState;
+                    history.pushState = function () {
+                      var result = pushState.apply(this, arguments);
+                      setTimeout(trackRouteChange, 0);
+                      return result;
+                    };
+
+                    var replaceState = history.replaceState;
+                    history.replaceState = function () {
+                      var result = replaceState.apply(this, arguments);
+                      setTimeout(trackRouteChange, 0);
+                      return result;
+                    };
+
+                    window.addEventListener('popstate', trackRouteChange);
+
+                    document.addEventListener('click', function (event) {
+                      var target = event.target instanceof Element ? event.target.closest('[data-ga-event]') : null;
+                      if (!target) return;
+                      var eventName = target.getAttribute('data-ga-event');
+                      if (!eventName) return;
+                      sendEvent(eventName, {
+                        link_label: (target.getAttribute('data-ga-label') || target.textContent || '').trim(),
+                        link_location: target.getAttribute('data-ga-location') || window.location.pathname,
+                        link_url: target.getAttribute('href') || ''
+                      });
+                    });
+                  })();
+                `
+              }}
+            />
           </>
         ) : null}
       </body>
