@@ -47,7 +47,7 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm install && rm -rf /app/.next /app/.next-dev && npm run dev"
     ports:
       - "5173:5173"
     depends_on:
