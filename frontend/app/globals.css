@@ -849,17 +849,20 @@ th {
 
 .lp-page {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .lp-section-title {
-  margin: 0 0 8px;
-  font-size: 1.08rem;
+  margin: 0 0 10px;
+  padding-left: 10px;
+  border-left: 4px solid #0f5ec7;
+  font-size: 1.14rem;
+  letter-spacing: 0.01em;
 }
 
 .lp-page h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.06rem;
   line-height: 1.35;
 }
 
@@ -872,12 +875,16 @@ th {
 
 .lp-hero {
   background:
-    radial-gradient(420px 180px at 92% -10%, #d8e7ff 0%, transparent 72%),
-    linear-gradient(145deg, #ffffff 0%, #f6faff 100%);
-  border: 1px solid var(--border);
+    radial-gradient(460px 220px at 95% -14%, #d6e6ff 0%, transparent 72%),
+    linear-gradient(145deg, #ffffff 0%, #f4f9ff 100%);
+  border: 1px solid #ccd9ec;
   border-radius: 18px;
   box-shadow: var(--shadow);
-  padding: 24px;
+  padding: 22px;
+}
+
+.lp-hero-top {
+  display: block;
 }
 
 .lp-kicker {
@@ -897,13 +904,13 @@ th {
 
 .lp-lead {
   margin: 10px 0 0;
-  max-width: 800px;
+  max-width: 760px;
   color: var(--muted);
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
 .lp-hero-actions {
-  margin-top: 16px;
+  margin-top: 14px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -912,11 +919,39 @@ th {
 .lp-hero-preview {
   width: 100%;
   height: auto;
-  margin-top: 14px;
+  margin-top: 12px;
   border: 1px solid #cfdced;
   border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(18, 40, 70, 0.12);
+  box-shadow: 0 10px 24px rgba(18, 40, 70, 0.11);
   display: block;
+}
+
+.lp-proof-strip {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.lp-proof-item {
+  background: #f8fbff;
+  border: 1px solid #d8e3f2;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: grid;
+  gap: 2px;
+}
+
+.lp-proof-label {
+  color: #5a7495;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lp-proof-item strong {
+  color: #1c3b63;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .lp-btn {
@@ -949,10 +984,11 @@ th {
 
 .lp-value-card {
   background: var(--surface-solid);
-  border: 1px solid var(--border);
+  border: 1px solid #d4e0f0;
+  border-top: 3px solid #9cbce6;
   border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 14px;
+  box-shadow: 0 8px 24px rgba(16, 32, 58, 0.07);
+  padding: 15px;
 }
 
 .lp-value-card p {
@@ -975,10 +1011,10 @@ th {
 .lp-detail-main,
 .lp-detail-side {
   background: var(--surface-solid);
-  border: 1px solid var(--border);
+  border: 1px solid #d4e0f0;
   border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 16px;
+  box-shadow: 0 8px 24px rgba(16, 32, 58, 0.07);
+  padding: 17px;
 }
 
 .lp-detail-main ul {
@@ -1025,10 +1061,10 @@ th {
 
 .lp-author {
   background: var(--surface-solid);
-  border: 1px solid var(--border);
+  border: 1px solid #d4e0f0;
   border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 16px;
+  box-shadow: 0 8px 24px rgba(16, 32, 58, 0.07);
+  padding: 17px;
 }
 
 .lp-author p {
@@ -1101,6 +1137,10 @@ th {
 }
 
 @media (max-width: 900px) {
+  .lp-proof-strip {
+    grid-template-columns: 1fr;
+  }
+
   .lp-value-grid {
     grid-template-columns: 1fr;
   }

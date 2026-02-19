@@ -20,12 +20,19 @@ export default function RowingResultsPage() {
   return (
     <main className="container lp-page">
       <section className="lp-hero">
-        <p className="lp-kicker">Rowing Results Database</p>
-        <h1>ローイング記録・大会結果を、ひとつの画面で。</h1>
-        <p className="lp-lead">
-          年度・大会名・種目・Final・団体を横断して検索し、メダル傾向と優勝タイム推移までまとめて確認できます。
-          日本の主要大会記録を、比較しやすい形で素早くたどれます。
-        </p>
+        <div className="lp-hero-top">
+          <p className="lp-kicker">Rowing Results Database</p>
+          <h1>ローイング記録・大会結果を、ひとつの画面で。</h1>
+          <p className="lp-lead">
+            年度・大会名・種目・Final・団体を横断して検索し、メダル傾向と優勝タイム推移までまとめて確認できます。
+            日本の主要大会記録を、比較しやすい形で素早くたどれます。
+          </p>
+          <div className="lp-hero-actions">
+            <Link href="/" className="lp-btn lp-btn-primary">
+              今すぐ検索を始める
+            </Link>
+          </div>
+        </div>
         <img
           className="lp-hero-preview"
           src="/lp-fv-screenshot.png"
@@ -33,10 +40,19 @@ export default function RowingResultsPage() {
           width={1446}
           height={1138}
         />
-        <div className="lp-hero-actions">
-          <Link href="/" className="lp-btn lp-btn-primary">
-            今すぐ検索を始める
-          </Link>
+        <div className="lp-proof-strip" aria-label="データ概要サマリー">
+          <div className="lp-proof-item">
+            <span className="lp-proof-label">収録年</span>
+            <strong>2009 - 2025</strong>
+          </div>
+          <div className="lp-proof-item">
+            <span className="lp-proof-label">対象</span>
+            <strong>Final B以上</strong>
+          </div>
+          <div className="lp-proof-item">
+            <span className="lp-proof-label">大会カテゴリ</span>
+            <strong>全日本級 4大会</strong>
+          </div>
         </div>
       </section>
 
