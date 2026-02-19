@@ -115,6 +115,21 @@ export default function RowingResultsPage() {
         </aside>
       </section>
 
+      <section className="lp-support-cta" aria-labelledby="lp-support-cta-heading">
+        <h2 id="lp-support-cta-heading" className="lp-section-title">運営サポートのお願い</h2>
+        <div className="lp-support-cta-card">
+          <p>
+            RowingAPIは個人運営で継続改善しています。大会前の機能改善とデータ更新を続けるため、
+            寄付・協賛でのサポートを募集しています。
+          </p>
+          <div className="lp-hero-actions">
+            <Link href="/support" className="lp-btn lp-btn-primary">
+              サポート・協賛の詳細を見る
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="lp-author-section" aria-labelledby="lp-author-heading">
         <h2 id="lp-author-heading" className="lp-section-title">開発者について</h2>
         <div className="lp-author">
