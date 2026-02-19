@@ -4,14 +4,20 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "ローイング・ボート記録・大会結果",
   description:
-    "ローイング（ボート）記録を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果を横断して確認できます。",
+    "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果を横断して確認できます。",
+  keywords: [
+    "ローイング 大会 結果",
+    "ローイング 大会結果",
+    "ローイング大会結果",
+    "ボート 大会 結果"
+  ],
   alternates: {
     canonical: "/rowing-results"
   },
   openGraph: {
     title: "ローイング・ボート記録・大会結果 | RowingAPI",
     description:
-      "ローイング（ボート）記録を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
+      "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
     url: "/rowing-results"
   }
 };
@@ -24,7 +30,8 @@ export default function RowingResultsPage() {
           <p className="lp-kicker">Rowing Results Database</p>
           <h1>ローイング記録・大会結果を、ひとつの画面で。</h1>
           <p className="lp-lead">
-            年度・大会名・種目・Final・団体を横断して検索し、メダル傾向と優勝タイム推移までまとめて確認できます。
+            年度・大会名・種目・団体を横断して検索し、メダル傾向までまとめて確認。
+            <br />
             日本の主要大会記録を、比較しやすい形で素早くたどれます。
           </p>
           <div className="lp-hero-actions">

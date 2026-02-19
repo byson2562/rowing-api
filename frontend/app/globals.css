@@ -1080,26 +1080,31 @@ th {
 }
 
 .lp-author-meta div {
-  display: grid;
-  grid-template-columns: 64px 1fr;
+  display: flex;
+  align-items: baseline;
   gap: 10px;
 }
 
 .lp-author-meta dt {
+  flex: 0 0 64px;
   margin: 0;
   color: #4d6788;
   font-size: 12px;
   font-weight: 700;
+  line-height: 18px;
 }
 
 .lp-author-meta dd {
+  flex: 1 1 auto;
   margin: 0;
   color: #1f3d64;
+  line-height: 18px;
 }
 
 .lp-author-meta a {
   color: #0f5ec7;
   text-decoration: none;
+  line-height: 18px;
 }
 
 .lp-author-meta a:hover {

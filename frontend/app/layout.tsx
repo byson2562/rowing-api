@@ -13,9 +13,12 @@ export const metadata: Metadata = {
     template: "%s | RowingAPI"
   },
   description:
-    "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。日本の大会結果を横断して可視化できます。",
+    "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。ローイング大会結果を横断して可視化できます。",
   keywords: [
     "ローイング 記録",
+    "ローイング 大会 結果",
+    "ローイング 大会結果",
+    "ローイング大会結果",
     "ボート 記録",
     "ボート 大会結果",
     "全日本 ローイング 選手権",
@@ -39,7 +42,7 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "RowingAPI",
     title: "ローイング・ボート記録検索 | RowingAPI",
-    description: "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。",
+    description: "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
     images: [
       {
         url: `${siteUrl}/og`,
@@ -52,7 +55,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ローイング・ボート記録検索 | RowingAPI",
-    description: "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。",
+    description: "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
     images: [`${siteUrl}/og`]
   },
   robots: {
