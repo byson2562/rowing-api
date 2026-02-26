@@ -11,6 +11,17 @@ repo_url       = "https://github.com/byson2562/rowing-api.git"
 repo_branch    = "main"
 deploy_user    = "ec2-user"
 app_dir        = "/opt/rowing-api"
+enable_user_data = true
+
+ecr_backend_repository_name = "rowing-api/backend"
+ecr_frontend_repository_name = "rowing-api/frontend"
+
+github_repository           = "byson2562/rowing-api"
+github_branch               = "main"
+github_actions_role_name    = "rowing-api-github-actions-ecr-push"
+
+ec2_ecr_pull_role_name             = "rowing-api-ec2-ecr-pull"
+ec2_ecr_pull_instance_profile_name = "rowing-api-ec2-ecr-pull-profile"
 
 tags = {
   Project = "rowing-api"

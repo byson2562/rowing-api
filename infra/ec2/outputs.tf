@@ -22,3 +22,28 @@ output "app_dir" {
   description = "Application directory on instance"
   value       = var.app_dir
 }
+
+output "ecr_registry" {
+  description = "ECR registry URI"
+  value       = split("/", aws_ecr_repository.backend.repository_url)[0]
+}
+
+output "ecr_backend_repository_url" {
+  description = "Backend ECR repository URL"
+  value       = aws_ecr_repository.backend.repository_url
+}
+
+output "ecr_frontend_repository_url" {
+  description = "Frontend ECR repository URL"
+  value       = aws_ecr_repository.frontend.repository_url
+}
+
+output "github_actions_role_arn" {
+  description = "IAM role ARN for GitHub Actions (set as AWS_ROLE_TO_ASSUME)"
+  value       = aws_iam_role.github_actions_ecr_push.arn
+}
+
+output "ec2_ecr_pull_instance_profile_name" {
+  description = "EC2 instance profile name for ECR pull"
+  value       = aws_iam_instance_profile.ec2_ecr_pull.name
+}

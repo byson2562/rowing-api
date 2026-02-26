@@ -145,6 +145,9 @@ cp deploy/.env.prod.example deploy/.env.prod
 必須で設定する値:
 
 - `DOMAIN`
+- `ECR_REGISTRY`
+- `ECR_REPOSITORY_BACKEND`
+- `ECR_REPOSITORY_FRONTEND`
 - `SECRET_KEY_BASE`
 - `RAILS_MASTER_KEY`
 - `MYSQL_ROOT_PASSWORD`
@@ -164,7 +167,7 @@ docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod run --rm b
 ### 2) 起動
 
 ```bash
-docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d --build
+docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d
 ```
 
 GA4を有効化した場合は、デプロイ後にブラウザの開発者ツールで
@@ -242,9 +245,23 @@ SKIP_BACKUP=1 bash deploy/scripts/import_all_results_prod.sh
 ENV_FILE=/path/to/.env.prod bash deploy/scripts/import_all_results_prod.sh
 ```
 
-### 8) GitHub Actionsで自動デプロイ（self-hosted runner）
+### 8) GitHub ActionsでECRビルド + 自動デプロイ（self-hosted runner）
 
-`main` へ push すると `.github/workflows/deploy-prod.yml` が実行され、EC2上の self-hosted runner でデプロイします。
+`main` へ push すると以下の順で実行されます。
+
+1. `.github/workflows/build-and-push-ecr.yml` で `frontend/backend` イメージをECRへpush
+2. 成功後 `.github/workflows/deploy-prod.yml` がEC2上の self-hosted runner でデプロイ
+
+`build-and-push-ecr.yml` で必要な Repository Variables / Secrets:
+
+- Variables:
+  - `AWS_REGION`（例: `ap-northeast-1`）
+  - `ECR_REPOSITORY_BACKEND`（例: `rowing-api/backend`）
+  - `ECR_REPOSITORY_FRONTEND`（例: `rowing-api/frontend`）
+  - `NEXT_PUBLIC_SITE_URL`（例: `https://rowing-api.com`）
+  - `NEXT_PUBLIC_GA_MEASUREMENT_ID`（任意）
+- Secret:
+  - `AWS_ROLE_TO_ASSUME`（GitHub OIDC でAssumeするIAM Role ARN）
 
 #### 8-1) EC2にrunnerを登録
 

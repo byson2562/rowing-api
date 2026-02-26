@@ -1,9 +1,13 @@
 name: Deploy Production
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - Build and Push to ECR
     branches:
       - main
+    types:
+      - completed
   workflow_dispatch:
 
 concurrency:
@@ -12,6 +16,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on:
       - self-hosted
       - linux
