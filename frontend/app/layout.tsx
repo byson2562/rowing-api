@@ -88,6 +88,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         {children}
+        <footer className="site-footer">
+          <div className="site-footer-inner">
+            <p className="site-footer-copy">© {new Date().getFullYear()} RowingAPI</p>
+            <nav className="site-footer-nav" aria-label="フッターナビゲーション">
+              <Link href="/" className="site-footer-link">
+                検索
+              </Link>
+              <Link href="/rowing-results" className="site-footer-link">
+                RowingAPIとは
+              </Link>
+            </nav>
+          </div>
+        </footer>
         {gaMeasurementId ? (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} strategy="afterInteractive" />
@@ -114,21 +127,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       window.gtag('event', name, params || {});
                     }
 
-                    function trackSupportPageView() {
-                      if (window.location.pathname !== '/support') return;
-                      sendEvent('support_page_view', {
-                        page_path: window.location.pathname,
-                        page_title: document.title
-                      });
+                    function trackPageViews() {
+                      if (window.location.pathname === '/support') {
+                        sendEvent('support_page_view', {
+                          page_path: window.location.pathname,
+                          page_title: document.title
+                        });
+                      }
+
+                      if (window.location.pathname === '/rowing-results') {
+                        sendEvent('rowing_results_page_view', {
+                          page_path: window.location.pathname,
+                          page_title: document.title
+                        });
+                      }
                     }
 
-                    trackSupportPageView();
+                    trackPageViews();
 
                     var previousPath = window.location.pathname;
                     function trackRouteChange() {
                       if (window.location.pathname === previousPath) return;
                       previousPath = window.location.pathname;
-                      trackSupportPageView();
+                      trackPageViews();
                     }
 
                     var pushState = history.pushState;
@@ -147,11 +168,43 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                     window.addEventListener('popstate', trackRouteChange);
 
+                    document.addEventListener('change', function (event) {
+                      var target = event.target instanceof Element ? event.target.closest('[data-ga-filter]') : null;
+                      if (!target) return;
+
+                      var filterName = target.getAttribute('data-ga-filter') || '';
+                      if (!filterName) return;
+
+                      var filterValue = '';
+                      if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
+                        filterValue = target.value || '';
+                      } else {
+                        filterValue = target.getAttribute('data-ga-filter-value') || '';
+                      }
+
+                      sendEvent('filter_interaction', {
+                        filter_name: filterName,
+                        filter_value: filterValue,
+                        page_path: window.location.pathname
+                      });
+                    });
+
                     document.addEventListener('click', function (event) {
+                      var filterActionTarget = event.target instanceof Element ? event.target.closest('[data-ga-filter-action]') : null;
+                      if (filterActionTarget) {
+                        sendEvent('filter_interaction', {
+                          filter_name: filterActionTarget.getAttribute('data-ga-filter-action') || 'unknown',
+                          filter_value: filterActionTarget.getAttribute('data-ga-filter-value') || '',
+                          page_path: window.location.pathname
+                        });
+                      }
+
                       var target = event.target instanceof Element ? event.target.closest('[data-ga-event]') : null;
                       if (!target) return;
+
                       var eventName = target.getAttribute('data-ga-event');
                       if (!eventName) return;
+
                       sendEvent(eventName, {
                         link_label: (target.getAttribute('data-ga-label') || target.textContent || '').trim(),
                         link_location: target.getAttribute('data-ga-location') || window.location.pathname,

@@ -111,6 +111,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const resultsRequestRef = useRef(0);
   const filtersRequestRef = useRef(0);
+  const hasInitializedDefaultYearRef = useRef(false);
 
   const [q, setQ] = useState("");
   const [year, setYear] = useState("");
@@ -273,6 +274,19 @@ export default function Page() {
       controller.abort();
     };
   }, [filterQuery]);
+
+  useEffect(() => {
+    if (hasInitializedDefaultYearRef.current) return;
+    if (year) {
+      hasInitializedDefaultYearRef.current = true;
+      return;
+    }
+    if (filterOptions.years.length === 0) return;
+
+    const latestYear = Math.max(...filterOptions.years);
+    setYear(String(latestYear));
+    hasInitializedDefaultYearRef.current = true;
+  }, [filterOptions.years, year]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -504,6 +518,8 @@ export default function Page() {
                 className={active ? "active" : ""}
                 onClick={() => setGender(option)}
                 data-testid={`gender-tab-${label}`}
+                data-ga-filter-action="gender"
+                data-ga-filter-value={option}
                 aria-pressed={active}
               >
                 {label}
@@ -513,7 +529,7 @@ export default function Page() {
         </section>
 
         <section className="filters">
-          <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年">
+          <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年" data-ga-filter="year">
             <option value="">年(すべて)</option>
             {filterOptions.years.map((option) => (
               <option key={option} value={option.toString()}>
@@ -522,7 +538,7 @@ export default function Page() {
             ))}
           </select>
 
-          <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名">
+          <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名" data-ga-filter="competition">
             <option value="">大会名(すべて)</option>
             {filterOptions.competitions.map((option) => (
               <option key={option} value={option}>
@@ -536,6 +552,7 @@ export default function Page() {
             value={competitionCategory}
             onChange={(e) => setCompetitionCategory(e.target.value)}
             aria-label="大会カテゴリ"
+            data-ga-filter="competition_category"
           >
             <option value="">大会カテゴリ(すべて)</option>
             {filterOptions.competition_categories.map((option) => (
@@ -550,6 +567,7 @@ export default function Page() {
             value={affiliationType}
             onChange={(e) => setAffiliationType(e.target.value)}
             aria-label="団体区分"
+            data-ga-filter="affiliation_type"
           >
             <option value="">団体区分(すべて)</option>
             {filterOptions.affiliation_types.map((option) => (
@@ -559,7 +577,7 @@ export default function Page() {
             ))}
           </select>
 
-          <select data-testid="event-select" value={event} onChange={(e) => setEvent(e.target.value)} aria-label="種目">
+          <select data-testid="event-select" value={event} onChange={(e) => setEvent(e.target.value)} aria-label="種目" data-ga-filter="event">
             <option value="">種目(すべて)</option>
             {filterOptions.events.map((option) => (
               <option key={option} value={option}>
@@ -568,7 +586,7 @@ export default function Page() {
             ))}
           </select>
 
-          <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final">
+          <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final" data-ga-filter="final_group">
             <option value="">Final(すべて)</option>
             {filterOptions.final_groups.map((option) => (
               <option key={option} value={option}>
@@ -601,6 +619,7 @@ export default function Page() {
               }}
               placeholder="団体を検索して選択"
               aria-label="団体"
+              data-ga-filter="organization_search"
               role="combobox"
               aria-autocomplete="list"
               aria-expanded={organizationMenuOpen}
@@ -646,7 +665,7 @@ export default function Page() {
             )}
           </div>
 
-          <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位">
+          <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位" data-ga-filter="rank">
             <option value="">順位(すべて)</option>
             {rankOptions.map((option) => (
               <option key={option} value={option}>
@@ -657,7 +676,7 @@ export default function Page() {
         </section>
 
         <div className="filter-actions">
-          <button type="button" onClick={clearFilters}>
+          <button type="button" onClick={clearFilters} data-ga-filter-action="clear_filters" data-ga-filter-value="all">
             フィルタをクリア
           </button>
         </div>
@@ -667,7 +686,14 @@ export default function Page() {
             <span className="chip chip-empty">フィルタ未指定</span>
           ) : (
             activeFilters.map((chip) => (
-              <button key={chip.key} type="button" className="chip chip-clearable" onClick={chip.onClear}>
+              <button
+                key={chip.key}
+                type="button"
+                className="chip chip-clearable"
+                onClick={chip.onClear}
+                data-ga-filter-action="clear_filter_chip"
+                data-ga-filter-value={chip.key}
+              >
                 <span>{chip.text}</span>
                 <span className="chip-clear" aria-hidden="true">
                   ×
@@ -683,13 +709,24 @@ export default function Page() {
           <h2>まずは条件を1つ選んで検索を始めましょう</h2>
           <p>おすすめ: 年、Final、種目の順で絞り込むと目的の結果に早く到達できます。</p>
           <div className="empty-state-guide-actions">
-            <button type="button" onClick={applyLatestYearFilter} disabled={filterOptions.years.length === 0}>
+            <button
+              type="button"
+              onClick={applyLatestYearFilter}
+              disabled={filterOptions.years.length === 0}
+              data-ga-filter-action="quick_filter"
+              data-ga-filter-value="latest_year"
+            >
               最新年を選択
             </button>
-            <button type="button" onClick={() => setFinalGroup("Final A")}>
+            <button type="button" onClick={() => setFinalGroup("Final A")} data-ga-filter-action="quick_filter" data-ga-filter-value="final_a">
               Final Aのみ
             </button>
-            <button type="button" onClick={() => setCompetitionCategory("全日本大学選手権")}>
+            <button
+              type="button"
+              onClick={() => setCompetitionCategory("全日本大学選手権")}
+              data-ga-filter-action="quick_filter"
+              data-ga-filter-value="all_japan_university"
+            >
               全日本大学選手権
             </button>
           </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SupportContactForm } from "../../components/support-contact-form";
 
 export const metadata: Metadata = {
   title: "RowingAPI サポート・協賛募集",
@@ -17,10 +18,21 @@ export const metadata: Metadata = {
 };
 
 export default function SupportPage() {
-  const donationUrl =
-    process.env.NEXT_PUBLIC_DONATION_URL ??
+  const stripeDonateUrl = process.env.NEXT_PUBLIC_STRIPE_DONATE_URL?.trim() || "";
+  const legacyDonationUrl = process.env.NEXT_PUBLIC_DONATION_URL?.trim() || "";
+
+  const stripeLinks = [
+    { label: "500円で寄付", key: "500", url: process.env.NEXT_PUBLIC_STRIPE_DONATE_URL_500 },
+    { label: "1,000円で寄付", key: "1000", url: process.env.NEXT_PUBLIC_STRIPE_DONATE_URL_1000 },
+    { label: "3,000円で寄付", key: "3000", url: process.env.NEXT_PUBLIC_STRIPE_DONATE_URL_3000 },
+    { label: "自由な金額で寄付", key: "custom", url: process.env.NEXT_PUBLIC_STRIPE_DONATE_URL_CUSTOM }
+  ].filter((item): item is { label: string; key: string; url: string } => Boolean(item.url));
+
+  const fallbackDonationUrl =
+    stripeDonateUrl ||
+    legacyDonationUrl ||
     "mailto:takumi.nakamura.by@gmail.com?subject=RowingAPI%20%E5%AF%84%E4%BB%98%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6";
-  const donationIsExternal = /^https?:\/\//.test(donationUrl);
+  const fallbackDonationLabel = "Stripeで寄付する";
 
   return (
     <main className="container lp-page">
@@ -36,17 +48,6 @@ export default function SupportPage() {
             <Link href="/" className="lp-btn lp-btn-primary">
               検索画面を見る
             </Link>
-            <a
-              className="lp-btn lp-btn-primary"
-              href={donationUrl}
-              target={donationIsExternal ? "_blank" : undefined}
-              rel={donationIsExternal ? "noopener noreferrer" : undefined}
-              data-ga-event="donation_click"
-              data-ga-label="support_donation_button"
-              data-ga-location="/support"
-            >
-              寄付でサポートする
-            </a>
             <a
               className="lp-btn lp-btn-secondary"
               href="mailto:takumi.nakamura.by@gmail.com?subject=RowingAPI%20%E5%8D%94%E8%B3%9B%E3%83%BB%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"
@@ -70,9 +71,37 @@ export default function SupportPage() {
             <li>寄付特典: 新機能や更新情報を優先案内</li>
           </ul>
           <p className="lp-support-note">
-            決済リンクを設置する場合は、以下の文言をそのまま利用できます。<br />
+            Stripe決済リンクを設置する場合は、以下の文言をそのまま利用できます。<br />
             「ご支援は、RowingAPIの運用継続・データ更新・機能改善に充てます。」
           </p>
+          <div className="lp-donation-links" aria-label="寄付リンク">
+            {stripeLinks.length > 0 ? (
+              stripeLinks.map((item) => (
+                <a
+                  key={item.key}
+                  className="lp-btn lp-btn-primary"
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-ga-event="donation_click"
+                  data-ga-label={`support_donation_stripe_${item.key}`}
+                  data-ga-location="/support"
+                >
+                  {item.label}
+                </a>
+              ))
+            ) : (
+              <a
+                className="lp-btn lp-btn-primary"
+                href={fallbackDonationUrl}
+                data-ga-event="donation_click"
+                data-ga-label="support_donation_mail_fallback"
+                data-ga-location="/support"
+              >
+                {fallbackDonationLabel}
+              </a>
+            )}
+          </div>
         </article>
 
         <aside className="lp-detail-side">
@@ -110,6 +139,7 @@ RowingAPI運営者様
 ご確認のほど、よろしくお願いいたします。`}
           </pre>
           <h3 className="lp-tech-heading">連絡先</h3>
+          <SupportContactForm />
           <dl className="lp-author-meta">
             <div>
               <dt>メール</dt>
