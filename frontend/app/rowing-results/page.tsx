@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "ローイング・ボート記録・大会結果",
+  title: "RowingAPIとは（データ範囲・使い方）",
   description:
     "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果を横断して確認できます。",
   keywords: [
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     canonical: "/rowing-results"
   },
   openGraph: {
-    title: "ローイング・ボート記録・大会結果 | RowingAPI",
+    title: "RowingAPIとは（データ範囲・使い方）",
     description:
       "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
     url: "/rowing-results"
