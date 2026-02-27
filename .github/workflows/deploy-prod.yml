@@ -3,7 +3,8 @@ name: Deploy Production
 on:
   workflow_run:
     workflows:
-      - Build and Push to ECR
+      - Build Backend to ECR
+      - Build Frontend to ECR
     branches:
       - main
     types:
@@ -31,7 +32,19 @@ jobs:
 
       - name: Deploy on EC2 (self-hosted runner)
         working-directory: /opt/rowing-api
+        env:
+          DEPLOY_IMAGE_TAG: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || 'latest' }}
         run: |
           set -euo pipefail
-          ENV_FILE=/etc/rowing-api/.env.prod bash deploy/scripts/deploy_prod.sh
+          for i in $(seq 1 30); do
+            if IMAGE_TAG="${DEPLOY_IMAGE_TAG}" docker compose -f docker-compose.prod.yml --env-file /etc/rowing-api/.env.prod pull backend frontend; then
+              break
+            fi
+            if [ "${i}" -eq 30 ]; then
+              echo "Timed out waiting for backend/frontend images tagged ${DEPLOY_IMAGE_TAG}" >&2
+              exit 1
+            fi
+            sleep 20
+          done
+          IMAGE_TAG="${DEPLOY_IMAGE_TAG}" ENV_FILE=/etc/rowing-api/.env.prod bash deploy/scripts/deploy_prod.sh
           docker compose -f docker-compose.prod.yml --env-file /etc/rowing-api/.env.prod ps
