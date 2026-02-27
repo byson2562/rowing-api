@@ -12,7 +12,11 @@ concurrency:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    runs-on:
+      - self-hosted
+      - linux
+      - ARM64
     permissions:
       id-token: write
       contents: read
@@ -53,8 +57,10 @@ jobs:
         with:
           context: ./backend
           file: ./backend/Dockerfile.prod
-          platforms: linux/arm64
           push: true
+          provenance: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_BACKEND }}:${{ github.sha }}
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY_BACKEND }}:latest
@@ -64,8 +70,10 @@ jobs:
         with:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
-          platforms: linux/arm64
           push: true
+          provenance: false
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
           build-args: |
             NEXT_PUBLIC_API_BASE_URL=/api
             NEXT_PUBLIC_SITE_URL=${{ env.NEXT_PUBLIC_SITE_URL }}
