@@ -24,6 +24,4 @@ docker compose -f docker-compose.prod.yml --env-file "${ENV_FILE}" pull
 
 docker compose -f docker-compose.prod.yml --env-file "${ENV_FILE}" up -d
 
-docker compose -f docker-compose.prod.yml --env-file "${ENV_FILE}" exec -T backend bundle exec rails db:migrate
-
 echo "Deploy completed"

@@ -18,10 +18,15 @@ concurrency:
 jobs:
   deploy:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      id-token: write
+      contents: read
     runs-on:
       - self-hosted
       - linux
       - ARM64
+    env:
+      AWS_REGION: ap-northeast-1
 
     steps:
       - name: Validate deploy prerequisites
@@ -30,21 +35,30 @@ jobs:
           test -d /opt/rowing-api
           test -f /etc/rowing-api/.env.prod
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
       - name: Deploy on EC2 (self-hosted runner)
         working-directory: /opt/rowing-api
         env:
           DEPLOY_IMAGE_TAG: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || 'latest' }}
         run: |
           set -euo pipefail
-          for i in $(seq 1 30); do
+          for i in $(seq 1 90); do
             if IMAGE_TAG="${DEPLOY_IMAGE_TAG}" docker compose -f docker-compose.prod.yml --env-file /etc/rowing-api/.env.prod pull backend frontend; then
               break
             fi
-            if [ "${i}" -eq 30 ]; then
+            if [ "${i}" -eq 90 ]; then
               echo "Timed out waiting for backend/frontend images tagged ${DEPLOY_IMAGE_TAG}" >&2
               exit 1
             fi
-            sleep 20
+            sleep 15
           done
           IMAGE_TAG="${DEPLOY_IMAGE_TAG}" ENV_FILE=/etc/rowing-api/.env.prod bash deploy/scripts/deploy_prod.sh
           docker compose -f docker-compose.prod.yml --env-file /etc/rowing-api/.env.prod ps
