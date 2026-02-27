@@ -17,32 +17,6 @@ services:
       - frontend
       - backend
 
-  db:
-    image: mysql:8.0
-    container_name: rowing_api_db
-    restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-p${MYSQL_ROOT_PASSWORD}",
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
   backend:
     image: ${ECR_REGISTRY}/${ECR_REPOSITORY_BACKEND}:${IMAGE_TAG:-latest}
     container_name: rowing_api_backend
@@ -53,15 +27,11 @@ services:
       RAILS_SERVE_STATIC_FILES: "true"
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      MYSQL_HOST: db
-      MYSQL_PORT: 3306
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SQLITE_DATABASE_PATH: /data/db/production.sqlite3
       FRONTEND_ORIGIN: https://${DOMAIN}
       PIDFILE: /tmp/server.pid
-    depends_on:
-      db:
-        condition: service_healthy
+    volumes:
+      - ./deploy/data/sqlite:/data/db
 
   frontend:
     image: ${ECR_REGISTRY}/${ECR_REPOSITORY_FRONTEND}:${IMAGE_TAG:-latest}
@@ -76,6 +46,5 @@ services:
       - backend
 
 volumes:
-  mysql_data:
   caddy_data:
   caddy_config:

@@ -36,3 +36,7 @@
 
 # Bundler vendor dir
 /vendor/bundle/
+
+# Local SQLite databases
+/db/*.sqlite3
+/db/*.sqlite3-*

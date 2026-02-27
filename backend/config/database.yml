@@ -1,22 +1,16 @@
 default: &default
-  adapter: mysql2
-  encoding: utf8mb4
+  adapter: sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: <%= ENV.fetch("MYSQL_USER", "root") %>
-  password: <%= ENV.fetch("MYSQL_PASSWORD", "password") %>
-  host: <%= ENV.fetch("MYSQL_HOST", "db") %>
-  port: <%= ENV.fetch("MYSQL_PORT", 3306) %>
+  timeout: 5000
 
 development:
   <<: *default
-  database: smart_rowing_development
+  database: db/development.sqlite3
 
 test:
   <<: *default
-  database: smart_rowing_test
+  database: db/test.sqlite3
 
 production:
   <<: *default
-  database: smart_rowing_production
-  username: <%= ENV.fetch("MYSQL_USER", "smart_rowing") %>
-  password: <%= ENV.fetch("MYSQL_PASSWORD", "password") %>
+  database: <%= ENV.fetch("SQLITE_DATABASE_PATH", "/data/db/production.sqlite3") %>
