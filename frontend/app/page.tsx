@@ -43,7 +43,16 @@ type FilterOptionsResponse = {
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 const API_PREFIX = API_BASE_URL.endsWith("/api") ? API_BASE_URL : `${API_BASE_URL}/api`;
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
+const DEFAULT_SITE_URL = "http://localhost:5173";
+const SITE_URL = (() => {
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
+  if (!raw) return DEFAULT_SITE_URL;
+  try {
+    return new URL(raw).toString().replace(/\/$/, "");
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+})();
 
 function apiUrl(path: string): string {
   return `${API_PREFIX}${path}`;

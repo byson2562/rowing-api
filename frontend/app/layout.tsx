@@ -3,7 +3,16 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import Link from "next/link";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:5173";
+const DEFAULT_SITE_URL = "http://localhost:5173";
+const siteUrl = (() => {
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
+  if (!raw) return DEFAULT_SITE_URL;
+  try {
+    return new URL(raw).toString().replace(/\/$/, "");
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+})();
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
