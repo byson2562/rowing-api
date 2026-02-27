@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: "ローイング・ボート記録検索 | RowingAPI",
-    template: "%s | RowingAPI"
+    template: "%s | RowingAPI",
   },
   description:
     "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。ローイング大会結果を横断して可視化できます。",
@@ -36,14 +36,14 @@ export const metadata: Metadata = {
     "ボート",
     "大会結果",
     "日本ローイング協会",
-    "レース記録"
+    "レース記録",
   ],
   alternates: {
-    canonical: "/"
+    canonical: "/",
   },
   icons: {
     icon: "/favicon.svg",
-    shortcut: "/favicon.svg"
+    shortcut: "/favicon.svg",
   },
   openGraph: {
     type: "website",
@@ -51,21 +51,23 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "RowingAPI",
     title: "ローイング・ボート記録検索 | RowingAPI",
-    description: "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
+    description:
+      "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
     images: [
       {
         url: `${siteUrl}/og`,
         width: 1200,
         height: 630,
-        alt: "RowingAPI"
-      }
-    ]
+        alt: "RowingAPI",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "ローイング・ボート記録検索 | RowingAPI",
-    description: "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
-    images: [`${siteUrl}/og`]
+    description:
+      "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
+    images: [`${siteUrl}/og`],
   },
   robots: {
     index: true,
@@ -75,12 +77,16 @@ export const metadata: Metadata = {
       follow: true,
       "max-image-preview": "large",
       "max-snippet": -1,
-      "max-video-preview": -1
-    }
-  }
+      "max-video-preview": -1,
+    },
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="ja">
       <body>
@@ -99,8 +105,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <footer className="site-footer">
           <div className="site-footer-inner">
-            <p className="site-footer-copy">© {new Date().getFullYear()} RowingAPI</p>
-            <nav className="site-footer-nav" aria-label="フッターナビゲーション">
+            <p className="site-footer-copy">
+              © {new Date().getFullYear()} RowingAPI
+            </p>
+            <nav
+              className="site-footer-nav"
+              aria-label="フッターナビゲーション"
+            >
               <Link href="/" className="site-footer-link">
                 検索
               </Link>
@@ -112,7 +123,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </footer>
         {gaMeasurementId ? (
           <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} strategy="afterInteractive" />
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+              strategy="afterInteractive"
+            />
             <Script
               id="ga4-init"
               strategy="afterInteractive"
@@ -122,7 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
                   gtag('config', '${gaMeasurementId}');
-                `
+                `,
               }}
             />
             <Script
@@ -221,7 +235,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       });
                     });
                   })();
-                `
+                `,
               }}
             />
           </>
