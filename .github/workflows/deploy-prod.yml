@@ -3,7 +3,6 @@ name: Deploy Production
 on:
   workflow_run:
     workflows:
-      - Build Backend to ECR
       - Build Frontend to ECR
     branches:
       - main
