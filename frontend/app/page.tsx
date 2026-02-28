@@ -486,6 +486,7 @@ export default function Page() {
     if (activeFilters.length === 0) return "No data";
     return "現在のフィルタ条件では該当データがありません。条件を一部解除してください。";
   }, [activeFilters.length, results.length]);
+  const showChartLoading = isRefreshing || loading;
 
   const shouldShowFilterGuide = activeFilters.length === 0;
 
@@ -761,7 +762,7 @@ export default function Page() {
             <span>Final A golds</span>
           </div>
           <div className="chart-wrap" ref={organizationGoldChartRef} style={{ height: organizationBarChartHeight }}>
-            {organizationGoldChartWidth > 0 ? (
+            {topOrganizationGolds.length > 0 && organizationGoldChartWidth > 0 ? (
               <BarChart
                 width={organizationGoldChartWidth}
                 height={organizationBarChartHeight}
@@ -775,6 +776,14 @@ export default function Page() {
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" />
               </BarChart>
+            ) : (
+              <div className="chart-empty-state">No data</div>
+            )}
+            {showChartLoading ? (
+              <div className="chart-loading-overlay" role="status" aria-live="polite">
+                <span className="chart-loading-spinner" aria-hidden="true" />
+                <span>Loading...</span>
+              </div>
             ) : null}
           </div>
         </article>
@@ -785,7 +794,7 @@ export default function Page() {
             <span>Final A medals</span>
           </div>
           <div className="chart-wrap" ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
-            {organizationMedalChartWidth > 0 ? (
+            {topOrganizationMedals.length > 0 && organizationMedalChartWidth > 0 ? (
               <BarChart
                 width={organizationMedalChartWidth}
                 height={organizationBarChartHeight}
@@ -799,6 +808,14 @@ export default function Page() {
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" />
               </BarChart>
+            ) : (
+              <div className="chart-empty-state">No data</div>
+            )}
+            {showChartLoading ? (
+              <div className="chart-loading-overlay" role="status" aria-live="polite">
+                <span className="chart-loading-spinner" aria-hidden="true" />
+                <span>Loading...</span>
+              </div>
             ) : null}
           </div>
         </article>
@@ -822,6 +839,12 @@ export default function Page() {
             ) : (
               <div className="chart-empty-state">{event ? "No data" : "種目を選択してください (No data)"}</div>
             )}
+            {showChartLoading ? (
+              <div className="chart-loading-overlay" role="status" aria-live="polite">
+                <span className="chart-loading-spinner" aria-hidden="true" />
+                <span>Loading...</span>
+              </div>
+            ) : null}
           </div>
         </article>
 
