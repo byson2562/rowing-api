@@ -13,7 +13,7 @@ export type ResultRecord = {
   time_display: string;
 };
 
-type QueryFilters = {
+export type QueryFilters = {
   q?: string;
   year?: string;
   gender?: string;
@@ -32,12 +32,28 @@ type QueryFilters = {
 
 type StatPoint = { label: string; value: number };
 type ResultsIndex = { years: number[]; total_count: number };
+type CacheEntry<T> = { expiresAt: number; value: T };
+export type FiltersResponse = {
+  years: number[];
+  genders: string[];
+  competition_categories: string[];
+  final_groups: string[];
+  competitions: string[];
+  events: string[];
+  organizations: string[];
+  affiliation_types: string[];
+};
 
 const RESULTS_INDEX = resultsIndex as ResultsIndex;
 const AVAILABLE_YEARS = RESULTS_INDEX.years;
 const YEAR_SET = new Set(AVAILABLE_YEARS);
 const yearCache = new Map<number, ResultRecord[]>();
 let allResultsCache: ResultRecord[] | null = null;
+const QUERY_CACHE_TTL_MS = 30_000;
+const QUERY_CACHE_MAX = 200;
+const filteredResultsCache = new Map<string, CacheEntry<ResultRecord[]>>();
+const filtersResponseCache = new Map<string, CacheEntry<FiltersResponse>>();
+const statsCache = new Map<string, CacheEntry<StatPoint[]>>();
 
 const COMPETITION_CATEGORY_RULES = [
   { label: "全日本大学選手権", keywords: ["全日本大学選手権", "全日本大学ローイング"] },
@@ -97,6 +113,48 @@ export function parseQueryFilters(searchParams: URLSearchParams): QueryFilters {
     time_from: get("time_from"),
     time_to: get("time_to"),
   };
+}
+
+function cacheGet<T>(cache: Map<string, CacheEntry<T>>, key: string): T | null {
+  const now = Date.now();
+  const hit = cache.get(key);
+  if (!hit) return null;
+  if (hit.expiresAt <= now) {
+    cache.delete(key);
+    return null;
+  }
+  return hit.value;
+}
+
+function cacheSet<T>(cache: Map<string, CacheEntry<T>>, key: string, value: T): T {
+  if (cache.size >= QUERY_CACHE_MAX) {
+    const oldestKey = cache.keys().next().value as string | undefined;
+    if (oldestKey) cache.delete(oldestKey);
+  }
+  cache.set(key, { value, expiresAt: Date.now() + QUERY_CACHE_TTL_MS });
+  return value;
+}
+
+function filtersKey(filters: QueryFilters): string {
+  const keys: (keyof QueryFilters)[] = [
+    "q",
+    "year",
+    "gender",
+    "affiliation_type",
+    "event",
+    "final_group",
+    "competition",
+    "competition_category",
+    "organization",
+    "rank",
+    "rank_from",
+    "rank_to",
+    "time_from",
+    "time_to",
+  ];
+  return keys
+    .map((key) => `${key}:${filters[key] ?? ""}`)
+    .join("|");
 }
 
 function parseYear(value?: string): number | null {
@@ -234,6 +292,14 @@ export function filterResults(source: ResultRecord[], filters: QueryFilters): Re
   });
 }
 
+export async function getFilteredResults(filters: QueryFilters): Promise<ResultRecord[]> {
+  const key = filtersKey(filters);
+  const cached = cacheGet(filteredResultsCache, key);
+  if (cached) return cached;
+  const computed = filterResults(await allResults(filters), filters);
+  return cacheSet(filteredResultsCache, key, computed);
+}
+
 export function sortForIndex(rows: ResultRecord[]): ResultRecord[] {
   return [...rows].sort((a, b) => {
     if (a.year !== b.year) return b.year - a.year;
@@ -268,7 +334,11 @@ function omitFilters(filters: QueryFilters, keys: (keyof QueryFilters)[]): Query
   return copy;
 }
 
-export async function buildFiltersResponse(filters: QueryFilters) {
+export async function buildFiltersResponse(filters: QueryFilters): Promise<FiltersResponse> {
+  const key = filtersKey(filters);
+  const cached = cacheGet(filtersResponseCache, key);
+  if (cached) return cached;
+
   const base = await allResults(filters);
   const finalGroupsRelation = filterResults(base, omitFilters(filters, ["final_group"]));
   const competitionsRelation = filterResults(base, omitFilters(filters, ["competition"]));
@@ -301,7 +371,7 @@ export async function buildFiltersResponse(filters: QueryFilters) {
   const hasStudent = affiliationTypesRelation.some((row) => isStudentOrganization(row.organization));
   const hasSocial = affiliationTypesRelation.some((row) => !isStudentOrganization(row.organization));
 
-  return {
+  return cacheSet(filtersResponseCache, key, {
     years: [...AVAILABLE_YEARS].sort((a, b) => b - a),
     genders,
     competition_categories: competitionCategories,
@@ -310,7 +380,7 @@ export async function buildFiltersResponse(filters: QueryFilters) {
     events: uniqueSorted(eventsRelation.map((row) => row.event_name)),
     organizations: uniqueSorted(organizationsRelation.map((row) => row.organization)),
     affiliation_types: [hasStudent ? "学生" : "", hasSocial ? "社会人" : ""].filter(Boolean),
-  };
+  });
 }
 
 function countByLabel(rows: ResultRecord[], pick: (row: ResultRecord) => string): Map<string, number> {
@@ -323,16 +393,27 @@ function countByLabel(rows: ResultRecord[], pick: (row: ResultRecord) => string)
 }
 
 export async function buildStats(groupBy: string, filters: QueryFilters): Promise<StatPoint[]> {
-  const filtered = filterResults(await allResults(filters), filters);
+  const cacheKey = `${groupBy}|${filtersKey(filters)}`;
+  const cached = cacheGet(statsCache, cacheKey);
+  if (cached) return cached;
+
+  const filtered = await getFilteredResults(filters);
 
   if (groupBy === "year_count") {
-    return Array.from(countByLabel(filtered, (row) => String(row.year)).entries())
+    return cacheSet(
+      statsCache,
+      cacheKey,
+      Array.from(countByLabel(filtered, (row) => String(row.year)).entries())
       .sort((a, b) => Number(a[0]) - Number(b[0]))
-      .map(([label, value]) => ({ label, value }));
+      .map(([label, value]) => ({ label, value })),
+    );
   }
 
   if (groupBy === "organization_medals") {
-    return Array.from(
+    return cacheSet(
+      statsCache,
+      cacheKey,
+      Array.from(
       countByLabel(
         filtered.filter((row) => row.final_group === "Final A" && [1, 2, 3].includes(row.rank)),
         (row) => row.organization,
@@ -340,11 +421,15 @@ export async function buildStats(groupBy: string, filters: QueryFilters): Promis
     )
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
-      .map(([label, value]) => ({ label, value }));
+      .map(([label, value]) => ({ label, value })),
+    );
   }
 
   if (groupBy === "organization_golds") {
-    return Array.from(
+    return cacheSet(
+      statsCache,
+      cacheKey,
+      Array.from(
       countByLabel(
         filtered.filter((row) => row.final_group === "Final A" && row.rank === 1),
         (row) => row.organization,
@@ -352,14 +437,19 @@ export async function buildStats(groupBy: string, filters: QueryFilters): Promis
     )
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
-      .map(([label, value]) => ({ label, value }));
+      .map(([label, value]) => ({ label, value })),
+    );
   }
 
   if (groupBy === "event_count") {
-    return Array.from(countByLabel(filtered, (row) => row.event_name).entries())
+    return cacheSet(
+      statsCache,
+      cacheKey,
+      Array.from(countByLabel(filtered, (row) => row.event_name).entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10)
-      .map(([label, value]) => ({ label, value }));
+      .map(([label, value]) => ({ label, value })),
+    );
   }
 
   if (groupBy === "winner_time_trend") {
@@ -370,13 +460,17 @@ export async function buildStats(groupBy: string, filters: QueryFilters): Promis
       list.push(row.time_seconds);
       group.set(row.year, list);
     });
-    return Array.from(group.entries())
+    return cacheSet(
+      statsCache,
+      cacheKey,
+      Array.from(group.entries())
       .sort((a, b) => a[0] - b[0])
       .map(([year, values]) => ({
         label: String(year),
         value: Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2)),
-      }));
+      })),
+    );
   }
 
-  return [];
+  return cacheSet(statsCache, cacheKey, []);
 }

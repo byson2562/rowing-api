@@ -21,3 +21,16 @@ services:
     command: sh -c "npm install && rm -rf /app/.next /app/.next-dev && npm run dev"
     ports:
       - "5173:5173"
+
+  frontend-e2e:
+    image: mcr.microsoft.com/playwright:v1.58.2-jammy
+    container_name: smart_rowing_frontend_e2e
+    working_dir: /app
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: /api
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:5173}
+      CI: "1"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -lc "npm ci && npm run e2e"

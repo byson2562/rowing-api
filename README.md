@@ -106,8 +106,7 @@ docker compose exec backend bundle exec rails test
 ### Frontend E2E (select連動)
 
 ```bash
-docker compose exec frontend npx playwright install --with-deps chromium
-docker compose exec frontend npm run e2e
+docker compose run --rm frontend-e2e
 ```
 
 ## EC2 Terraform定義

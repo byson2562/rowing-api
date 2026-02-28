@@ -9,6 +9,9 @@ const VALID_GROUP_BY = new Set([
   "event_count",
   "winner_time_trend",
 ]);
+const RESPONSE_HEADERS = {
+  "Cache-Control": "public, max-age=0, s-maxage=30, stale-while-revalidate=120",
+};
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -25,5 +28,5 @@ export async function GET(request: Request) {
   }
 
   const filters = parseQueryFilters(searchParams);
-  return NextResponse.json({ group_by: groupBy, data: await buildStats(groupBy, filters) });
+  return NextResponse.json({ group_by: groupBy, data: await buildStats(groupBy, filters) }, { headers: RESPONSE_HEADERS });
 }
