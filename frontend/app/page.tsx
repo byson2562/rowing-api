@@ -126,7 +126,7 @@ export default function Page() {
     events: [],
     organizations: []
   });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const resultsRequestRef = useRef(0);
   const filtersRequestRef = useRef(0);
   const hasInitializedDefaultYearRef = useRef(false);
@@ -146,7 +146,7 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState("50");
   const [pageInput, setPageInput] = useState("1");
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(true);
   const organizationGoldChartRef = useRef<HTMLDivElement | null>(null);
   const organizationMedalChartRef = useRef<HTMLDivElement | null>(null);
   const winnerTrendChartRef = useRef<HTMLDivElement | null>(null);
@@ -776,9 +776,9 @@ export default function Page() {
                 <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#f59e0b" />
               </BarChart>
-            ) : (
+            ) : !showChartLoading ? (
               <div className="chart-empty-state">No data</div>
-            )}
+            ) : null}
             {showChartLoading ? (
               <div className="chart-loading-overlay" role="status" aria-live="polite">
                 <span className="chart-loading-spinner" aria-hidden="true" />
@@ -808,9 +808,9 @@ export default function Page() {
                 <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
                 <Bar dataKey="value" fill="#ef6c00" />
               </BarChart>
-            ) : (
+            ) : !showChartLoading ? (
               <div className="chart-empty-state">No data</div>
-            )}
+            ) : null}
             {showChartLoading ? (
               <div className="chart-loading-overlay" role="status" aria-live="polite">
                 <span className="chart-loading-spinner" aria-hidden="true" />
