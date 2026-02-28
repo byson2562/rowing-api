@@ -15,23 +15,6 @@ services:
       - caddy_config:/config
     depends_on:
       - frontend
-      - backend
-
-  backend:
-    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_BACKEND}:${IMAGE_TAG:-latest}
-    container_name: rowing_api_backend
-    restart: unless-stopped
-    environment:
-      RAILS_ENV: production
-      RAILS_LOG_TO_STDOUT: "true"
-      RAILS_SERVE_STATIC_FILES: "true"
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      SQLITE_DATABASE_PATH: /data/db/production.sqlite3
-      FRONTEND_ORIGIN: https://${DOMAIN}
-      PIDFILE: /tmp/server.pid
-    volumes:
-      - ./deploy/data/sqlite:/data/db
 
   frontend:
     image: ${ECR_REGISTRY}/${ECR_REPOSITORY_FRONTEND}:${IMAGE_TAG:-latest}
@@ -42,8 +25,6 @@ services:
       NEXT_PUBLIC_API_BASE_URL: /api
       NEXT_PUBLIC_SITE_URL: https://${DOMAIN}
       NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID}
-    depends_on:
-      - backend
 
 volumes:
   caddy_data:

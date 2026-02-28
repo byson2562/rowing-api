@@ -6,9 +6,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm npm install
 
-# Install Chromium and required system libs for Playwright E2E in container.
-RUN npx playwright install --with-deps chromium
-
 COPY . .
 
 EXPOSE 5173

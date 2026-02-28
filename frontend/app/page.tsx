@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis
 } from "recharts";
+import resultsIndex from "../data/results/index.json";
 
 type Result = {
   id: number;
@@ -41,8 +42,16 @@ type FilterOptionsResponse = {
   organizations: string[];
 };
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+type ResultsIndex = {
+  years: number[];
+  total_count: number;
+};
+
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api").replace(/\/$/, "");
 const API_PREFIX = API_BASE_URL.endsWith("/api") ? API_BASE_URL : `${API_BASE_URL}/api`;
+const INITIAL_RESULTS_INDEX = resultsIndex as ResultsIndex;
+const INITIAL_YEARS = [...(INITIAL_RESULTS_INDEX.years ?? [])].sort((a, b) => b - a);
+const INITIAL_LATEST_YEAR = INITIAL_YEARS.length > 0 ? String(INITIAL_YEARS[0]) : "";
 const DEFAULT_SITE_URL = "http://localhost:5173";
 const SITE_URL = (() => {
   const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
@@ -108,8 +117,8 @@ export default function Page() {
   const [winnerTrend, setWinnerTrend] = useState<StatPoint[]>([]);
   const [pagination, setPagination] = useState<Pagination>({ page: 1, per_page: 50, total_count: 0, total_pages: 0 });
   const [filterOptions, setFilterOptions] = useState<FilterOptionsResponse>({
-    years: [],
-    genders: [],
+    years: INITIAL_YEARS,
+    genders: ["男子", "女子"],
     affiliation_types: [],
     competition_categories: [],
     final_groups: [],
@@ -123,7 +132,7 @@ export default function Page() {
   const hasInitializedDefaultYearRef = useRef(false);
 
   const [q, setQ] = useState("");
-  const [year, setYear] = useState("");
+  const [year, setYear] = useState(INITIAL_LATEST_YEAR);
   const [gender, setGender] = useState("");
   const [affiliationType, setAffiliationType] = useState("");
   const [event, setEvent] = useState("");
@@ -150,8 +159,11 @@ export default function Page() {
   const topOrganizationMedals = useMemo(() => organizationMedals.slice(0, 8), [organizationMedals]);
   const organizationBarChartHeight = 260;
   const genderTabOptions = useMemo(() => {
-    const options = filterOptions.genders.filter((value) => value === "男子" || value === "女子");
-    return ["", ...options];
+    const options = new Set(["男子", "女子"]);
+    filterOptions.genders
+      .filter((value) => value === "男子" || value === "女子")
+      .forEach((value) => options.add(value));
+    return ["", ...Array.from(options)];
   }, [filterOptions.genders]);
 
   const baseQuery = useMemo(() => {

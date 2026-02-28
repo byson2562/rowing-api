@@ -1,22 +1,10 @@
 services:
-  backend:
-    build:
-      context: ./backend
-    container_name: smart_rowing_backend
-    environment:
-      RAILS_ENV: development
-      FRONTEND_ORIGIN: http://localhost:5173
-    volumes:
-      - ./backend:/app
-    ports:
-      - "3000:3000"
-
   frontend:
     build:
       context: ./frontend
     container_name: smart_rowing_frontend
     environment:
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
+      NEXT_PUBLIC_API_BASE_URL: /api
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:5173}
       NEXT_PUBLIC_DONATION_URL: ${NEXT_PUBLIC_DONATION_URL:-mailto:takumi.nakamura.by@gmail.com?subject=RowingAPI%20%E5%AF%84%E4%BB%98%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6}
       NEXT_PUBLIC_STRIPE_DONATE_URL: ${NEXT_PUBLIC_STRIPE_DONATE_URL:-}
@@ -33,5 +21,3 @@ services:
     command: sh -c "npm install && rm -rf /app/.next /app/.next-dev && npm run dev"
     ports:
       - "5173:5173"
-    depends_on:
-      - backend
