@@ -36,7 +36,7 @@ export async function GET() {
           }}
         >
           <img
-            src={`${siteUrl}/rowingapi-logo-mark.svg`}
+            src={`${siteUrl}/og.svg`}
             alt="RowingAPI"
             width={128}
             height={128}

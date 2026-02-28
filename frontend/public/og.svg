@@ -1,0 +1,18 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rmark-bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B2A57"/>
+      <stop offset="1" stop-color="#0F5EC7"/>
+    </linearGradient>
+    <linearGradient id="rmark-accent" x1="168" y1="292" x2="356" y2="292" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#76B6FF"/>
+      <stop offset="1" stop-color="#B7DAFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="52" y="52" width="408" height="408" rx="96" fill="url(#rmark-bg)"/>
+
+  <path d="M172 372V140H274C332 140 368 173 368 226C368 264 347 293 311 307L380 372H320L264 319H228V372H172ZM228 271H267C300 271 313 252 313 228C313 204 300 188 267 188H228V271Z" fill="white"/>
+
+  <path d="M172 292H356" stroke="url(#rmark-accent)" stroke-width="14" stroke-linecap="round" opacity="0.8"/>
+</svg>
