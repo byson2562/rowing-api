@@ -16,6 +16,8 @@ deploy/.env.prod
 
 # Runtime backups
 deploy/backups/
+deploy/data/sqlite/*.sqlite3
+deploy/data/sqlite/*.sqlite3-*
 
 # Terraform local state
 infra/ec2/.terraform/
