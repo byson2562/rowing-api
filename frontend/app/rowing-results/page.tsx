@@ -26,18 +26,27 @@ export default function RowingResultsPage() {
   return (
     <main className="container lp-page">
       <section className="lp-hero">
-        <div className="lp-hero-top">
-          <p className="lp-kicker">Rowing Results Database</p>
-          <h1>ローイング記録・大会結果を、ひとつの画面で。</h1>
-          <p className="lp-lead">
-            年度・大会名・種目・団体を横断して検索し、メダル傾向までまとめて確認。
-            <br />
-            日本の主要大会記録を、比較しやすい形で素早くたどれます。
-          </p>
-          <div className="lp-hero-actions">
-            <Link href="/" className="lp-btn lp-btn-primary">
-              今すぐ検索を始める
-            </Link>
+        <div className="lp-hero-orb lp-hero-orb-a" aria-hidden="true" />
+        <div className="lp-hero-orb lp-hero-orb-b" aria-hidden="true" />
+        <div className="lp-hero-inner">
+          <div className="lp-hero-top">
+            <p className="lp-kicker">Rowing Results Database</p>
+            <h1>ローイング記録・大会結果を、ひとつの画面で。</h1>
+            <p className="lp-lead">
+              年度・大会名・種目・団体を横断して検索し、メダル傾向までまとめて確認。
+              <br />
+              日本の主要大会記録を、比較しやすい形で素早くたどれます。
+            </p>
+            <div className="lp-hero-actions">
+              <Link href="/" className="lp-btn lp-btn-primary">
+                今すぐ検索を始める
+              </Link>
+            </div>
+            <ul className="lp-hero-tags" aria-label="機能タグ">
+              <li>横断検索</li>
+              <li>メダル可視化</li>
+              <li>時系列比較</li>
+            </ul>
           </div>
         </div>
         <img
@@ -47,37 +56,23 @@ export default function RowingResultsPage() {
           width={1446}
           height={1138}
         />
-        <div className="lp-proof-strip" aria-label="データ概要サマリー">
-          <div className="lp-proof-item">
-            <span className="lp-proof-label">収録年</span>
-            <strong>2009 - 2025</strong>
-          </div>
-          <div className="lp-proof-item">
-            <span className="lp-proof-label">対象</span>
-            <strong>Final B以上</strong>
-          </div>
-          <div className="lp-proof-item">
-            <span className="lp-proof-label">大会カテゴリ</span>
-            <strong>全日本級 4大会</strong>
-          </div>
-        </div>
       </section>
 
       <section aria-labelledby="lp-features-heading">
         <h2 id="lp-features-heading" className="lp-section-title">主な特徴</h2>
         <div className="lp-value-grid">
-        <article className="lp-value-card">
-          <h3><span className="lp-heading-icon" aria-hidden="true">🔎</span>横断検索</h3>
-          <p>大会・年・種目・団体の条件を組み合わせて、目的のレース結果を素早く絞り込み。</p>
-        </article>
-        <article className="lp-value-card">
-          <h3><span className="lp-heading-icon" aria-hidden="true">📊</span>可視化</h3>
-          <p>団体別の金メダル数・メダル数をグラフで確認し、勢力図の変化を把握。</p>
-        </article>
-        <article className="lp-value-card">
-          <h3><span className="lp-heading-icon" aria-hidden="true">⏱</span>時系列比較</h3>
-          <p>種目ごとの優勝タイム推移を追い、記録トレンドを直感的に分析。</p>
-        </article>
+          <article className="lp-value-card">
+            <h3><span className="lp-heading-icon" aria-hidden="true">🔎</span>横断検索</h3>
+            <p>大会・年・種目・団体の条件を組み合わせて、目的のレース結果を素早く絞り込み。</p>
+          </article>
+          <article className="lp-value-card">
+            <h3><span className="lp-heading-icon" aria-hidden="true">📊</span>可視化</h3>
+            <p>団体別の金メダル数・メダル数をグラフで確認し、勢力図の変化を把握。</p>
+          </article>
+          <article className="lp-value-card">
+            <h3><span className="lp-heading-icon" aria-hidden="true">⏱</span>時系列比較</h3>
+            <p>種目ごとの優勝タイム推移を追い、記録トレンドを直感的に分析。</p>
+          </article>
         </div>
       </section>
 

@@ -1,9 +1,10 @@
+# syntax=docker/dockerfile:1.7
 FROM node:20-bookworm-slim
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm npm install
 
 # Install Chromium and required system libs for Playwright E2E in container.
 RUN npx playwright install --with-deps chromium

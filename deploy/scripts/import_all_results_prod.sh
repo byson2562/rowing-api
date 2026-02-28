@@ -40,12 +40,17 @@ if [[ "${SKIP_BACKUP}" != "1" ]]; then
   source "${ENV_FILE}"
   set +a
 
-  OUT_FILE="${BACKUP_DIR}/mysql_${MYSQL_DATABASE}_before_import_${TIMESTAMP}.sql.gz"
+  OUT_FILE="${BACKUP_DIR}/sqlite_before_import_${TIMESTAMP}.sqlite3"
   docker compose -f "${ROOT_DIR}/docker-compose.prod.yml" --env-file "${ENV_FILE}" \
-    exec -T db sh -lc "mysqldump -u\"${MYSQL_USER}\" -p\"${MYSQL_PASSWORD}\" \"${MYSQL_DATABASE}\"" \
-    | gzip > "${OUT_FILE}"
+    exec -T backend sh -lc 'if [[ -f "${SQLITE_DATABASE_PATH}" ]]; then cat "${SQLITE_DATABASE_PATH}"; fi' \
+    > "${OUT_FILE}"
 
-  echo "Backup created: ${OUT_FILE}"
+  if [[ -s "${OUT_FILE}" ]]; then
+    echo "Backup created: ${OUT_FILE}"
+  else
+    rm -f "${OUT_FILE}"
+    echo "Skip backup: SQLite DB file not found in container (${SQLITE_DATABASE_PATH:-unset})"
+  fi
 fi
 
 echo "Delete existing records..."

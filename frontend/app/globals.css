@@ -931,12 +931,24 @@ th {
 
 .lp-hero {
   background:
-    radial-gradient(460px 220px at 95% -14%, #d6e6ff 0%, transparent 72%),
-    linear-gradient(145deg, #ffffff 0%, #f4f9ff 100%);
+    radial-gradient(620px 300px at 100% -25%, rgba(113, 159, 232, 0.32) 0%, transparent 72%),
+    radial-gradient(560px 280px at -12% 18%, rgba(142, 202, 255, 0.24) 0%, transparent 76%),
+    linear-gradient(155deg, #ffffff 0%, #f1f7ff 58%, #e8f2ff 100%);
   border: 1px solid #ccd9ec;
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  padding: 22px;
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(17, 42, 75, 0.12);
+  padding: 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+.lp-hero-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: start;
+  position: relative;
+  z-index: 2;
 }
 
 .lp-hero-top {
@@ -954,7 +966,7 @@ th {
 
 .lp-hero h1 {
   margin: 8px 0 0;
-  font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+  font-size: clamp(1.8rem, 3.1vw, 2.35rem);
   line-height: 1.2;
 }
 
@@ -966,48 +978,76 @@ th {
 }
 
 .lp-hero-actions {
-  margin-top: 14px;
+  margin-top: 16px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.lp-hero-preview {
-  width: 100%;
-  height: auto;
-  margin-top: 12px;
-  border: 1px solid #cfdced;
-  border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(18, 40, 70, 0.11);
-  display: block;
+.lp-hero-tags {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
 }
 
-.lp-proof-strip {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.lp-proof-item {
-  background: #f8fbff;
-  border: 1px solid #d8e3f2;
-  border-radius: 10px;
-  padding: 8px 10px;
-  display: grid;
-  gap: 2px;
-}
-
-.lp-proof-label {
-  color: #5a7495;
-  font-size: 11px;
+.lp-hero-tags li {
+  border: 1px solid #c9dbf0;
+  background: rgba(255, 255, 255, 0.86);
+  border-radius: 999px;
+  padding: 4px 10px;
+  color: #264b75;
+  font-size: 12px;
   font-weight: 700;
 }
 
-.lp-proof-item strong {
-  color: #1c3b63;
-  font-size: 14px;
-  line-height: 1.4;
+.lp-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(0.2px);
+}
+
+.lp-hero-orb-a {
+  width: 140px;
+  height: 140px;
+  right: 48px;
+  top: 26px;
+  background: radial-gradient(circle at 35% 35%, rgba(177, 214, 255, 0.6), rgba(124, 176, 237, 0.15));
+  animation: lpFloatA 8s ease-in-out infinite;
+}
+
+.lp-hero-orb-b {
+  width: 90px;
+  height: 90px;
+  right: 220px;
+  top: 52px;
+  background: radial-gradient(circle at 35% 35%, rgba(165, 222, 245, 0.5), rgba(105, 178, 231, 0.12));
+  animation: lpFloatB 6.6s ease-in-out infinite;
+}
+
+.lp-hero-preview {
+  width: 100%;
+  height: auto;
+  margin-top: 14px;
+  border: 1px solid #cfdced;
+  border-radius: 16px;
+  box-shadow: 0 14px 30px rgba(18, 40, 70, 0.14);
+  display: block;
+  position: relative;
+  z-index: 2;
+}
+
+.lp-btn {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.lp-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(14, 56, 113, 0.2);
 }
 
 .lp-support-cta-card {
@@ -1055,10 +1095,16 @@ th {
 .lp-value-card {
   background: var(--surface-solid);
   border: 1px solid #d4e0f0;
-  border-top: 3px solid #9cbce6;
+  border-top: 4px solid #9cbce6;
   border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(16, 32, 58, 0.07);
-  padding: 15px;
+  box-shadow: 0 10px 24px rgba(16, 32, 58, 0.08);
+  padding: 15px 16px;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.lp-value-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px rgba(16, 32, 58, 0.12);
 }
 
 .lp-value-card p {
@@ -1290,11 +1336,11 @@ th {
 }
 
 @media (max-width: 900px) {
-  .lp-contact-grid {
+  .lp-hero-inner {
     grid-template-columns: 1fr;
   }
 
-  .lp-proof-strip {
+  .lp-contact-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1304,5 +1350,35 @@ th {
 
   .lp-detail {
     grid-template-columns: 1fr;
+  }
+}
+
+@keyframes lpFloatA {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes lpFloatB {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero-orb-a,
+  .lp-hero-orb-b,
+  .lp-value-card,
+  .lp-btn {
+    animation: none;
+    transition: none;
   }
 }

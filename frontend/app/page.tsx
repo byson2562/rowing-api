@@ -547,15 +547,6 @@ export default function Page() {
             ))}
           </select>
 
-          <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名" data-ga-filter="competition">
-            <option value="">大会名(すべて)</option>
-            {filterOptions.competitions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-
           <select
             data-testid="competition-category-select"
             value={competitionCategory}
@@ -571,15 +562,9 @@ export default function Page() {
             ))}
           </select>
 
-          <select
-            data-testid="affiliation-type-select"
-            value={affiliationType}
-            onChange={(e) => setAffiliationType(e.target.value)}
-            aria-label="団体区分"
-            data-ga-filter="affiliation_type"
-          >
-            <option value="">団体区分(すべて)</option>
-            {filterOptions.affiliation_types.map((option) => (
+          <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名" data-ga-filter="competition">
+            <option value="">大会名(すべて)</option>
+            {filterOptions.competitions.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -598,6 +583,15 @@ export default function Page() {
           <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final" data-ga-filter="final_group">
             <option value="">Final(すべて)</option>
             {filterOptions.final_groups.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+
+          <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位" data-ga-filter="rank">
+            <option value="">順位(すべて)</option>
+            {rankOptions.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>
@@ -674,9 +668,15 @@ export default function Page() {
             )}
           </div>
 
-          <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位" data-ga-filter="rank">
-            <option value="">順位(すべて)</option>
-            {rankOptions.map((option) => (
+          <select
+            data-testid="affiliation-type-select"
+            value={affiliationType}
+            onChange={(e) => setAffiliationType(e.target.value)}
+            aria-label="団体区分"
+            data-ga-filter="affiliation_type"
+          >
+            <option value="">団体区分(すべて)</option>
+            {filterOptions.affiliation_types.map((option) => (
               <option key={option} value={option}>
                 {option}
               </option>

@@ -14,16 +14,7 @@ class Result < ApplicationRecord
   scope :by_affiliation_type, lambda { |affiliation_type|
     next unless affiliation_type.present?
 
-    student_org_pattern = student_organization_pattern
-    student_mixed_pattern = student_mixed_abbrev_pattern
-    student_condition_sql = <<~SQL.squish
-      organization REGEXP :student_org
-      OR (organization LIKE '%混成%' AND organization REGEXP :student_mixed_abbrev)
-    SQL
-    student_condition_binds = {
-      student_org: student_org_pattern,
-      student_mixed_abbrev: student_mixed_pattern
-    }
+    student_condition_sql, student_condition_binds = student_affiliation_condition
 
     case affiliation_type
     when "学生"
@@ -142,6 +133,32 @@ class Result < ApplicationRecord
 
     def student_mixed_abbrev_pattern
       to_regexp_pattern(affiliation_rules[:student_mixed_abbrev_keywords])
+    end
+
+    def student_affiliation_condition
+      student_keywords = affiliation_rules[:student_keywords]
+      mixed_abbrev_keywords = affiliation_rules[:student_mixed_abbrev_keywords]
+
+      student_org_conditions = student_keywords.each_with_index.map do |_value, index|
+        "organization LIKE :student_org_#{index}"
+      end
+      mixed_conditions = mixed_abbrev_keywords.each_with_index.map do |_value, index|
+        "organization LIKE :mixed_abbrev_#{index}"
+      end
+
+      binds = {}
+      student_keywords.each_with_index do |value, index|
+        binds[:"student_org_#{index}"] = "%#{value}%"
+      end
+      mixed_abbrev_keywords.each_with_index do |value, index|
+        binds[:"mixed_abbrev_#{index}"] = "%#{value}%"
+      end
+      binds[:mixed_org] = "%混成%"
+
+      student_org_sql = student_org_conditions.present? ? "(#{student_org_conditions.join(' OR ')})" : "(1=0)"
+      mixed_sql = mixed_conditions.present? ? "(organization LIKE :mixed_org AND (#{mixed_conditions.join(' OR ')}))" : "(1=0)"
+
+      ["#{student_org_sql} OR #{mixed_sql}", binds]
     end
 
     private

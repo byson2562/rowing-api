@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7
 FROM ruby:3.1.1
 
 RUN apt-get update -qq && apt-get install -y --no-install-recommends build-essential libsqlite3-dev && rm -rf /var/lib/apt/lists/*
@@ -5,7 +6,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends build-essen
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock* ./
-RUN bundle install
+RUN --mount=type=cache,target=/usr/local/bundle/cache bundle install
 
 COPY . .
 
