@@ -33,6 +33,12 @@ export type QueryFilters = {
 type StatPoint = { label: string; value: number };
 type ResultsIndex = { years: number[]; total_count: number };
 type CacheEntry<T> = { expiresAt: number; value: T };
+export type DatasetSummary = {
+  totalCount: number;
+  minYear: number | null;
+  maxYear: number | null;
+  competitionCategoryCount: number;
+};
 export type FiltersResponse = {
   years: number[];
   genders: string[];
@@ -61,6 +67,18 @@ const COMPETITION_CATEGORY_RULES = [
   { label: "全日本軽量級選手権", keywords: ["全日本軽量級選手権", "全日本軽量級ローイング"] },
   { label: "全日本新人選手権", keywords: ["全日本新人選手権", "全日本新人ローイング"] },
 ] as const;
+
+export function getDatasetSummary(): DatasetSummary {
+  const years = [...AVAILABLE_YEARS];
+  const minYear = years.length > 0 ? Math.min(...years) : null;
+  const maxYear = years.length > 0 ? Math.max(...years) : null;
+  return {
+    totalCount: RESULTS_INDEX.total_count ?? 0,
+    minYear,
+    maxYear,
+    competitionCategoryCount: COMPETITION_CATEGORY_RULES.length,
+  };
+}
 
 const STUDENT_KEYWORDS = [
   "大学",

@@ -5,7 +5,7 @@
 - EC2 (Amazon Linux 2023, ARM)
 - Security Group (22/80/443)
 - Elastic IP
-- ECR repositories (`backend` / `frontend`)
+- ECR repository (`frontend`)
 - GitHub Actions (OIDC) 用 IAM Role (ECR push 権限)
 - EC2 用 IAM Instance Profile (ECR pull 権限)
 
@@ -49,7 +49,6 @@ vi deploy/.env.prod
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d
-docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod exec -T backend bundle exec rails db:migrate
 ```
 
 4. DNS設定
@@ -68,4 +67,4 @@ terraform destroy
 - `instance_type` は `t4g.small` をデフォルトにしています（コスト重視）。
 - SSHは `ssh_cidr` を `/32` で固定推奨です。
 - `terraform output github_actions_role_arn` を GitHub Secrets `AWS_ROLE_TO_ASSUME` に設定してください。
-- `terraform output ecr_registry` / `ecr_*_repository_url` を `deploy/.env.prod` と GitHub Variables に反映してください。
+- `terraform output ecr_registry` / `ecr_frontend_repository_url` を `deploy/.env.prod` と GitHub Variables に反映してください。

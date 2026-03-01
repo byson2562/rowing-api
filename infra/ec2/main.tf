@@ -25,22 +25,7 @@ data "aws_ami" "al2023" {
 
 locals {
   github_actions_sub = "repo:${var.github_repository}:ref:refs/heads/${var.github_branch}"
-  backend_repo_arn   = aws_ecr_repository.backend.arn
   frontend_repo_arn  = aws_ecr_repository.frontend.arn
-}
-
-resource "aws_ecr_repository" "backend" {
-  name = var.ecr_backend_repository_name
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-
-  image_tag_mutability = "MUTABLE"
-
-  tags = merge(var.tags, {
-    Name = "${var.name_prefix}-ecr-backend"
-  })
 }
 
 resource "aws_ecr_repository" "frontend" {
@@ -128,7 +113,7 @@ data "aws_iam_policy_document" "github_actions_ecr_push" {
       "ecr:PutImage",
       "ecr:UploadLayerPart"
     ]
-    resources = [local.backend_repo_arn, local.frontend_repo_arn]
+    resources = [local.frontend_repo_arn]
   }
 }
 
@@ -187,7 +172,7 @@ data "aws_iam_policy_document" "ec2_ecr_pull" {
       "ecr:GetDownloadUrlForLayer",
       "ecr:ListImages"
     ]
-    resources = [local.backend_repo_arn, local.frontend_repo_arn]
+    resources = [local.frontend_repo_arn]
   }
 }
 

@@ -51,7 +51,6 @@ const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api").replace(/\
 const API_PREFIX = API_BASE_URL.endsWith("/api") ? API_BASE_URL : `${API_BASE_URL}/api`;
 const INITIAL_RESULTS_INDEX = resultsIndex as ResultsIndex;
 const INITIAL_YEARS = [...(INITIAL_RESULTS_INDEX.years ?? [])].sort((a, b) => b - a);
-const INITIAL_LATEST_YEAR = INITIAL_YEARS.length > 0 ? String(INITIAL_YEARS[0]) : "";
 const DEFAULT_SITE_URL = "http://localhost:5173";
 const SITE_URL = (() => {
   const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
@@ -129,10 +128,9 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const resultsRequestRef = useRef(0);
   const filtersRequestRef = useRef(0);
-  const hasInitializedDefaultYearRef = useRef(false);
 
   const [q, setQ] = useState("");
-  const [year, setYear] = useState(INITIAL_LATEST_YEAR);
+  const [year, setYear] = useState("");
   const [gender, setGender] = useState("");
   const [affiliationType, setAffiliationType] = useState("");
   const [event, setEvent] = useState("");
@@ -295,19 +293,6 @@ export default function Page() {
       controller.abort();
     };
   }, [filterQuery]);
-
-  useEffect(() => {
-    if (hasInitializedDefaultYearRef.current) return;
-    if (year) {
-      hasInitializedDefaultYearRef.current = true;
-      return;
-    }
-    if (filterOptions.years.length === 0) return;
-
-    const latestYear = Math.max(...filterOptions.years);
-    setYear(String(latestYear));
-    hasInitializedDefaultYearRef.current = true;
-  }, [filterOptions.years, year]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -487,6 +472,7 @@ export default function Page() {
     return "現在のフィルタ条件では該当データがありません。条件を一部解除してください。";
   }, [activeFilters.length, results.length]);
   const showChartLoading = isRefreshing || loading;
+  const winnerTrendHasData = Boolean(event && winnerTrend.length > 0);
 
   const shouldShowFilterGuide = activeFilters.length === 0;
 
@@ -523,6 +509,7 @@ export default function Page() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <header className="hero">
         <div>
+          <p className="hero-kicker">Rowing Results Database</p>
           <h1>ローイング・ボート記録検索 | RowingAPI</h1>
           <p className="subtitle">ローイング（ボート）記録を検索し、メダル傾向・優勝タイム推移を可視化</p>
         </div>
@@ -551,150 +538,154 @@ export default function Page() {
         </section>
 
         <section className="filters">
-          <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年" data-ga-filter="year">
-            <option value="">年(すべて)</option>
-            {filterOptions.years.map((option) => (
-              <option key={option} value={option.toString()}>
-                {option}
-              </option>
-            ))}
-          </select>
+          <div className="filters-primary" aria-label="主要フィルター">
+            <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年" data-ga-filter="year">
+              <option value="">年(すべて)</option>
+              {filterOptions.years.map((option) => (
+                <option key={option} value={option.toString()}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
-          <select
-            data-testid="competition-category-select"
-            value={competitionCategory}
-            onChange={(e) => setCompetitionCategory(e.target.value)}
-            aria-label="大会カテゴリ"
-            data-ga-filter="competition_category"
-          >
-            <option value="">大会カテゴリ(すべて)</option>
-            {filterOptions.competition_categories.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <select
+              data-testid="competition-category-select"
+              value={competitionCategory}
+              onChange={(e) => setCompetitionCategory(e.target.value)}
+              aria-label="大会カテゴリ"
+              data-ga-filter="competition_category"
+            >
+              <option value="">大会カテゴリ(すべて)</option>
+              {filterOptions.competition_categories.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
-          <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名" data-ga-filter="competition">
-            <option value="">大会名(すべて)</option>
-            {filterOptions.competitions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名" data-ga-filter="competition">
+              <option value="">大会名(すべて)</option>
+              {filterOptions.competitions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
-          <select data-testid="event-select" value={event} onChange={(e) => setEvent(e.target.value)} aria-label="種目" data-ga-filter="event">
-            <option value="">種目(すべて)</option>
-            {filterOptions.events.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <select data-testid="event-select" value={event} onChange={(e) => setEvent(e.target.value)} aria-label="種目" data-ga-filter="event">
+              <option value="">種目(すべて)</option>
+              {filterOptions.events.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final" data-ga-filter="final_group">
-            <option value="">Final(すべて)</option>
-            {filterOptions.final_groups.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          <div className="filters-secondary" aria-label="詳細条件">
+            <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final" data-ga-filter="final_group">
+              <option value="">Final(すべて)</option>
+              {filterOptions.final_groups.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
-          <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位" data-ga-filter="rank">
-            <option value="">順位(すべて)</option>
-            {rankOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位" data-ga-filter="rank">
+              <option value="">順位(すべて)</option>
+              {rankOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
 
-          <div className={`organization-combobox${organizationMenuOpen ? " open" : ""}`}>
-            <input
-              data-testid="organization-combobox-input"
-              value={organizationSearch}
-              onFocus={() => setOrganizationMenuOpen(true)}
-              onBlur={() => window.setTimeout(() => setOrganizationMenuOpen(false), 120)}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  setOrganizationMenuOpen(false);
-                }
-                if (e.key === "Enter" && organizationMenuOpen && filteredOrganizations.length > 0) {
-                  e.preventDefault();
-                  chooseOrganization(filteredOrganizations[0]);
-                }
-              }}
-              onChange={(e) => {
-                const value = e.target.value;
-                setOrganizationSearch(value);
-                setOrganization("");
-                setPage(1);
-                setOrganizationMenuOpen(true);
-              }}
-              placeholder="団体を検索して選択"
-              aria-label="団体"
-              data-ga-filter="organization_search"
-              role="combobox"
-              aria-autocomplete="list"
-              aria-expanded={organizationMenuOpen}
-              aria-controls="organization-listbox"
-            />
-            {organizationMenuOpen && (
-              <div
-                id="organization-listbox"
-                role="listbox"
-                className="organization-combobox-menu"
-                data-testid="organization-combobox-menu"
-              >
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={!organization}
-                  className={!organization ? "active" : ""}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => {
-                    setOrganization("");
-                    setOrganizationSearch("");
+            <div className={`organization-combobox${organizationMenuOpen ? " open" : ""}`}>
+              <input
+                data-testid="organization-combobox-input"
+                value={organizationSearch}
+                onFocus={() => setOrganizationMenuOpen(true)}
+                onBlur={() => window.setTimeout(() => setOrganizationMenuOpen(false), 120)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
                     setOrganizationMenuOpen(false);
-                    setPage(1);
-                  }}
+                  }
+                  if (e.key === "Enter" && organizationMenuOpen && filteredOrganizations.length > 0) {
+                    e.preventDefault();
+                    chooseOrganization(filteredOrganizations[0]);
+                  }
+                }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setOrganizationSearch(value);
+                  setOrganization("");
+                  setPage(1);
+                  setOrganizationMenuOpen(true);
+                }}
+                placeholder="団体を検索して選択"
+                aria-label="団体"
+                data-ga-filter="organization_search"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={organizationMenuOpen}
+                aria-controls="organization-listbox"
+              />
+              {organizationMenuOpen && (
+                <div
+                  id="organization-listbox"
+                  role="listbox"
+                  className="organization-combobox-menu"
+                  data-testid="organization-combobox-menu"
                 >
-                  団体(すべて)
-                </button>
-                {filteredOrganizations.map((option) => (
                   <button
                     type="button"
                     role="option"
-                    aria-selected={organization === option}
-                    data-testid={`organization-option-${option}`}
-                    className={organization === option ? "active" : ""}
-                    key={option}
+                    aria-selected={!organization}
+                    className={!organization ? "active" : ""}
                     onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => chooseOrganization(option)}
+                    onClick={() => {
+                      setOrganization("");
+                      setOrganizationSearch("");
+                      setOrganizationMenuOpen(false);
+                      setPage(1);
+                    }}
                   >
-                    {option}
+                    団体(すべて)
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
+                  {filteredOrganizations.map((option) => (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={organization === option}
+                      data-testid={`organization-option-${option}`}
+                      className={organization === option ? "active" : ""}
+                      key={option}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => chooseOrganization(option)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <select
-            data-testid="affiliation-type-select"
-            value={affiliationType}
-            onChange={(e) => setAffiliationType(e.target.value)}
-            aria-label="団体区分"
-            data-ga-filter="affiliation_type"
-          >
-            <option value="">団体区分(すべて)</option>
-            {filterOptions.affiliation_types.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+            <select
+              data-testid="affiliation-type-select"
+              value={affiliationType}
+              onChange={(e) => setAffiliationType(e.target.value)}
+              aria-label="団体区分"
+              data-ga-filter="affiliation_type"
+            >
+              <option value="">団体区分(すべて)</option>
+              {filterOptions.affiliation_types.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
         </section>
 
         <div className="filter-actions">
@@ -756,7 +747,39 @@ export default function Page() {
       )}
 
       <section className={`cards${isRefreshing ? " is-refreshing" : ""}`}>
-        <article className="chart-card">
+        <article className="chart-card chart-card-primary">
+          <div className="chart-card-head">
+            <h2>団体別メダル数(Top8)</h2>
+            <span>Final A medals</span>
+          </div>
+          <div className="chart-wrap" ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
+            {topOrganizationMedals.length > 0 && organizationMedalChartWidth > 0 ? (
+              <BarChart
+                width={organizationMedalChartWidth}
+                height={organizationBarChartHeight}
+                data={topOrganizationMedals}
+                layout="horizontal"
+                margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
+                <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
+                <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
+                <Bar dataKey="value" fill="#ef6c00" />
+              </BarChart>
+            ) : !showChartLoading ? (
+              <div className="chart-empty-state">No data</div>
+            ) : null}
+            {showChartLoading ? (
+              <div className="chart-loading-overlay" role="status" aria-live="polite">
+                <span className="chart-loading-spinner" aria-hidden="true" />
+                <span>Loading...</span>
+              </div>
+            ) : null}
+          </div>
+        </article>
+
+        <article className="chart-card winner-trend-card">
           <div className="chart-card-head">
             <h2>団体別金メダル数(Top8)</h2>
             <span>Final A golds</span>
@@ -790,43 +813,11 @@ export default function Page() {
 
         <article className="chart-card">
           <div className="chart-card-head">
-            <h2>団体別メダル数(Top8)</h2>
-            <span>Final A medals</span>
-          </div>
-          <div className="chart-wrap" ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
-            {topOrganizationMedals.length > 0 && organizationMedalChartWidth > 0 ? (
-              <BarChart
-                width={organizationMedalChartWidth}
-                height={organizationBarChartHeight}
-                data={topOrganizationMedals}
-                layout="horizontal"
-                margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
-                <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
-                <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
-                <Bar dataKey="value" fill="#ef6c00" />
-              </BarChart>
-            ) : !showChartLoading ? (
-              <div className="chart-empty-state">No data</div>
-            ) : null}
-            {showChartLoading ? (
-              <div className="chart-loading-overlay" role="status" aria-live="polite">
-                <span className="chart-loading-spinner" aria-hidden="true" />
-                <span>Loading...</span>
-              </div>
-            ) : null}
-          </div>
-        </article>
-
-        <article className="chart-card">
-          <div className="chart-card-head">
             <h2>優勝タイム推移</h2>
             <span>{event ? event : "種目を選択"}</span>
           </div>
-          <div className="chart-wrap" ref={winnerTrendChartRef}>
-            {event && winnerTrend.length > 0 ? (
+          <div className={`chart-wrap${winnerTrendHasData ? "" : " no-data"}`} ref={winnerTrendChartRef}>
+            {winnerTrendHasData ? (
               winnerTrendChartWidth > 0 ? (
                 <LineChart width={winnerTrendChartWidth} height={260} data={winnerTrend}>
                   <CartesianGrid strokeDasharray="3 3" />

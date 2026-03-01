@@ -1,314 +1,66 @@
-# smart-rowing
+# RowingAPI
 
-日本ローイング協会の大会記録データを検索・可視化するための構成です。
+日本ローイング協会の大会記録を検索・可視化する Next.js サービスです。
 
-- Frontend: React (Next.js App Router)
-- Backend: Rails API
-- DB: MySQL 8
-- Runtime: docker compose
+## 構成
+- Frontend/API: Next.js (App Router)
+- Data: 年度別JSON (`frontend/data/results/*.json`)
+- Reverse Proxy: Caddy (production)
 
-## 起動
-
+## ローカル起動
 ```bash
 docker compose up --build
 ```
 
-起動後:
+- App: [http://localhost:5173](http://localhost:5173)
+- API (Next Route): `http://localhost:5173/api/v1/results`
+- Health: `http://localhost:5173/health`
 
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3000
-- Health check: http://localhost:3000/health
-- MySQL(host): localhost:3307
-
-## API
-
-### 検索
-
-`GET /api/v1/results`
-
-クエリ:
-
-- `q`: キーワード（大会名・種目・クルー・所属）
-- `year`: 年
-- `event`: 種目名
-- `competition`: 大会名
-- `organization`: 所属名
-- `rank_from`, `rank_to`: 順位範囲
-- `time_from`, `time_to`: タイム秒範囲
-- `limit`: 上限件数（デフォルト100、最大500）
-
-例:
-
-```bash
-curl "http://localhost:3000/api/v1/results?year=2024&event=シングルスカル&rank_to=3"
-```
-
-### 集計
-
-`GET /api/v1/results/stats?group_by=...`
-
-- `year_count`: 年別レコード件数
-- `organization_medals`: 所属別メダル数(1〜3位)
-- `event_count`: 種目別件数
-- `winner_time_trend`: 優勝タイムの年次平均(秒)
-
-例:
-
-```bash
-curl "http://localhost:3000/api/v1/results/stats?group_by=winner_time_trend"
-```
-
-## ETL / データ取り込み
-
-### 1) スクレイピングでCSV生成
-
-```bash
-docker compose exec backend bundle exec rake data:scrape_results SOURCE_URL="https://example.com/results.html" OUTPUT_CSV="/app/data/source/scraped_results.csv"
-```
-
-### 2) CSVをDBへ取り込み
-
-```bash
-docker compose exec backend bundle exec rake data:import_results CSV_PATH="/app/data/source/scraped_results.csv"
-```
-
-- CSVの列: `year,competition_name,event_name,crew_name,organization,rank,time`
-- `time` は `7:00.4` または `420.4` 形式を受け付けます。
-- 所属名や種目の表記揺れを一部正規化します（例: `慶応義塾大学 -> 慶應義塾大学`, `M1X -> 男子シングルスカル`）。
-
-## フロント表示
-
-Next.js UI で以下を表示します。
-
-1. 年別レコード件数
-2. 所属別メダル数(上位10)
-3. 優勝タイム推移
-4. 検索結果テーブル
-
-## JARA実データ取り込み（年度単位）
-
-```bash
-docker compose exec backend bundle exec rake data:import_jara_year YEAR=2025
-```
-
-- 取得元: `https://www.jara.or.jp/race/<YEAR>/`
-- 年度ページの国内大会リンクを巡回し、各種目ページの `Final` の順位・2000mタイムを取り込みます。
-- 出力CSV: `backend/data/source/jara_<YEAR>.csv`
-
-## テスト
-
-### Backend (フィルタの挙動)
-
-```bash
-docker compose exec backend bundle exec rails test
-```
-
-### Frontend E2E (select連動)
+## E2E
+Playwright 依存ライブラリを含む専用サービスで実行します。
 
 ```bash
 docker compose run --rm frontend-e2e
 ```
 
-## EC2 Terraform定義
-
-EC2で構築する場合は以下を利用してください。
-
-- `infra/ec2/main.tf`
-- `infra/ec2/variables.tf`
-- `infra/ec2/outputs.tf`
-- `infra/ec2/templates/user_data.sh.tftpl`
-- `infra/ec2/terraform.tfvars.example`
-- `infra/ec2/README.md`
-
-## Lightsail向け本番構成
-
-追加した本番用ファイル:
-
+## Production
+使用ファイル:
 - `docker-compose.prod.yml`
 - `deploy/Caddyfile`
 - `deploy/.env.prod.example`
 - `frontend/Dockerfile.prod`
-- `backend/Dockerfile.prod`
 - `deploy/scripts/deploy_prod.sh`
-- `deploy/scripts/backup_mysql.sh`
-- `deploy/scripts/restore_mysql.sh`
-- `deploy/scripts/import_all_results_prod.sh`
 
-### 1) 初期設定
-
+### 1) 設定
 ```bash
 cp deploy/.env.prod.example deploy/.env.prod
-# deploy/.env.prod の値を本番用に編集
 ```
 
-必須で設定する値:
-
+必須値:
 - `DOMAIN`
 - `ECR_REGISTRY`
-- `ECR_REPOSITORY_BACKEND`
 - `ECR_REPOSITORY_FRONTEND`
-- `SECRET_KEY_BASE`
-- `RAILS_MASTER_KEY`
-- `MYSQL_ROOT_PASSWORD`
-- `MYSQL_USER`
-- `MYSQL_PASSWORD`
 
-任意（計測を有効化する場合）:
-
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID`（例: `G-XXXXXXXXXX`）
-
-`SECRET_KEY_BASE` は以下で生成できます。
-
-```bash
-docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod run --rm backend bundle exec rails secret
-```
+任意:
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID`（GA4を使う場合）
 
 ### 2) 起動
-
 ```bash
 docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d
 ```
 
-GA4を有効化した場合は、デプロイ後にブラウザの開発者ツールで
-`https://www.googletagmanager.com/gtag/js?id=...` が読み込まれていることを確認してください。
-
-DBマイグレーション:
-
-```bash
-docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod exec -T backend bundle exec rails db:migrate
-```
-
 ### 3) デプロイ更新
-
 `/etc/rowing-api/.env.prod` を優先利用します。
 
 ```bash
 bash deploy/scripts/deploy_prod.sh
 ```
 
-### 4) バックアップ/リストア
+## CI/CD
+- Workflow: `.github/workflows/ci-deploy-prod.yml`
+- 実行内容:
+  1. frontend image を ECR へ build/push
+  2. self-hosted runner (EC2) で pull / up
 
-バックアップ:
-
-```bash
-bash deploy/scripts/backup_mysql.sh
-```
-
-リストア:
-
-```bash
-bash deploy/scripts/restore_mysql.sh deploy/backups/mysql_smart_rowing_production_YYYYMMDD_HHMMSS.sql.gz
-```
-
-`/etc/rowing-api/.env.prod` 以外を使う場合は `ENV_FILE` で上書きできます。
-
-```bash
-ENV_FILE=/path/to/.env.prod bash deploy/scripts/backup_mysql.sh
-```
-
-### 5) Lightsail 側の推奨設定
-
-- インスタンス: Linux 2GB以上
-- 静的IPを割り当て
-- ポート開放: `80`, `443`, `22`
-- DNS: `A` レコードを静的IPへ向ける
-- SSL: Caddyが自動で取得/更新
-
-### 6) Cron例（毎日3:00にバックアップ）
-
-```bash
-0 3 * * * cd /home/ubuntu/rowing-api && bash deploy/scripts/backup_mysql.sh >> /var/log/rowing_backup.log 2>&1
-```
-
-### 7) 本番データ再投入（CSV一括）
-
-バックアップ -> 全削除 -> 年次CSV再投入までを一括実行:
-
-```bash
-bash deploy/scripts/import_all_results_prod.sh
-```
-
-オプション例:
-
-```bash
-# 2015〜2025のみ再投入
-YEAR_FROM=2015 YEAR_TO=2025 bash deploy/scripts/import_all_results_prod.sh
-
-# バックアップをスキップ
-SKIP_BACKUP=1 bash deploy/scripts/import_all_results_prod.sh
-```
-
-`/etc/rowing-api/.env.prod` 以外を使う場合:
-
-```bash
-ENV_FILE=/path/to/.env.prod bash deploy/scripts/import_all_results_prod.sh
-```
-
-### 8) GitHub ActionsでECRビルド + 自動デプロイ（self-hosted runner）
-
-`main` へ push すると以下の順で実行されます。
-
-1. `.github/workflows/build-and-push-ecr.yml` で `frontend/backend` イメージをECRへpush
-2. 成功後 `.github/workflows/deploy-prod.yml` がEC2上の self-hosted runner でデプロイ
-
-`build-and-push-ecr.yml` で必要な Repository Variables / Secrets:
-
-- Variables:
-  - `AWS_REGION`（例: `ap-northeast-1`）
-  - `ECR_REPOSITORY_BACKEND`（例: `rowing-api/backend`）
-  - `ECR_REPOSITORY_FRONTEND`（例: `rowing-api/frontend`）
-  - `NEXT_PUBLIC_SITE_URL`（例: `https://rowing-api.com`）
-  - `NEXT_PUBLIC_GA_MEASUREMENT_ID`（任意）
-- Secret:
-  - `AWS_ROLE_TO_ASSUME`（GitHub OIDC でAssumeするIAM Role ARN）
-
-#### 8-1) EC2にrunnerを登録
-
-1. GitHubリポジトリで `Settings > Actions > Runners > New self-hosted runner` を開く
-2. OS=`Linux`, Architecture=`x64` を選択し、表示されるコマンドをEC2で実行
-
-例（`ec2-user` で実行）:
-
-```bash
-mkdir -p /home/ec2-user/actions-runner && cd /home/ec2-user/actions-runner
-curl -o actions-runner-linux-x64.tar.gz -L https://github.com/actions/runner/releases/download/v2.323.0/actions-runner-linux-x64-2.323.0.tar.gz
-tar xzf ./actions-runner-linux-x64.tar.gz
-./config.sh --url https://github.com/byson2562/rowing-api --token <RUNNER_TOKEN> --labels rowing-api-prod --unattended
-sudo ./svc.sh install ec2-user
-sudo ./svc.sh start
-```
-
-#### 8-2) runnerユーザーにDocker実行権限を付与
-
-```bash
-sudo usermod -aG docker ec2-user
-sudo systemctl restart actions.runner.byson2562-rowing-api.* || true
-```
-
-#### 8-3) セキュリティグループを戻す
-
-self-hosted 化後は `22/tcp` の一時開放（`0.0.0.0/0`）を必ず閉じてください。
-
-#### 8-4) 不要になったSecrets
-
-SSH方式で使っていた以下は不要です（削除可）。
-
-- `PROD_HOST`
-- `PROD_USER`
-- `PROD_SSH_KEY`
-- `PROD_PORT`
-
-デプロイ処理は runner 上で以下を実行します。
-
-```bash
-cd /opt/rowing-api
-ENV_FILE=/etc/rowing-api/.env.prod bash deploy/scripts/deploy_prod.sh
-```
-
-### 9) systemdで自動起動
-
-```bash
-sudo cp deploy/rowing-api.service /etc/systemd/system/rowing-api.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now rowing-api.service
-```
+## データ更新
+現在の本番データは `frontend/data/results/` 配下の年度別JSONを利用します。

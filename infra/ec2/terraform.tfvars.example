@@ -13,7 +13,6 @@ deploy_user    = "ec2-user"
 app_dir        = "/opt/rowing-api"
 enable_user_data = true
 
-ecr_backend_repository_name = "rowing-api/backend"
 ecr_frontend_repository_name = "rowing-api/frontend"
 
 github_repository           = "byson2562/rowing-api"

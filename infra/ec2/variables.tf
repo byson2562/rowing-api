@@ -79,12 +79,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "ecr_backend_repository_name" {
-  description = "ECR repository name for backend image"
-  type        = string
-  default     = "rowing-api/backend"
-}
-
 variable "ecr_frontend_repository_name" {
   description = "ECR repository name for frontend image"
   type        = string

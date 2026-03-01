@@ -25,12 +25,7 @@ output "app_dir" {
 
 output "ecr_registry" {
   description = "ECR registry URI"
-  value       = split("/", aws_ecr_repository.backend.repository_url)[0]
-}
-
-output "ecr_backend_repository_url" {
-  description = "Backend ECR repository URL"
-  value       = aws_ecr_repository.backend.repository_url
+  value       = split("/", aws_ecr_repository.frontend.repository_url)[0]
 }
 
 output "ecr_frontend_repository_url" {
