@@ -127,6 +127,14 @@ export default function RowingResultsPage() {
                 </ul>
               </dd>
             </div>
+            <div>
+              <dt>North Star KPI</dt>
+              <dd>週次検索実行数（検索を実行したセッション数）を最重要指標として運用しています。</dd>
+            </div>
+            <div>
+              <dt>データ更新方針</dt>
+              <dd>大会期間中は月次更新を目安にデータ反映します（大会公開状況により遅延する場合があります）。</dd>
+            </div>
           </dl>
         </aside>
       </section>

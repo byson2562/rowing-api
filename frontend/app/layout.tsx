@@ -213,12 +213,24 @@ export default function RootLayout({
                         filter_value: filterValue,
                         page_path: window.location.pathname
                       });
+
+                      sendEvent('filter_apply', {
+                        filter_name: filterName,
+                        filter_value: filterValue,
+                        page_path: window.location.pathname
+                      });
                     });
 
                     document.addEventListener('click', function (event) {
                       var filterActionTarget = event.target instanceof Element ? event.target.closest('[data-ga-filter-action]') : null;
                       if (filterActionTarget) {
                         sendEvent('filter_interaction', {
+                          filter_name: filterActionTarget.getAttribute('data-ga-filter-action') || 'unknown',
+                          filter_value: filterActionTarget.getAttribute('data-ga-filter-value') || '',
+                          page_path: window.location.pathname
+                        });
+
+                        sendEvent('filter_apply', {
                           filter_name: filterActionTarget.getAttribute('data-ga-filter-action') || 'unknown',
                           filter_value: filterActionTarget.getAttribute('data-ga-filter-value') || '',
                           page_path: window.location.pathname
@@ -236,6 +248,21 @@ export default function RootLayout({
                         link_location: target.getAttribute('data-ga-location') || window.location.pathname,
                         link_url: target.getAttribute('href') || ''
                       });
+                    });
+
+                    window.addEventListener('rowingapi_analytics_event', function (event) {
+                      var customEvent = event;
+                      if (!(customEvent instanceof CustomEvent) || !customEvent.detail) return;
+                      var detail = customEvent.detail;
+                      if (!detail.event_name) return;
+                      var eventName = detail.event_name;
+                      var params = {};
+                      Object.keys(detail).forEach(function (key) {
+                        if (key !== 'event_name') {
+                          params[key] = detail[key];
+                        }
+                      });
+                      sendEvent(eventName, params);
                     });
                   })();
                 `,

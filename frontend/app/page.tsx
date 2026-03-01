@@ -151,6 +151,7 @@ export default function Page() {
   const [organizationGoldChartWidth, setOrganizationGoldChartWidth] = useState(0);
   const [organizationMedalChartWidth, setOrganizationMedalChartWidth] = useState(0);
   const [winnerTrendChartWidth, setWinnerTrendChartWidth] = useState(0);
+  const lastAnalyticsSnapshotRef = useRef("");
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
   const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 8), [organizationGolds]);
@@ -473,6 +474,48 @@ export default function Page() {
   }, [activeFilters.length, results.length]);
   const showChartLoading = isRefreshing || loading;
   const winnerTrendHasData = Boolean(event && winnerTrend.length > 0);
+  const northStarValue = results.length;
+
+  const emitAnalyticsEvent = (eventName: string, params: Record<string, string | number | boolean>) => {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(
+      new CustomEvent("rowingapi_analytics_event", {
+        detail: {
+          event_name: eventName,
+          ...params
+        }
+      })
+    );
+  };
+
+  useEffect(() => {
+    if (loading || isRefreshing) return;
+    const snapshot = JSON.stringify({
+      query: baseQuery,
+      page,
+      perPage,
+      totalCount: pagination.total_count,
+      activeFilterCount: activeFilters.length
+    });
+    if (snapshot === lastAnalyticsSnapshotRef.current) return;
+    lastAnalyticsSnapshotRef.current = snapshot;
+
+    emitAnalyticsEvent("search_results_loaded", {
+      result_count: pagination.total_count,
+      page,
+      per_page: Number(perPage),
+      active_filter_count: activeFilters.length,
+      has_event_filter: Boolean(event),
+      north_star_weekly_search_execution: northStarValue
+    });
+
+    if (pagination.total_count === 0) {
+      emitAnalyticsEvent("no_data_view", {
+        active_filter_count: activeFilters.length,
+        has_event_filter: Boolean(event)
+      });
+    }
+  }, [activeFilters.length, baseQuery, event, isRefreshing, loading, northStarValue, page, pagination.total_count, perPage]);
 
   const shouldShowFilterGuide = activeFilters.length === 0;
 
@@ -747,7 +790,7 @@ export default function Page() {
       )}
 
       <section className={`cards${isRefreshing ? " is-refreshing" : ""}`}>
-        <article className="chart-card chart-card-primary">
+        <article className="chart-card chart-card-primary" data-ga-event="chart_interaction" data-ga-label="organization_medals_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>団体別メダル数(Top8)</h2>
             <span>Final A medals</span>
@@ -779,7 +822,7 @@ export default function Page() {
           </div>
         </article>
 
-        <article className="chart-card winner-trend-card">
+        <article className="chart-card winner-trend-card" data-ga-event="chart_interaction" data-ga-label="organization_golds_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>団体別金メダル数(Top8)</h2>
             <span>Final A golds</span>
@@ -811,7 +854,7 @@ export default function Page() {
           </div>
         </article>
 
-        <article className="chart-card">
+        <article className="chart-card" data-ga-event="chart_interaction" data-ga-label="winner_trend_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>優勝タイム推移</h2>
             <span>{event ? event : "種目を選択"}</span>
@@ -888,7 +931,7 @@ export default function Page() {
                 </tr>
               ) : (
                 results.map((row) => (
-                  <tr key={row.id}>
+                  <tr key={row.id} data-ga-event="result_open" data-ga-label={`${row.year}_${row.event_name}`} data-ga-location="/">
                     <td className="col-year">{row.year}</td>
                     <td className="col-competition" title={row.competition_name}>
                       <div className="cell-competition">{row.competition_name}</div>
@@ -917,7 +960,7 @@ export default function Page() {
             <div className="result-card-empty">{noResultMessage}</div>
           ) : (
             results.map((row) => (
-              <article className="result-card" key={`mobile-${row.id}`}>
+              <article className="result-card" key={`mobile-${row.id}`} data-ga-event="result_open" data-ga-label={`${row.year}_${row.event_name}`} data-ga-location="/">
                 <header className="result-card-head">
                   <span className="result-card-year">{row.year}</span>
                   <span className="result-card-final">{row.final_group}</span>
