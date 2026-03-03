@@ -534,18 +534,19 @@ export default function Page() {
         url: SITE_URL,
         inLanguage: "ja"
       },
-      {
-        "@type": "Dataset",
-        name: "RowingAPI ローイング記録データセット",
-        description: "日本ローイング協会のボート・ローイング大会結果データを検索・可視化できるデータセット",
-        url: SITE_URL,
-        creator: {
-          "@type": "Organization",
-          name: "RowingAPI"
+        {
+          "@type": "Dataset",
+          name: "RowingAPI ローイング記録データセット",
+          description: "日本ローイング協会のボート・ローイング大会結果データを検索・可視化できるデータセット",
+          url: SITE_URL,
+          creator: {
+            "@type": "Organization",
+            name: "RowingAPI",
+            logo: `${SITE_URL}/og.svg`
+          }
         }
-      }
-    ]
-  };
+      ]
+    };
 
   return (
     <main className="container">
@@ -581,7 +582,9 @@ export default function Page() {
         </section>
 
         <section className="filters">
-          <div className="filters-primary" aria-label="主要フィルター">
+          <div className="filters-primary-wrap">
+            <p className="filter-group-title">主要条件</p>
+            <div className="filters-primary" aria-label="主要フィルター">
             <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年" data-ga-filter="year">
               <option value="">年(すべて)</option>
               {filterOptions.years.map((option) => (
@@ -623,9 +626,12 @@ export default function Page() {
                 </option>
               ))}
             </select>
+            </div>
           </div>
 
-          <div className="filters-secondary" aria-label="詳細条件">
+          <div className="filters-secondary-wrap">
+            <p className="filter-group-title">詳細条件</p>
+            <div className="filters-secondary" aria-label="詳細条件">
             <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final" data-ga-filter="final_group">
               <option value="">Final(すべて)</option>
               {filterOptions.final_groups.map((option) => (
@@ -728,6 +734,7 @@ export default function Page() {
                 </option>
               ))}
             </select>
+            </div>
           </div>
         </section>
 
@@ -790,7 +797,7 @@ export default function Page() {
       )}
 
       <section className={`cards${isRefreshing ? " is-refreshing" : ""}`}>
-        <article className="chart-card chart-card-primary" data-ga-event="chart_interaction" data-ga-label="organization_medals_chart" data-ga-location="/">
+        <article className="chart-card chart-card-primary medal-chart-card" data-ga-event="chart_interaction" data-ga-label="organization_medals_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>団体別メダル数(Top8)</h2>
             <span>Final A medals</span>
@@ -822,7 +829,7 @@ export default function Page() {
           </div>
         </article>
 
-        <article className="chart-card winner-trend-card" data-ga-event="chart_interaction" data-ga-label="organization_golds_chart" data-ga-location="/">
+        <article className="chart-card medal-chart-card" data-ga-event="chart_interaction" data-ga-label="organization_golds_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>団体別金メダル数(Top8)</h2>
             <span>Final A golds</span>
@@ -854,7 +861,7 @@ export default function Page() {
           </div>
         </article>
 
-        <article className="chart-card" data-ga-event="chart_interaction" data-ga-label="winner_trend_chart" data-ga-location="/">
+        <article className="chart-card winner-trend-card" data-ga-event="chart_interaction" data-ga-label="winner_trend_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>優勝タイム推移</h2>
             <span>{event ? event : "種目を選択"}</span>
