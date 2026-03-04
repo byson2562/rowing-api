@@ -197,49 +197,7 @@ export default function RootLayout({
 
                     window.addEventListener('popstate', trackRouteChange);
 
-                    document.addEventListener('change', function (event) {
-                      var target = event.target instanceof Element ? event.target.closest('[data-ga-filter]') : null;
-                      if (!target) return;
-
-                      var filterName = target.getAttribute('data-ga-filter') || '';
-                      if (!filterName) return;
-
-                      var filterValue = '';
-                      if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
-                        filterValue = target.value || '';
-                      } else {
-                        filterValue = target.getAttribute('data-ga-filter-value') || '';
-                      }
-
-                      sendEvent('filter_interaction', {
-                        filter_name: filterName,
-                        filter_value: filterValue,
-                        page_path: window.location.pathname
-                      });
-
-                      sendEvent('filter_apply', {
-                        filter_name: filterName,
-                        filter_value: filterValue,
-                        page_path: window.location.pathname
-                      });
-                    });
-
                     document.addEventListener('click', function (event) {
-                      var filterActionTarget = event.target instanceof Element ? event.target.closest('[data-ga-filter-action]') : null;
-                      if (filterActionTarget) {
-                        sendEvent('filter_interaction', {
-                          filter_name: filterActionTarget.getAttribute('data-ga-filter-action') || 'unknown',
-                          filter_value: filterActionTarget.getAttribute('data-ga-filter-value') || '',
-                          page_path: window.location.pathname
-                        });
-
-                        sendEvent('filter_apply', {
-                          filter_name: filterActionTarget.getAttribute('data-ga-filter-action') || 'unknown',
-                          filter_value: filterActionTarget.getAttribute('data-ga-filter-value') || '',
-                          page_path: window.location.pathname
-                        });
-                      }
-
                       var target = event.target instanceof Element ? event.target.closest('[data-ga-event]') : null;
                       if (!target) return;
 

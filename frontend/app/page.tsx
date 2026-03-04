@@ -152,6 +152,7 @@ export default function Page() {
   const [organizationMedalChartWidth, setOrganizationMedalChartWidth] = useState(0);
   const [winnerTrendChartWidth, setWinnerTrendChartWidth] = useState(0);
   const lastAnalyticsSnapshotRef = useRef("");
+  const searchExecutionStorageKey = "rowingapi_search_execution_keys_v1";
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
   const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 8), [organizationGolds]);
@@ -388,6 +389,7 @@ export default function Page() {
     setOrganizationMenuOpen(false);
     setRank("");
     setPage(1);
+    emitFilterEvents("clear_filters", "all");
   };
 
   const rankCellClassName = (row: Result): string => {
@@ -465,6 +467,7 @@ export default function Page() {
     setOrganizationSearch(value);
     setOrganizationMenuOpen(false);
     setPage(1);
+    emitFilterEvents("organization", value);
   };
 
   const noResultMessage = useMemo(() => {
@@ -488,6 +491,27 @@ export default function Page() {
     );
   };
 
+  const emitFilterInteraction = (filterName: string, filterValue: string) => {
+    emitAnalyticsEvent("filter_interaction", {
+      filter_name: filterName,
+      filter_value: filterValue,
+      page_path: "/"
+    });
+  };
+
+  const emitFilterApply = (filterName: string, filterValue: string) => {
+    emitAnalyticsEvent("filter_apply", {
+      filter_name: filterName,
+      filter_value: filterValue,
+      page_path: "/"
+    });
+  };
+
+  const emitFilterEvents = (filterName: string, filterValue: string) => {
+    emitFilterInteraction(filterName, filterValue);
+    emitFilterApply(filterName, filterValue);
+  };
+
   useEffect(() => {
     if (loading || isRefreshing) return;
     const snapshot = JSON.stringify({
@@ -506,8 +530,35 @@ export default function Page() {
       per_page: Number(perPage),
       active_filter_count: activeFilters.length,
       has_event_filter: Boolean(event),
-      north_star_weekly_search_execution: northStarValue
+      north_star_weekly_search_execution: northStarValue,
+      search_context: activeFilters.length > 0 ? "filtered" : "initial"
     });
+
+    if (activeFilters.length > 0 && page === 1) {
+      const executionKey = baseQuery || "__all__";
+      let shouldSendExecution = true;
+      try {
+        const raw = sessionStorage.getItem(searchExecutionStorageKey);
+        const keys = new Set<string>(raw ? (JSON.parse(raw) as string[]) : []);
+        if (keys.has(executionKey)) {
+          shouldSendExecution = false;
+        } else {
+          keys.add(executionKey);
+          sessionStorage.setItem(searchExecutionStorageKey, JSON.stringify(Array.from(keys)));
+        }
+      } catch {
+        shouldSendExecution = true;
+      }
+
+      if (shouldSendExecution) {
+        emitAnalyticsEvent("search_execution", {
+          result_count: pagination.total_count,
+          active_filter_count: activeFilters.length,
+          has_event_filter: Boolean(event),
+          page_path: "/"
+        });
+      }
+    }
 
     if (pagination.total_count === 0) {
       emitAnalyticsEvent("no_data_view", {
@@ -523,6 +574,7 @@ export default function Page() {
     if (filterOptions.years.length === 0) return;
     const latestYear = Math.max(...filterOptions.years);
     setYear(String(latestYear));
+    emitFilterEvents("quick_filter", "latest_year");
   };
 
   const jsonLd = {
@@ -569,7 +621,10 @@ export default function Page() {
                 key={label}
                 type="button"
                 className={active ? "active" : ""}
-                onClick={() => setGender(option)}
+                onClick={() => {
+                  setGender(option);
+                  emitFilterEvents("gender", option);
+                }}
                 data-testid={`gender-tab-${label}`}
                 data-ga-filter-action="gender"
                 data-ga-filter-value={option}
@@ -585,7 +640,16 @@ export default function Page() {
           <div className="filters-primary-wrap">
             <p className="filter-group-title">主要条件</p>
             <div className="filters-primary" aria-label="主要フィルター">
-            <select data-testid="year-select" value={year} onChange={(e) => setYear(e.target.value)} aria-label="年" data-ga-filter="year">
+            <select
+              data-testid="year-select"
+              value={year}
+              onChange={(e) => {
+                setYear(e.target.value);
+                emitFilterEvents("year", e.target.value);
+              }}
+              aria-label="年"
+              data-ga-filter="year"
+            >
               <option value="">年(すべて)</option>
               {filterOptions.years.map((option) => (
                 <option key={option} value={option.toString()}>
@@ -597,7 +661,10 @@ export default function Page() {
             <select
               data-testid="competition-category-select"
               value={competitionCategory}
-              onChange={(e) => setCompetitionCategory(e.target.value)}
+              onChange={(e) => {
+                setCompetitionCategory(e.target.value);
+                emitFilterEvents("competition_category", e.target.value);
+              }}
               aria-label="大会カテゴリ"
               data-ga-filter="competition_category"
             >
@@ -609,7 +676,16 @@ export default function Page() {
               ))}
             </select>
 
-            <select data-testid="competition-select" value={competition} onChange={(e) => setCompetition(e.target.value)} aria-label="大会名" data-ga-filter="competition">
+            <select
+              data-testid="competition-select"
+              value={competition}
+              onChange={(e) => {
+                setCompetition(e.target.value);
+                emitFilterEvents("competition", e.target.value);
+              }}
+              aria-label="大会名"
+              data-ga-filter="competition"
+            >
               <option value="">大会名(すべて)</option>
               {filterOptions.competitions.map((option) => (
                 <option key={option} value={option}>
@@ -618,7 +694,16 @@ export default function Page() {
               ))}
             </select>
 
-            <select data-testid="event-select" value={event} onChange={(e) => setEvent(e.target.value)} aria-label="種目" data-ga-filter="event">
+            <select
+              data-testid="event-select"
+              value={event}
+              onChange={(e) => {
+                setEvent(e.target.value);
+                emitFilterEvents("event", e.target.value);
+              }}
+              aria-label="種目"
+              data-ga-filter="event"
+            >
               <option value="">種目(すべて)</option>
               {filterOptions.events.map((option) => (
                 <option key={option} value={option}>
@@ -632,7 +717,16 @@ export default function Page() {
           <div className="filters-secondary-wrap">
             <p className="filter-group-title">詳細条件</p>
             <div className="filters-secondary" aria-label="詳細条件">
-            <select data-testid="final-group-select" value={finalGroup} onChange={(e) => setFinalGroup(e.target.value)} aria-label="Final" data-ga-filter="final_group">
+            <select
+              data-testid="final-group-select"
+              value={finalGroup}
+              onChange={(e) => {
+                setFinalGroup(e.target.value);
+                emitFilterEvents("final_group", e.target.value);
+              }}
+              aria-label="Final"
+              data-ga-filter="final_group"
+            >
               <option value="">Final(すべて)</option>
               {filterOptions.final_groups.map((option) => (
                 <option key={option} value={option}>
@@ -641,7 +735,16 @@ export default function Page() {
               ))}
             </select>
 
-            <select data-testid="rank-select" value={rank} onChange={(e) => setRank(e.target.value)} aria-label="順位" data-ga-filter="rank">
+            <select
+              data-testid="rank-select"
+              value={rank}
+              onChange={(e) => {
+                setRank(e.target.value);
+                emitFilterEvents("rank", e.target.value);
+              }}
+              aria-label="順位"
+              data-ga-filter="rank"
+            >
               <option value="">順位(すべて)</option>
               {rankOptions.map((option) => (
                 <option key={option} value={option}>
@@ -671,6 +774,7 @@ export default function Page() {
                   setOrganization("");
                   setPage(1);
                   setOrganizationMenuOpen(true);
+                  emitFilterInteraction("organization_search", value);
                 }}
                 placeholder="団体を検索して選択"
                 aria-label="団体"
@@ -698,6 +802,7 @@ export default function Page() {
                       setOrganizationSearch("");
                       setOrganizationMenuOpen(false);
                       setPage(1);
+                      emitFilterEvents("organization", "");
                     }}
                   >
                     団体(すべて)
@@ -723,7 +828,10 @@ export default function Page() {
             <select
               data-testid="affiliation-type-select"
               value={affiliationType}
-              onChange={(e) => setAffiliationType(e.target.value)}
+              onChange={(e) => {
+                setAffiliationType(e.target.value);
+                emitFilterEvents("affiliation_type", e.target.value);
+              }}
               aria-label="団体区分"
               data-ga-filter="affiliation_type"
             >
@@ -753,7 +861,10 @@ export default function Page() {
                 key={chip.key}
                 type="button"
                 className="chip chip-clearable"
-                onClick={chip.onClear}
+                onClick={() => {
+                  chip.onClear();
+                  emitFilterEvents("clear_filter_chip", chip.key);
+                }}
                 data-ga-filter-action="clear_filter_chip"
                 data-ga-filter-value={chip.key}
               >
@@ -781,12 +892,23 @@ export default function Page() {
             >
               最新年を選択
             </button>
-            <button type="button" onClick={() => setFinalGroup("Final A")} data-ga-filter-action="quick_filter" data-ga-filter-value="final_a">
+            <button
+              type="button"
+              onClick={() => {
+                setFinalGroup("Final A");
+                emitFilterEvents("quick_filter", "final_a");
+              }}
+              data-ga-filter-action="quick_filter"
+              data-ga-filter-value="final_a"
+            >
               Final Aのみ
             </button>
             <button
               type="button"
-              onClick={() => setCompetitionCategory("全日本大学選手権")}
+              onClick={() => {
+                setCompetitionCategory("全日本大学選手権");
+                emitFilterEvents("quick_filter", "all_japan_university");
+              }}
               data-ga-filter-action="quick_filter"
               data-ga-filter-value="all_japan_university"
             >
