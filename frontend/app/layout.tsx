@@ -3,16 +3,8 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import Link from "next/link";
 
-const DEFAULT_SITE_URL = "http://localhost:5173";
-const siteUrl = (() => {
-  const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
-  if (!raw) return DEFAULT_SITE_URL;
-  try {
-    return new URL(raw).toString().replace(/\/$/, "");
-  } catch {
-    return DEFAULT_SITE_URL;
-  }
-})();
+import { siteUrl } from "../lib/site-url";
+
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
@@ -38,9 +30,8 @@ export const metadata: Metadata = {
     "日本ローイング協会",
     "レース記録",
   ],
-  alternates: {
-    canonical: "/",
-  },
+  // canonicalはページ側で出し分ける（Next 14はルートパス+クエリのcanonicalを
+  // オリジンへ丸めてしまうため、レイアウトの一律指定はフィルタ付きURLと相性が悪い）
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -102,6 +93,9 @@ export default function RootLayout({
               <Link href="/" className="site-nav-link">
                 検索
               </Link>
+              <Link href="/results" className="site-nav-link">
+                大会結果一覧
+              </Link>
               <Link href="/rowing-results" className="site-nav-link">
                 RowingAPIとは
               </Link>
@@ -120,6 +114,9 @@ export default function RootLayout({
             >
               <Link href="/" className="site-footer-link">
                 検索
+              </Link>
+              <Link href="/results" className="site-footer-link">
+                大会結果一覧
               </Link>
               <Link href="/rowing-results" className="site-footer-link">
                 RowingAPIとは

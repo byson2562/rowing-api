@@ -74,6 +74,8 @@ test("filter selects can change directly without resetting to all", async ({ pag
   await eventSelect.selectOption({ label: "女子シングルスカル" });
   await expect(eventSelect).toHaveValue("女子シングルスカル");
 
+  await page.getByRole("button", { name: /詳細条件/ }).click();
+
   await organizationComboboxInput.fill("早稲田");
   await page.getByTestId("organization-option-早稲田大学").click();
   await expect(organizationComboboxInput).toHaveValue("早稲田大学");

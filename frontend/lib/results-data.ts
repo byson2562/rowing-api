@@ -68,6 +68,10 @@ const COMPETITION_CATEGORY_RULES = [
   { label: "全日本新人選手権", keywords: ["全日本新人選手権", "全日本新人ローイング"] },
 ] as const;
 
+export function availableYears(): number[] {
+  return [...AVAILABLE_YEARS].sort((a, b) => b - a);
+}
+
 export function getDatasetSummary(): DatasetSummary {
   const years = [...AVAILABLE_YEARS];
   const minYear = years.length > 0 ? Math.min(...years) : null;
@@ -225,10 +229,44 @@ async function importYear(year: number): Promise<ResultRecord[]> {
   }
 }
 
+// 元データの種目名には「舵手つき/舵手付き/舵手付」「クォドルプル/クオドルプル」の
+// 表記ゆれが混在するため、正書法のみを名寄せする（舵手有無が不明な種目名は触らない）
+export function normalizeEventName(name: string): string {
+  return name
+    .replace(/舵手付き/g, "舵手つき")
+    .replace(/舵手付/g, "舵手つき")
+    .replace(/クオドルプル/g, "クォドルプル");
+}
+
+// 競漕記録の慣例表記 m:ss.cc（例 6:12.08）
+export function formatTimeDisplay(totalSeconds: number): string {
+  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) return "";
+  let minutes = Math.floor(totalSeconds / 60);
+  let seconds = Math.floor(totalSeconds % 60);
+  let centiseconds = Math.round((totalSeconds - Math.floor(totalSeconds)) * 100);
+  if (centiseconds >= 100) {
+    centiseconds -= 100;
+    seconds += 1;
+  }
+  if (seconds >= 60) {
+    seconds -= 60;
+    minutes += 1;
+  }
+  return `${minutes}:${seconds.toString().padStart(2, "0")}.${centiseconds.toString().padStart(2, "0")}`;
+}
+
+function normalizeRecord(row: ResultRecord): ResultRecord {
+  return {
+    ...row,
+    event_name: normalizeEventName(row.event_name),
+    time_display: formatTimeDisplay(row.time_seconds) || row.time_display,
+  };
+}
+
 async function loadYearResults(year: number): Promise<ResultRecord[]> {
   const cached = yearCache.get(year);
   if (cached) return cached;
-  const loaded = await importYear(year);
+  const loaded = (await importYear(year)).map(normalizeRecord);
   yearCache.set(year, loaded);
   return loaded;
 }
@@ -346,6 +384,21 @@ function uniqueSorted(values: string[]): string[] {
   return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b, "ja"));
 }
 
+// 大会名は辞書順だと「第100回…」が「第36回…」より前に来て探しにくいため、
+// 開催年の新しい順（同年内は名前順）で並べる
+export function competitionsByRecency(rows: ResultRecord[]): string[] {
+  const latestYear = new Map<string, number>();
+  rows.forEach((row) => {
+    const current = latestYear.get(row.competition_name);
+    if (current == null || row.year > current) {
+      latestYear.set(row.competition_name, row.year);
+    }
+  });
+  return Array.from(latestYear.entries())
+    .sort((a, b) => (a[1] !== b[1] ? b[1] - a[1] : a[0].localeCompare(b[0], "ja")))
+    .map(([name]) => name);
+}
+
 function omitFilters(filters: QueryFilters, keys: (keyof QueryFilters)[]): QueryFilters {
   const copy: QueryFilters = { ...filters };
   keys.forEach((key) => {
@@ -396,7 +449,7 @@ export async function buildFiltersResponse(filters: QueryFilters): Promise<Filte
     genders,
     competition_categories: competitionCategories,
     final_groups: uniqueSorted(finalGroupsRelation.map((row) => row.final_group)),
-    competitions: uniqueSorted(competitionsRelation.map((row) => row.competition_name)),
+    competitions: competitionsByRecency(competitionsRelation),
     events: uniqueSorted(eventsRelation.map((row) => row.event_name)),
     organizations: uniqueSorted(organizationsRelation.map((row) => row.organization)),
     affiliation_types: [hasStudent ? "学生" : "", hasSocial ? "社会人" : ""].filter(Boolean),

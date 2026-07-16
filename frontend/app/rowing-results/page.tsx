@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getDatasetSummary } from "../../lib/results-data";
+import {
+  availableYears,
+  competitionsByRecency,
+  getDatasetSummary,
+  getFilteredResults
+} from "../../lib/results-data";
 
 export const metadata: Metadata = {
   title: "RowingAPIとは（データ範囲・使い方）",
@@ -23,16 +28,60 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RowingResultsPage() {
+export default async function RowingResultsPage() {
   const summary = getDatasetSummary();
   const totalCountLabel = new Intl.NumberFormat("ja-JP").format(summary.totalCount);
   const periodLabel =
     summary.minYear !== null && summary.maxYear !== null
       ? `${summary.minYear} - ${summary.maxYear}`
       : "-";
+  const coverageLabel =
+    summary.minYear !== null && summary.maxYear !== null
+      ? `${summary.minYear}年から${summary.maxYear}年まで`
+      : "主要大会";
+
+  const latestYear = availableYears()[0] ?? null;
+  const latestCompetitions =
+    latestYear !== null ? competitionsByRecency(await getFilteredResults({ year: String(latestYear) })) : [];
+
+  const faqItems = [
+    {
+      question: "ローイング（ボート）の大会結果はどこで見られますか？",
+      answer:
+        "RowingAPIの検索ページで、全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は大会結果一覧ページからもたどれます。"
+    },
+    {
+      question: "どの期間・どの大会のデータを収録していますか？",
+      answer: `${coverageLabel}の全日本級${summary.competitionCategoryCount}大会の記録（Final B以上）を収録しています。新しい大会結果は公開され次第、順次追加されます。`
+    },
+    {
+      question: "過去の優勝タイムの推移は確認できますか？",
+      answer:
+        "検索ページで種目を選択すると、その種目のFinal A優勝タイムの年別推移をグラフで確認できます。年度・団体などの条件と組み合わせた絞り込みも可能です。"
+    },
+    {
+      question: "データはいつ更新されますか？",
+      answer:
+        "大会期間中は月次更新を目安にデータを反映しています（大会の結果公開状況により遅延する場合があります）。"
+    }
+  ];
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
 
   return (
     <main className="container lp-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <section className="lp-hero">
         <div className="lp-hero-inner">
           <div className="lp-hero-top">
@@ -113,7 +162,7 @@ export default function RowingResultsPage() {
           <dl className="lp-summary-list">
             <div>
               <dt>収録データ</dt>
-              <dd>現在は2009年から2025年までの大会記録を掲載しています（Final B以上が対象）。</dd>
+              <dd>現在は{coverageLabel}の大会記録を掲載しています（Final B以上が対象）。</dd>
             </div>
             <div>
               <dt>集計対象大会</dt>
@@ -137,6 +186,43 @@ export default function RowingResultsPage() {
             </div>
           </dl>
         </aside>
+      </section>
+
+      <section aria-labelledby="lp-archive-heading">
+        <h2 id="lp-archive-heading" className="lp-section-title">大会結果アーカイブ</h2>
+        <p className="lp-archive-lead">
+          年度・大会ごとの結果ページを用意しています。最新の結果は以下からご覧いただけます。
+        </p>
+        <ul className="lp-archive-links">
+          <li>
+            <Link href="/results">年度別ローイング大会結果一覧</Link>
+          </li>
+          {latestYear !== null && (
+            <li>
+              <Link href={`/results/${latestYear}`}>{latestYear}年のローイング大会結果</Link>
+            </li>
+          )}
+          {latestYear !== null &&
+            latestCompetitions.map((competition) => (
+              <li key={competition}>
+                <Link href={`/results/${latestYear}/${encodeURIComponent(competition)}`}>
+                  {competition}（{latestYear}年）の結果
+                </Link>
+              </li>
+            ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="lp-faq-heading">
+        <h2 id="lp-faq-heading" className="lp-section-title">よくある質問</h2>
+        <div className="lp-faq-list">
+          {faqItems.map((item) => (
+            <article className="lp-faq-item" key={item.question}>
+              <h3>{item.question}</h3>
+              <p>{item.answer}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="lp-author-section" aria-labelledby="lp-author-heading">
@@ -166,32 +252,27 @@ export default function RowingResultsPage() {
           <h3 className="lp-tech-heading">技術スタック</h3>
           <ul className="lp-tech-list" aria-label="技術スタック">
             <li>
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="" width={18} height={18} />
+              <img src="/icons/tech/javascript-original.svg" alt="" width={18} height={18} />
               <span>Next.js API Routes</span>
             </li>
             <li>
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" alt="" width={18} height={18} />
+              <img src="/icons/tech/nextjs-original.svg" alt="" width={18} height={18} />
               <span>Next.js</span>
             </li>
             <li>
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="" width={18} height={18} />
+              <img src="/icons/tech/typescript-original.svg" alt="" width={18} height={18} />
               <span>TypeScript</span>
             </li>
             <li>
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/json/json-original.svg" alt="" width={18} height={18} />
+              <img src="/icons/tech/json-original.svg" alt="" width={18} height={18} />
               <span>Yearly JSON Dataset</span>
             </li>
             <li>
-              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" alt="" width={18} height={18} />
+              <img src="/icons/tech/docker-original.svg" alt="" width={18} height={18} />
               <span>Docker</span>
             </li>
             <li>
-              <img
-                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
-                alt=""
-                width={22}
-                height={18}
-              />
+              <img src="/icons/tech/amazonwebservices-original-wordmark.svg" alt="" width={22} height={18} />
               <span>AWS</span>
             </li>
           </ul>
