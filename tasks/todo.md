@@ -1,5 +1,31 @@
 # Next.js一本化 (DBレス化) タスク
 
+## JARA大会結果 自動更新ワークフロー (2026-07-17)
+
+### Spec / Plan
+- [x] 1. Ruby 3.3コンテナでJARA当年度ページを巡回し、既存収録範囲の公開済みFinal A/B完走結果を取得する
+- [x] 2. 既存レコードのIDを自然キーで保持し、新規レコードだけを全年度最大IDの続番で追加する
+- [x] 3. 取得件数の減少、取得失敗、重複、必須項目不備、index不整合がある場合はファイル更新・PR作成を停止する
+- [x] 4. 当年度JSON、`index.json`、新年度の静的import caseを一括生成し、2027年以降も同じ処理で更新可能にする
+- [x] 5. GitHub Actionsを毎日21:00 JSTに実行し、差分がある場合のみ自動更新ブランチへcommit/pushしてPRを作成・更新する
+- [x] 6. fixtureによる正常系・異常系、2026公式データの冪等再実行、全データ検証、workflow構文、frontend buildを確認する
+
+### Operational specification
+- 自動更新対象: 全日本選手権、全日本大学選手権（併催大会を含む）、全日本新人選手権
+- 更新方式: 当年度の公式結果を再収集し、既存自然キーのIDを維持した完全スナップショットとして年度JSONを再生成する
+- 安全弁: 既存年度より取得件数が減る更新は既定で拒否し、手動実行時のみ明示的な許可で解除可能にする
+- 反映方式: Actionsが作成したPRを人が確認・マージし、既存の`main` pushデプロイCIで本番反映する
+- 定期実行で結果未公開の新年度は変更なしで正常終了し、空の年度JSONは作成しない
+
+### Review
+- `.github/workflows/update-jara-results.yml` を追加。毎日21:00 JSTの定期実行と年度・削除許可を指定できる手動実行に対応し、生成差分がある場合だけ年度別の自動更新PRを作成・更新する。
+- `scripts/jara/` にRuby 3.3固定のマルチステージDocker環境、JARA収集・安定ID生成、全年度データ検証、fixtureテスト、運用READMEを追加した。ホスト側のRuby環境は使用しない。
+- 正常更新・冪等性・同件数でも自然キーが消える更新の拒否・明示許可時の削除・未公開新年度・ID重複をテストし、5 runs / 27 assertions / failure 0で成功した。
+- JARA公式2026年度ページへコンテナから実通信し、対象大会2件・種目20ページ・Final A/B 31レース・完走162件を確認。既存データへの追加0件、生成差分なしとなり、冪等性を確認した。
+- 全年度検証は2009〜2026年・5,408件・最大ID 5,733で成功。`index.json`、静的import年度、必須項目、ID・自然キーの一意性を確認した。
+- `actionlint 1.7.7` によるWorkflow構文検証と、frontendコンテナでの`npm run lint && npm run build`が成功。lintは既存の`no-img-element` warningのみ。
+- 運用開始前にGitHubの`Settings > Actions > General > Workflow permissions`で、ActionsによるPull Request作成を許可する必要がある。
+
 ## 2026年度大会データ取込 (2026-07-17)
 
 ### Spec / Plan
@@ -167,3 +193,74 @@
 - `search_results_loaded` に `search_context`（`initial` / `filtered`）を追加した。
 - `search_execution` を追加し、`activeFilters > 0 && page === 1` の条件でクエリ単位1回/セッションのみ送信するようにした（`sessionStorage` で重複抑止）。
 - `docker compose -f /Users/tnakamura/git/rowing-api/docker-compose.yml run --rm frontend sh -lc "npm run lint && npm run build"` は成功（`no-img-element` warning のみ）。
+
+## 検索画面フィルターUI調整（詳細条件の初期折りたたみ） (2026-03-05)
+
+### Plan
+- [x] 1. 検索画面のフィルター構成を確認し、主要/詳細のDOM構造を把握する
+- [x] 2. 詳細条件をデフォルト折りたたみに変更し、主要条件側は見出し装飾なしの入力群へ簡素化する
+- [x] 3. E2Eテスト（filter-selects）を新UIに合わせて更新する
+- [x] 4. frontendコンテナで lint/build を実行し、回帰がないことを確認する
+
+### Review
+- `/Users/tnakamura/git/rowing-api/frontend/app/page.tsx` に `showAdvancedFilters` state を追加し、詳細条件はトグル操作で表示する構成に変更した（初期値 `false`）。
+- 主要条件ブロックから見出し/装飾を外し、条件入力のみの表示に変更した。
+- `/Users/tnakamura/git/rowing-api/frontend/app/globals.css` に `advanced-filter-toggle` スタイルを追加した。
+- `/Users/tnakamura/git/rowing-api/frontend/tests/e2e/filter-selects.spec.ts` で、詳細条件操作前にトグルを開く手順を追加した。
+- `docker compose -f /Users/tnakamura/git/rowing-api/docker-compose.yml run --rm frontend sh -lc "npm run lint && npm run build"` は成功（`no-img-element` warning のみ）。
+
+## UIUXレビュー指摘1〜8の修正 (2026-07-16)
+
+### Plan
+- [x] 1. 種目名の表記ゆれ（舵手つき/付き/付・クォ/クオ）をデータ読み込み時に名寄せする
+- [x] 2. タイム表記を慣例形式 m:ss.cc（例 6:12.08）へ統一する（time_display再生成＋ツールチップ）
+- [x] 3. 性別切替時に矛盾する種目フィルタを自動解除し、セレクト表示と適用フィルタの不整合を解消する（0件トラップ対策：0件時のクリアボタンも追加）
+- [x] 4. フィルタ状態（filters/page/per_page）をURLクエリと双方向同期する
+- [x] 5. フィルタ直下に「該当N件の結果へ移動」リンクを追加し、モバイルではグラフをデフォルト折りたたみにする
+- [x] 6. 優勝タイム推移のY軸をデータ範囲にフィットさせ、単年時は平均タイム＋案内文の表示に変更する
+- [x] 7. 団体コンボボックスに「該当なし」表示と未適用時のヒントを追加する
+- [x] 8. 大会名セレクトを開催年の新しい順に並べ替える
+- [x] 9. tsc/lint/本番build/E2E/ブラウザ実操作（デスクトップ・モバイル）で検証する
+
+### Review
+- `/Users/tnakamura/git/rowing-api/frontend/lib/results-data.ts`: `normalizeEventName` / `formatTimeDisplay` を追加し `loadYearResults` で正規化。`competitionsByRecency` で大会名を年降順ソート。
+- `/Users/tnakamura/git/rowing-api/frontend/app/page.tsx`: URL同期（復元・書き込み・page優先制御）、性別×種目の矛盾自動解除、`withCurrentOption` によるセレクト表示同期、0件時クリアボタン、結果ジャンプリンク、モバイル用グラフ折りたたみトグル、推移チャートのY軸domain＋単年表示、コンボボックスの該当なし/ヒント表示。
+- `/Users/tnakamura/git/rowing-api/frontend/app/globals.css`: 上記UIのスタイル追記（`#results` の scroll-margin 含む）。
+- 検証: `tsc --noEmit` / `next lint`（既存warningのみ）/ `next build` 成功。E2Eは filter-selects・mobile-layout 成功。chart-layout はHEADでも失敗する既存問題（優勝タイム推移カードの空状態高さ190pxと他カード260pxの差）で今回のスコープ外。ブラウザ実操作で1〜8全件の挙動を確認済み。
+- 備考: `html { scroll-behavior: smooth }` はテスト環境でスクロールが無効化されるため採用せず、既定のハッシュジャンプとした。
+
+## SEO・グロースレビュー優先度高4項目の実装 (2026-07-17)
+
+### Plan
+- [x] 1. メインページ(`/`)をServer Component化し、searchParamsから初期データ（結果・統計・フィルタ候補）をSSRする
+- [x] 2. `generateMetadata` でフィルタ条件に応じた動的title/description/OGP/canonicalを生成する
+- [x] 3. ロングテールSSGページ `/results`（年度ハブ）・`/results/[year]`・`/results/[year]/[competition]` を新設する（パンくず・BreadcrumbList/ItemList/SportsEvent JSON-LD・内部リンク付き）
+- [x] 4. sitemap.xml を動的化し、/results 配下の全ページを登録する
+- [x] 5. OG画像（/og）を `?title=&subtitle=` 対応の動的カード生成にする
+- [x] 6. siteUrl解決を `lib/site-url.ts` に共通化し、layout/robots/sitemap/og/各ページで共用する
+- [x] 7. ヘッダー・フッターに「大会結果一覧」リンクを追加、h1をtitleと差別化
+- [x] 8. tsc/lint/build/E2E/ブラウザ実操作（dev・本番startの両方）で検証する
+
+### Review
+- `/Users/tnakamura/git/rowing-api/frontend/app/page.tsx`: Server Component化。`getFilteredResults`/`buildFiltersResponse`/`buildStats` で初期表示分をSSRし、UIは `app/search-page.tsx`（client）へ移動してprops受け渡し。JSON-LD（WebSite/Dataset）もサーバー側で出力。
+- canonical設計: **Next 14はルートパス+クエリのcanonical（`/?year=...`等）をオリジンのみに丸めるバグがある**（絶対URL・URLオブジェクトでも同様、非ルートパス+クエリは正常）。このため、フィルタが静的ページへ対応付く場合のみcanonicalを出す方針にした（年のみ→`/results/{year}`、年+大会→`/results/{year}/{大会名}`、その他の組み合わせ→canonical省略、`?q=`→noindex）。layoutの一律 `canonical: "/"` は撤去（/rowing-results・/supportは各自定義済み）。
+- `/results` 配下: 年度ハブ＋年度ページ（種目別優勝クルー表）＋大会ページ（種目別Final A全結果表）。ビルドで74ページSSG（2026年含む17年度×大会、index.json由来で新年度は自動追随）。`[competition]` は多バイトparamsとdevの `dynamicParams:false` 照合の相性問題があるため `dynamicParams:true` + `notFound()` 判定とした。
+- `app/search-page.tsx`: ページリセット判定を「初回スキップref」から「baseQueryスナップショット比較」に変更（StrictModeのエフェクト二重実行で `?page=N` 復元が消えるバグを修正）。URL復元はサーバー側initial propsに一本化し、クライアントの復元エフェクトを撤去。
+- 検証: `tsc --noEmit` / `next lint`（既存warningのみ）/ `next build` 成功。E2E filter-selects・mobile-layout 成功（chart-layoutは既存問題で対象外）。dev/本番startの両方で、`/?event=男子エイト&page=2` の完全復元、性別切替時のURL同期・ページリセット、/results各ページの表示・canonical・JSON-LD・404、動的OG画像(200/png)、sitemap.xml 78 URLをブラウザ・curlで確認。
+
+## SEO・グロースレビュー優先度中4項目の実装 (2026-07-17)
+
+### Plan
+- [x] 1. 元データJSON（frontend/data/results/*.json）の種目名表記ゆれをバッチ名寄せする（scripts/normalize_event_names.mjs、冪等）
+- [x] 2. JARAアップデータ（scripts/jara/update_results.rb）のnormalize_eventにも同一の名寄せ規則を追加し、将来データの揺れ再発を防ぐ
+- [x] 3. 技術スタックアイコンをcdn.jsdelivr.netから public/icons/tech/ へ自前ホスト化する
+- [x] 4. /rowing-results に「大会結果アーカイブ」内部リンク（/results・最新年度・最新大会）とFAQ 4問＋FAQPage JSON-LDを追加、収録期間表記をデータ由来に動的化
+- [x] 5. tsc/lint/build/E2E/ブラウザで検証する
+
+### Review
+- `scripts/normalize_event_names.mjs`: 17ファイル769行の event_name を名寄せ（舵手付き/舵手付→舵手つき、クオドルプル→クォドルプル）。event_name以外のフィールド・行数が不変であることをgit HEAD比較で検証済み。2回実行で差分ゼロ（冪等）。
+- `scripts/jara/update_results.rb`: normalize_event に同一のgsub規則を追加（ruby -c 構文OK、gsubロジックは単体検証済み）。**Dockerデーモン未起動のためCI相当のupdater testはローカル未実行** — 次回CI（update-jara-results.yml）で実行される。
+- `frontend/public/icons/tech/`: devicon SVG 6点（計約12KB）を自前ホスト化し、`app/rowing-results/page.tsx` の参照を差し替え。jsdelivrへの参照はゼロになったことをSSR HTMLで確認。
+- `frontend/app/rowing-results/page.tsx`: async化して「大会結果アーカイブ」セクション（/results・最新年度・最新年度の各大会への内部リンク、データ由来で新年度に自動追随）と「よくある質問」4問＋FAQPage JSON-LDを追加。「収録データ 2009年から2025年」の古い固定文言を getDatasetSummary 由来（現在2009〜2026年）へ動的化。
+- `frontend/app/globals.css`: `.lp-archive-*` / `.lp-faq-*` スタイル追加。
+- 検証: `tsc --noEmit` / `next lint`（既存warningのみ）/ `next build`（90ページ、/rowing-resultsは静的のまま）成功。E2E filter-selects・mobile-layout 成功。ブラウザでアイコン6点のロード成功（naturalWidth>0）・FAQ 4件・アーカイブリンク3件・FAQPage JSON-LDをDOM検証（Browser paneのスクロール後スクリーンショットが空になる環境不具合があり、視覚確認はcomputed styleで代替）。

@@ -1,0 +1,139 @@
+name: Update JARA Results
+
+on:
+  schedule:
+    - cron: "0 12 * * *" # 21:00 JST
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "JARA competition year (defaults to the current year in JST)"
+        required: false
+        type: string
+      allow_deletions:
+        description: "Allow official results missing from the new snapshot to be removed"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: update-jara-results
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-results:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Determine competition year
+        id: year
+        env:
+          REQUESTED_YEAR: ${{ inputs.year }}
+        run: |
+          set -euo pipefail
+          year="${REQUESTED_YEAR:-$(TZ=Asia/Tokyo date +%Y)}"
+          if [[ ! "${year}" =~ ^[0-9]{4}$ ]]; then
+            echo "year must be a four-digit number: ${year}" >&2
+            exit 1
+          fi
+          echo "value=${year}" >> "${GITHUB_OUTPUT}"
+
+      - name: Build updater container
+        run: docker build --tag rowing-api-jara-updater scripts/jara
+
+      - name: Test updater
+        run: |
+          docker run --rm \
+            --entrypoint bundle \
+            rowing-api-jara-updater \
+            exec ruby /app/test/update_results_test.rb
+
+      - name: Collect current JARA results
+        env:
+          YEAR: ${{ steps.year.outputs.value }}
+          ALLOW_DELETIONS: ${{ inputs.allow_deletions || false }}
+        run: |
+          set -euo pipefail
+          args=(--year "${YEAR}")
+          if [[ "${ALLOW_DELETIONS}" == "true" ]]; then
+            args+=(--allow-decrease)
+          fi
+          docker run --rm \
+            --volume "${GITHUB_WORKSPACE}:/workspace" \
+            --workdir /workspace \
+            rowing-api-jara-updater \
+            "${args[@]}"
+
+      - name: Validate complete dataset
+        run: |
+          docker run --rm \
+            --volume "${GITHUB_WORKSPACE}:/workspace" \
+            --workdir /workspace \
+            --entrypoint bundle \
+            rowing-api-jara-updater \
+            exec ruby /app/validate_results.rb
+
+      - name: Detect generated changes
+        id: changes
+        env:
+          YEAR: ${{ steps.year.outputs.value }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$(git status --porcelain -- \
+            "frontend/data/results/${YEAR}.json" \
+            frontend/data/results/index.json \
+            frontend/lib/results-data.ts)" ]]; then
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Verify frontend
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          docker compose run --rm frontend sh -lc "npm run lint && npm run build"
+
+      - name: Create or update results pull request
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          YEAR: ${{ steps.year.outputs.value }}
+        run: |
+          set -euo pipefail
+          branch="automation/jara-results-${YEAR}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --create "${branch}"
+          git add \
+            "frontend/data/results/${YEAR}.json" \
+            frontend/data/results/index.json \
+            frontend/lib/results-data.ts
+          git commit -m "chore: update ${YEAR} JARA results"
+          git push --force origin "HEAD:refs/heads/${branch}"
+
+          pr_number="$(gh pr list \
+            --base main \
+            --head "${branch}" \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')"
+          if [[ -z "${pr_number}" ]]; then
+            gh pr create \
+              --base main \
+              --head "${branch}" \
+              --title "chore: update ${YEAR} JARA results" \
+              --body "JARA公式大会ページから${YEAR}年度の公開済み決勝結果を自動収集しました。データ検証、lint、本番buildはワークフロー内で完了しています。"
+          else
+            gh pr edit "${pr_number}" \
+              --title "chore: update ${YEAR} JARA results" \
+              --body "JARA公式大会ページから${YEAR}年度の公開済み決勝結果を自動収集しました。データ検証、lint、本番buildはワークフロー内で完了しています。"
+          fi
