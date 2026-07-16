@@ -218,6 +218,8 @@ async function importYear(year: number): Promise<ResultRecord[]> {
       return (await import("../data/results/2024.json")).default as ResultRecord[];
     case 2025:
       return (await import("../data/results/2025.json")).default as ResultRecord[];
+    case 2026:
+      return (await import("../data/results/2026.json")).default as ResultRecord[];
     default:
       return [];
   }

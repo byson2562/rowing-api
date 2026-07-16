@@ -1,5 +1,30 @@
 # Next.js一本化 (DBレス化) タスク
 
+## 2026年度大会データ取込 (2026-07-17)
+
+### Spec / Plan
+- [x] 1. 日本ローイング協会の2026年度大会ページを起点に、公開済み大会のレース結果リンクを収集する
+- [x] 2. 各種目ページから Final A / Final B（旧表記: 決勝 / 順決 / 順位決定）の完走結果を抽出する
+- [x] 3. 既存データと同じ必須項目・団体名名寄せ・タイム変換を適用し、安定した連番IDで `frontend/data/results/2026.json` を生成する
+- [x] 4. `frontend/data/results/index.json` と年度別動的import対象へ2026年を追加する
+- [x] 5. JSON構造、必須項目、ID/レース行の重複、公式ページとの標本一致、lint/buildを検証する
+
+### Import specification
+- Source: `https://www.jara.or.jp/race/current/index.html` および同ページから辿れる大会・種目別レース結果ページ
+- Scope: 過年度と同じ全日本選手権・全日本大学選手権（併催大会を含む）・全日本新人選手権のうち、2026年度ページ上で結果が公開され、Final A / Final Bに該当するレース。未開催・結果未掲載大会は後日の再実行で追加する
+- Record key: `year, competition_name, event_name, final_group, crew_name, organization, rank`
+- Time: 最終計時を秒へ変換し、表示値は既存互換の `MM:SS:CC` とする
+- Safety: 同じ入力から同じ並び・IDを生成し、再実行で重複を増やさない
+
+### Review
+- リポジトリ上の取込スクリプトは変更せず、Ruby 3.3コンテナから日本ローイング協会の2026年度ページを巡回した。
+- 2026-07-17時点で既存収録範囲の結果公開済み大会は「第104回全日本ローイング選手権大会」のみ。20種目リンク・Final A/B 31レースを確認し、計時のある完走結果162行を `frontend/data/results/2026.json` へ追加した。
+- 公式上は164順位行あるが、仙台大学の女子舵手つきフォア Final A 6位と女子エイト Final A 5位はゴールタイムが空欄のため、既存仕様どおり取込対象外とした。
+- 2026年度IDは5572〜5733。全年度合計は5,408行。必須項目、型、年度、Final区分、正の順位・タイム、全年度ID重複、2026年度自然キー重複、index集計一致を検証済み。
+- 公式との標本照合: 男子シングルスカル Final A 1位は永坂 日鼓（東レ滋賀）、07:13:94 / 433.94秒で一致。
+- コンテナで `npm run lint && npm run build` 成功。lintは既存の `no-img-element` warningのみ。buildで `/results/2026` と第104回全日本選手権ページの静的生成を確認した。
+- 一時起動したコンテナで `/api/v1/results?year=2026&per_page=1` の `pagination.total_count=162`、filtersの2026年・大会名、`/results/2026` のHTTP成功を確認した。
+
 ## Plan
 - [x] 1. Next.js API Routeで `/api/v1/results` `/api/v1/results/filters` `/api/v1/results/stats` を実装する
 - [x] 2. 既存フロント (`/Users/tnakamura/git/rowing-api/frontend/app/page.tsx`) のAPI参照を同一オリジン `/api` 前提に統一する
