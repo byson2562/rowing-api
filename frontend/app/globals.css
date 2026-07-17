@@ -1931,3 +1931,173 @@ th {
   line-height: 1.7;
   color: var(--text);
 }
+
+/* ===== デザインパス: タイポグラフィ階層・ヒーロー・チャート・テーブル ===== */
+
+/* --- 1. タイポグラフィ階層: 本文400 / ラベル500 / 操作600 / 見出し・数値700 --- */
+.site-nav-link,
+.site-footer-link,
+.chip,
+.advanced-filter-meta,
+.chart-card-head span,
+.results-per-page span,
+.combobox-hint,
+.result-card-year,
+.result-card-final,
+.result-card dt,
+.chart-empty-state,
+.result-card-empty {
+  font-weight: 500;
+}
+
+.gender-tabs button,
+.filter-actions button,
+.advanced-filter-toggle,
+.empty-state-guide-actions button,
+.pagination-controls button,
+.charts-toggle,
+.empty-results button {
+  font-weight: 600;
+}
+
+/* --- 2. ヒーロー: 実績チップ + 波モチーフ --- */
+.hero {
+  padding-bottom: 26px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='20' viewBox='0 0 1200 20' preserveAspectRatio='none'%3E%3Cpath d='M0 12 Q 75 2 150 12 T 300 12 T 450 12 T 600 12 T 750 12 T 900 12 T 1050 12 T 1200 12' fill='none' stroke='%230f5ec7' stroke-opacity='0.28' stroke-width='2.5'/%3E%3Cpath d='M0 17 Q 75 8 150 17 T 300 17 T 450 17 T 600 17 T 750 17 T 900 17 T 1050 17 T 1200 17' fill='none' stroke='%230f5ec7' stroke-opacity='0.14' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: min(560px, 90%) 20px;
+}
+
+.hero-stats {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin: 14px 0 0;
+  padding: 0;
+  color: #4a678d;
+  font-size: 13px;
+}
+
+.hero-stats li strong {
+  font-weight: 700;
+  font-size: 16px;
+  color: #17345a;
+  margin-right: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 3. 結果への導線をプライマリボタンに格上げ --- */
+.results-jump {
+  padding: 9px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 6px 14px rgba(15, 94, 199, 0.28);
+}
+
+.results-jump:hover {
+  text-decoration: none;
+  filter: brightness(1.06);
+}
+
+/* --- 4. テーブルの磨き込み --- */
+.results-table thead th {
+  background: #eef4fc;
+  font-weight: 600;
+  color: #2c4a70;
+  border-bottom: 2px solid #cfdff3;
+}
+
+.results-table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.results-table thead th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.results-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.results-table tbody tr:hover td {
+  background: #f3f8ff;
+}
+
+th.col-time,
+td.col-time {
+  text-align: right;
+}
+
+th.col-rank,
+td.col-rank {
+  text-align: center;
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #eef2f8;
+  color: #44618a;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-badge.medal-rank {
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+/* --- 5. モバイルカードの順位を強調 --- */
+.result-card-rank {
+  font-size: 14px;
+}
+
+/* .rank-badge の基底色より優先してメダル色を適用する */
+.rank-badge.medal-rank-gold {
+  background: #fde68a;
+  color: #78350f;
+}
+
+.rank-badge.medal-rank-silver {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.rank-badge.medal-rank-bronze {
+  background: #f5d0a9;
+  color: #7c2d12;
+}
+
+@media (max-width: 768px) {
+  .filter-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .results-jump {
+    width: 100%;
+    justify-content: center;
+    margin-right: 0;
+  }
+
+  .filter-actions button {
+    margin-left: auto;
+  }
+
+  .hero-stats {
+    gap: 6px 16px;
+  }
+
+  .hero-stats li strong {
+    font-size: 15px;
+  }
+}

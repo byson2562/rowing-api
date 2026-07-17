@@ -276,3 +276,21 @@
 - `/Users/tnakamura/git/rowing-api/frontend/app/layout.tsx`: Inter（subsets: latin）と Noto_Sans_JP（preload: false）を `variable` 指定で読み込み、`<html>` にクラス付与。
 - `/Users/tnakamura/git/rowing-api/frontend/app/globals.css`: font-family を Inter → Noto Sans JP → ヒラギノ → BIZ UDPGothic の順に変更。数字・欧文はInter、和文はNoto Sans JPで全OS統一表示になる。
 - 検証: document.fonts で両フォントの読み込みを確認、テーブルのタイム表示がInterで描画されることを目視確認。`tsc --noEmit` / `next build` / E2E(filter-selects, mobile-layout) 成功。
+
+## UIデザイン改善（toC向けビジュアルパス） (2026-07-17)
+
+### Plan
+- [x] 1. タイポグラフィ階層の整理（本文400/ラベル500/操作600/見出し・数値700）
+- [x] 2. カラー整理: チャートをブランドブルー＋ゴールドの2系統に統一（旧: オレンジ2種＋緑）
+- [x] 3. ヒーロー刷新: H1短縮「ローイング大会結果データベース」＋実績チップ（収録レース数・期間・対象大会）＋波モチーフ
+- [x] 4. 種目未選択時は優勝タイム推移カードを非表示（空箱が一等地を占有していた）
+- [x] 5. チャート磨き込み: 角丸バー・値ラベル・グリッド簡素化・ツールチップ統一・英語サブラベル日本語化
+- [x] 6. テーブル: 全順位を丸バッジ化（メダル色維持）・タイム右揃え・ヘッダ強調・行ホバー
+- [x] 7. モバイル: 結果ジャンプをプライマリボタン化＆全幅、カードの団体重複を非表示
+- [x] 8. tsc / build / E2E / ブラウザ（デスクトップ・モバイル）検証
+
+### Review
+- `/Users/tnakamura/git/rowing-api/frontend/app/search-page.tsx`: ヒーロー刷新、チャート配色定数化(CHART_BLUE/CHART_GOLD)、LabelList追加、推移カードの条件レンダリング、順位バッジ化、モバイルカードの団体重複排除。
+- `/Users/tnakamura/git/rowing-api/frontend/app/globals.css`: デザインパス用スタイル追記（タイポ階層オーバーライド、hero-stats/波モチーフ、rank-badge、テーブル磨き込み、モバイル調整）。
+- バグ修正: モバイルのグラフ折りたたみ解除時にResizeObserverが発火せず幅0のままチャートが描画されない問題を、chartsExpanded/eventを幅計測エフェクトの依存に追加して解消。
+- 検証: tsc / next build / E2E(filter-selects, mobile-layout) 成功。chart-layout は仕様変更（推移カードの条件表示）に伴い書き直しが必要（既存失敗テスト、タスクチップ発行済み）。

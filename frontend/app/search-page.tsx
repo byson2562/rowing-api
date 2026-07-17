@@ -5,12 +5,29 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  LabelList,
   Line,
   LineChart,
   Tooltip,
   XAxis,
   YAxis
 } from "recharts";
+import resultsIndex from "../data/results/index.json";
+
+const DATASET_INDEX = resultsIndex as { years: number[]; total_count: number };
+const DATASET_YEAR_MIN = Math.min(...DATASET_INDEX.years);
+const DATASET_YEAR_MAX = Math.max(...DATASET_INDEX.years);
+
+// チャート配色: メダル数はブランドブルー、金メダル数はゴールド、推移はブルー
+const CHART_BLUE = "#1f6fce";
+const CHART_GOLD = "#f0a92e";
+const CHART_TOOLTIP_STYLE = {
+  borderRadius: 10,
+  border: "1px solid #d6e0ef",
+  boxShadow: "0 8px 20px rgba(16, 32, 58, 0.12)",
+  fontSize: 12,
+  padding: "8px 10px"
+} as const;
 
 type Result = {
   id: number;
@@ -356,7 +373,10 @@ export default function SearchPage({
       window.removeEventListener("resize", updateChartWidths);
       window.removeEventListener("orientationchange", updateChartWidths);
     };
-  }, []);
+    // 優勝タイム推移カードは種目選択時のみマウント、チャート群はモバイルで
+    // 折りたたみからの表示切替があるため、どちらの変化でも幅を再計測する
+    // （display:none→表示の遷移ではResizeObserverの発火が保証されない）
+  }, [event, chartsExpanded]);
 
   useEffect(() => {
     if (typeof window === "undefined" || typeof navigator === "undefined") return;
@@ -637,8 +657,22 @@ export default function SearchPage({
       <header className="hero">
         <div>
           <p className="hero-kicker">Rowing Results Database</p>
-          <h1>ローイング大会結果を年度・大会・種目・団体で検索</h1>
-          <p className="subtitle">ローイング（ボート）記録を検索し、メダル傾向・優勝タイム推移を可視化</p>
+          <h1>ローイング大会結果データベース</h1>
+          <p className="subtitle">年度・大会・種目・団体で検索し、メダル傾向・優勝タイム推移を可視化</p>
+          <ul className="hero-stats" aria-label="収録データの概要">
+            <li>
+              <strong>{DATASET_INDEX.total_count.toLocaleString()}</strong>レース収録
+            </li>
+            <li>
+              <strong>
+                {DATASET_YEAR_MIN}–{DATASET_YEAR_MAX}
+              </strong>
+              年
+            </li>
+            <li>
+              <strong>全日本級4大会</strong>
+            </li>
+          </ul>
         </div>
       </header>
 
@@ -1003,7 +1037,7 @@ export default function SearchPage({
         <article className="chart-card chart-card-primary medal-chart-card" data-ga-event="chart_interaction" data-ga-label="organization_medals_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>団体別メダル数(Top8)</h2>
-            <span>Final A medals</span>
+            <span>Final A集計</span>
           </div>
           <div className="chart-wrap" ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
             {topOrganizationMedals.length > 0 && organizationMedalChartWidth > 0 ? (
@@ -1014,11 +1048,17 @@ export default function SearchPage({
                 layout="horizontal"
                 margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid vertical={false} stroke="#e3ecf7" />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
-                <Tooltip formatter={(value) => [`${value}個`, "メダル"]} labelFormatter={(label) => `団体: ${label}`} />
-                <Bar dataKey="value" fill="#ef6c00" />
+                <Tooltip
+                  formatter={(value) => [`${value}個`, "メダル"]}
+                  labelFormatter={(label) => `団体: ${label}`}
+                  contentStyle={CHART_TOOLTIP_STYLE}
+                />
+                <Bar dataKey="value" fill={CHART_BLUE} radius={[5, 5, 0, 0]}>
+                  <LabelList dataKey="value" position="top" fontSize={11} fill="#57718f" />
+                </Bar>
               </BarChart>
             ) : !showChartLoading ? (
               <div className="chart-empty-state">No data</div>
@@ -1035,7 +1075,7 @@ export default function SearchPage({
         <article className="chart-card medal-chart-card" data-ga-event="chart_interaction" data-ga-label="organization_golds_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>団体別金メダル数(Top8)</h2>
-            <span>Final A golds</span>
+            <span>Final A集計</span>
           </div>
           <div className="chart-wrap" ref={organizationGoldChartRef} style={{ height: organizationBarChartHeight }}>
             {topOrganizationGolds.length > 0 && organizationGoldChartWidth > 0 ? (
@@ -1046,11 +1086,17 @@ export default function SearchPage({
                 layout="horizontal"
                 margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid vertical={false} stroke="#e3ecf7" />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
-                <Tooltip formatter={(value) => [`${value}個`, "金メダル"]} labelFormatter={(label) => `団体: ${label}`} />
-                <Bar dataKey="value" fill="#f59e0b" />
+                <Tooltip
+                  formatter={(value) => [`${value}個`, "金メダル"]}
+                  labelFormatter={(label) => `団体: ${label}`}
+                  contentStyle={CHART_TOOLTIP_STYLE}
+                />
+                <Bar dataKey="value" fill={CHART_GOLD} radius={[5, 5, 0, 0]}>
+                  <LabelList dataKey="value" position="top" fontSize={11} fill="#57718f" />
+                </Bar>
               </BarChart>
             ) : !showChartLoading ? (
               <div className="chart-empty-state">No data</div>
@@ -1064,21 +1110,23 @@ export default function SearchPage({
           </div>
         </article>
 
+        {/* 種目未選択時は大きな空状態が一等地を占有するだけなのでカードごと出さない */}
+        {event && (
         <article className="chart-card winner-trend-card" data-ga-event="chart_interaction" data-ga-label="winner_trend_chart" data-ga-location="/">
           <div className="chart-card-head">
             <h2>優勝タイム推移</h2>
-            <span>{event ? event : "種目を選択"}</span>
+            <span>{event}</span>
           </div>
           <div className={`chart-wrap${winnerTrendHasData ? "" : " no-data"}`} ref={winnerTrendChartRef}>
             {winnerTrendHasData ? (
               winnerTrendChartWidth > 0 ? (
                 <LineChart width={winnerTrendChartWidth} height={260} data={winnerTrend}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid vertical={false} stroke="#e3ecf7" />
                   <XAxis dataKey="label" />
                   {/* タイム差が読めるようY軸は0起点にせずデータ範囲へフィットさせる */}
                   <YAxis tickFormatter={formatSecondsForAxis} domain={["dataMin - 5", "dataMax + 5"]} />
-                  <Tooltip formatter={(value) => formatSecondsToTime(Number(value))} />
-                  <Line type="monotone" dataKey="value" stroke="#2e7d32" strokeWidth={3} dot />
+                  <Tooltip formatter={(value) => formatSecondsToTime(Number(value))} contentStyle={CHART_TOOLTIP_STYLE} />
+                  <Line type="monotone" dataKey="value" stroke={CHART_BLUE} strokeWidth={3} dot />
                 </LineChart>
               ) : null
             ) : winnerTrendSingle ? (
@@ -1099,6 +1147,7 @@ export default function SearchPage({
             ) : null}
           </div>
         </article>
+        )}
 
       </section>
 
@@ -1171,7 +1220,9 @@ export default function SearchPage({
                     <td className="col-organization" title={row.organization}>
                       <div className="cell-ellipsis">{row.organization}</div>
                     </td>
-                    <td className={`col-rank ${rankCellClassName(row)}`}>{row.rank}</td>
+                    <td className="col-rank">
+                      <span className={`rank-badge ${rankCellClassName(row)}`}>{row.rank}</span>
+                    </td>
                     <td className="col-time">{row.time_display}</td>
                   </tr>
                 ))
@@ -1209,10 +1260,13 @@ export default function SearchPage({
                     <dt>クルー</dt>
                     <dd>{row.crew_name}</dd>
                   </div>
-                  <div>
-                    <dt>団体</dt>
-                    <dd>{row.organization}</dd>
-                  </div>
+                  {/* 団体名クルー（大学等）はクルーと同一値なので二重表示しない */}
+                  {row.organization !== row.crew_name && (
+                    <div>
+                      <dt>団体</dt>
+                      <dd>{row.organization}</dd>
+                    </div>
+                  )}
                   <div>
                     <dt>タイム</dt>
                     <dd>{row.time_display}</dd>
