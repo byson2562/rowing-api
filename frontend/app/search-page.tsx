@@ -1046,7 +1046,7 @@ export default function SearchPage({
                 height={organizationBarChartHeight}
                 data={topOrganizationMedals}
                 layout="horizontal"
-                margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
+                margin={{ top: 22, left: 0, right: 10, bottom: 34 }}
               >
                 <CartesianGrid vertical={false} stroke="#e3ecf7" />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
@@ -1084,7 +1084,7 @@ export default function SearchPage({
                 height={organizationBarChartHeight}
                 data={topOrganizationGolds}
                 layout="horizontal"
-                margin={{ top: 10, left: 0, right: 10, bottom: 34 }}
+                margin={{ top: 22, left: 0, right: 10, bottom: 34 }}
               >
                 <CartesianGrid vertical={false} stroke="#e3ecf7" />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
