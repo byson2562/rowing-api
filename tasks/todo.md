@@ -264,3 +264,15 @@
 - `frontend/app/rowing-results/page.tsx`: async化して「大会結果アーカイブ」セクション（/results・最新年度・最新年度の各大会への内部リンク、データ由来で新年度に自動追随）と「よくある質問」4問＋FAQPage JSON-LDを追加。「収録データ 2009年から2025年」の古い固定文言を getDatasetSummary 由来（現在2009〜2026年）へ動的化。
 - `frontend/app/globals.css`: `.lp-archive-*` / `.lp-faq-*` スタイル追加。
 - 検証: `tsc --noEmit` / `next lint`（既存warningのみ）/ `next build`（90ページ、/rowing-resultsは静的のまま）成功。E2E filter-selects・mobile-layout 成功。ブラウザでアイコン6点のロード成功（naturalWidth>0）・FAQ 4件・アーカイブリンク3件・FAQPage JSON-LDをDOM検証（Browser paneのスクロール後スクリーンショットが空になる環境不具合があり、視覚確認はcomputed styleで代替）。
+
+## フォント改善（next/fontによるWebフォント配信） (2026-07-17)
+
+### Plan
+- [x] 1. `next/font/google` で Inter + Noto Sans JP（ともに可変フォント）を自己ホスト配信する
+- [x] 2. `globals.css` の font-family を `var(--font-inter), var(--font-noto-sans-jp), ...` に変更する（2箇所）
+- [x] 3. tsc / build / E2E / ブラウザで検証する
+
+### Review
+- `/Users/tnakamura/git/rowing-api/frontend/app/layout.tsx`: Inter（subsets: latin）と Noto_Sans_JP（preload: false）を `variable` 指定で読み込み、`<html>` にクラス付与。
+- `/Users/tnakamura/git/rowing-api/frontend/app/globals.css`: font-family を Inter → Noto Sans JP → ヒラギノ → BIZ UDPGothic の順に変更。数字・欧文はInter、和文はNoto Sans JPで全OS統一表示になる。
+- 検証: document.fonts で両フォントの読み込みを確認、テーブルのタイム表示がInterで描画されることを目視確認。`tsc --noEmit` / `next build` / E2E(filter-selects, mobile-layout) 成功。

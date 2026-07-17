@@ -1,9 +1,25 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { Inter, Noto_Sans_JP } from "next/font/google";
 import Script from "next/script";
 import Link from "next/link";
 
 import { siteUrl } from "../lib/site-url";
+
+// 数字・欧文はInter（タイム表示の判読性・桁揃えが和文フォントの従属欧文より良い）、
+// 和文はNoto Sans JPへフォールバックさせる。どちらも可変フォントを自己ホスト配信
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const notoSansJp = Noto_Sans_JP({
+  subsets: ["latin"],
+  variable: "--font-noto-sans-jp",
+  display: "swap",
+  preload: false,
+});
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
@@ -82,7 +98,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja">
+    <html lang="ja" className={`${inter.variable} ${notoSansJp.variable}`}>
       <body>
         <header className="site-header">
           <div className="site-header-inner">
