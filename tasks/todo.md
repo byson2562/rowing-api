@@ -321,7 +321,7 @@
 - [x] 6a. NEXT_PUBLIC_SITE_URL=https://rowing-api-ashy.vercel.app をproductionへ設定・redeploy済み（2026-07-19。独自ドメイン確定時は値を差し替えて再デプロイ）
 - [ ] 6b. NEXT_PUBLIC_GA_MEASUREMENT_ID 設定 ※GA ID提供待ち
 - [x] 7a. 本番ドメインDNS切替（2026-07-19: NEXT_PUBLIC_SITE_URL=https://rowing-api.com へ差し替え→ドメインをVercelプロジェクトに追加→redeploy→Route53のapex AレコードをVercel（216.198.79.1/64.29.17.1）へUPSERT。SSL(Let's Encrypt)・canonical/OGP・主要ページ・API v1のJSON応答を本番検証済み。ロールバックはAレコードを18.178.211.215へ戻すだけ）
-- [ ] 7b. 旧環境の廃止: EC2/ECR/self-hostedランナー/ci-deploy-prod.yml（数日安定稼働を確認してから実施推奨）
+- [x] 7b. 旧環境の廃止（2026-07-19完了）: ci-deploy-prod.yml削除（74ede55）→ EC2/EIP/SGをterraform targeted destroy → self-hostedランナー登録解除 → ECRイメージ・リポジトリ/OIDCプロバイダ/IAMロール一式をterraform destroy。terraform state空・ECR NotFound・OIDC 0件を確認。インフラはVercel（Hobby）+ Route53のみに。
 
 ### Review
 - 初回デプロイは `npm run build` の `NEXT_DIST_DIR=.next-build` により出力先不一致で失敗 → vercel.json の buildCommand 上書きで解決。

@@ -5,7 +5,7 @@
 ## 構成
 - Frontend/API: Next.js (App Router)
 - Data: 年度別JSON (`frontend/data/results/*.json`)
-- Reverse Proxy: Caddy (production)
+- Hosting: Vercel (production)
 
 ## ローカル起動
 ```bash
@@ -24,43 +24,15 @@ docker compose run --rm frontend-e2e
 ```
 
 ## Production
-使用ファイル:
-- `docker-compose.prod.yml`
-- `deploy/Caddyfile`
-- `deploy/.env.prod.example`
-- `frontend/Dockerfile.prod`
-- `deploy/scripts/deploy_prod.sh`
+本番は Vercel でホストしています（https://rowing-api.com）。
 
-### 1) 設定
-```bash
-cp deploy/.env.prod.example deploy/.env.prod
-```
+- デプロイ: `main` への push で自動デプロイ（Root Directory: `frontend`、`frontend/vercel.json` 参照）
+- DNS: Route53 の apex A レコードが Vercel を指す
+- 環境変数（Vercel の Production に設定、ビルド時埋め込みのため変更後は再デプロイ要）:
+  - `NEXT_PUBLIC_SITE_URL=https://rowing-api.com`
+  - `NEXT_PUBLIC_GA_MEASUREMENT_ID`（任意、GA4を使う場合）
 
-必須値:
-- `DOMAIN`
-- `ECR_REGISTRY`
-- `ECR_REPOSITORY_FRONTEND`
-
-任意:
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID`（GA4を使う場合）
-
-### 2) 起動
-```bash
-docker compose -f docker-compose.prod.yml --env-file deploy/.env.prod up -d
-```
-
-### 3) デプロイ更新
-`/etc/rowing-api/.env.prod` を優先利用します。
-
-```bash
-bash deploy/scripts/deploy_prod.sh
-```
-
-## CI/CD
-- Workflow: `.github/workflows/ci-deploy-prod.yml`
-- 実行内容:
-  1. frontend image を ECR へ build/push
-  2. self-hosted runner (EC2) で pull / up
+旧EC2/ECR/self-hostedランナー構成は2026-07に廃止済み（経緯は `tasks/todo.md` 参照）。
 
 ## データ更新
 現在の本番データは `frontend/data/results/` 配下の年度別JSONを利用します。
