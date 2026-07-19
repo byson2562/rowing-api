@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { listAthleteResults, type ResultRecord } from "../../lib/results-data";
+import { listAthleteResults, organizationSlug, type ResultRecord } from "../../lib/results-data";
 import { siteUrl } from "../../lib/site-url";
 
 export const metadata: Metadata = {
@@ -40,8 +40,20 @@ export default async function AthletesIndexPage() {
     .sort((a, b) => a[0].localeCompare(b[0], "ja"))
     .map(([name, list]) => {
       const best = [...list].sort((a, b) => a.time_seconds - b.time_seconds)[0];
-      return { name, count: list.length, best };
+      // 複数の所属歴がある選手は最新年度の所属でグルーピングする
+      const latest = [...list].sort((a, b) => b.year - a.year)[0];
+      return { name, count: list.length, best, organization: latest.organization };
     });
+
+  const byOrganization = new Map<string, typeof athletes>();
+  athletes.forEach((athlete) => {
+    const list = byOrganization.get(athlete.organization) ?? [];
+    list.push(athlete);
+    byOrganization.set(athlete.organization, list);
+  });
+  const organizationGroups = Array.from(byOrganization.entries()).sort((a, b) =>
+    a[0].localeCompare(b[0], "ja")
+  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -79,28 +91,32 @@ export default async function AthletesIndexPage() {
           <p className="hero-kicker">Rowing Athletes</p>
           <h1>選手別シングルスカル成績一覧</h1>
           <p className="subtitle">
-            収録データで個人名が記録されているシングルスカル種目の選手、全{athletes.length}名の成績を掲載しています。
-            団体種目（ペア〜エイト）は個人名が記録されていないため対象外です。
+            収録データで個人名が記録されているシングルスカル種目の選手、全{athletes.length}名の成績を所属団体別に掲載しています。
+            所属は収録データ内の最新年度のもので、団体種目（ペア〜エイト）は個人名が記録されていないため対象外です。
           </p>
         </div>
       </header>
 
-      <section className="static-section">
-        <h2>
-          選手一覧
-          <span className="static-count">{athletes.length}名</span>
-        </h2>
-        <ul className="static-links org-links">
-          {athletes.map((athlete) => (
-            <li key={athlete.name}>
-              <Link href={`/athletes/${encodeURIComponent(athlete.name)}`}>{athlete.name}</Link>
-              <span className="static-count">
-                {athlete.best.organization} ・ ベスト{athlete.best.time_display} ・ {athlete.count}レース
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {organizationGroups.map(([organization, members]) => (
+        <section key={organization} className="static-section">
+          <h2>
+            <Link href={`/organizations/${encodeURIComponent(organizationSlug(organization))}`}>
+              {organization}
+            </Link>
+            <span className="static-count">{members.length}名</span>
+          </h2>
+          <ul className="static-links org-links">
+            {members.map((athlete) => (
+              <li key={athlete.name}>
+                <Link href={`/athletes/${encodeURIComponent(athlete.name)}`}>{athlete.name}</Link>
+                <span className="static-count">
+                  ベスト{athlete.best.time_display} ・ {athlete.count}レース
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
 
       <p className="static-cta">
         条件を組み合わせて探す場合は<Link href="/">記録検索ページ</Link>をご利用ください。
