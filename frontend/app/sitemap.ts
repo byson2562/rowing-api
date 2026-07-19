@@ -4,6 +4,7 @@ import {
   availableYears,
   competitionsByRecency,
   getFilteredResults,
+  listAthletes,
   listEventNames,
   listOrganizations,
   organizationSlug
@@ -48,8 +49,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7
+    },
+    {
+      url: `${siteUrl}/athletes`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7
     }
   ];
+
+  (await listAthletes()).forEach((name) => {
+    entries.push({
+      url: `${siteUrl}/athletes/${encodeURIComponent(name)}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5
+    });
+  });
 
   (await listEventNames()).forEach((event) => {
     entries.push({
@@ -84,6 +100,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: now,
         changeFrequency: "monthly",
         priority: 0.6
+      });
+    });
+
+    const seen = new Set<string>();
+    rows.forEach((row) => {
+      const key = `${row.competition_name}|${row.event_name}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      entries.push({
+        url: `${siteUrl}/results/${year}/${encodeURIComponent(row.competition_name)}/${encodeURIComponent(row.event_name)}`,
+        lastModified: now,
+        changeFrequency: "monthly",
+        priority: 0.5
       });
     });
   }

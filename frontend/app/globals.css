@@ -1813,6 +1813,10 @@ th {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  /* グローバルの table { table-layout: fixed } を打ち消す。
+     固定レイアウトだと列数の多い静的テーブルで長い大会名がセルからはみ出す */
+  table-layout: auto;
+  min-width: 0;
 }
 
 .static-table-caption {
@@ -1934,6 +1938,13 @@ th {
   font-size: 26px;
   font-weight: 800;
   color: var(--text);
+}
+
+/* 選手ページ: 収録範囲の注記 */
+.static-note {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--muted);
 }
 
 /* 団体一覧: 件数付きリンク */

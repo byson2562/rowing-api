@@ -7,6 +7,7 @@ import {
   availableYears,
   competitionsByRecency,
   getFilteredResults,
+  isAthleteRecord,
   organizationSlug,
   sortForIndex,
   type ResultRecord
@@ -149,7 +150,9 @@ export default async function CompetitionResultsPage({ params }: { params: Param
         return (
         <section key={eventName} className="static-section">
           <h2>
-            {eventName}
+            <Link href={`/results/${params.year}/${encodeURIComponent(competition)}/${encodeURIComponent(eventName)}`}>
+              {eventName}
+            </Link>
             <ShareXLink
               text={
                 winner
@@ -177,7 +180,13 @@ export default async function CompetitionResultsPage({ params }: { params: Param
                 {(rowsByEvent.get(eventName) ?? []).map((row) => (
                   <tr key={row.id}>
                     <td>{row.rank}</td>
-                    <td>{row.crew_name}</td>
+                    <td>
+                      {isAthleteRecord(row) ? (
+                        <Link href={`/athletes/${encodeURIComponent(row.crew_name)}`}>{row.crew_name}</Link>
+                      ) : (
+                        row.crew_name
+                      )}
+                    </td>
                     <td>
                       <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>
                         {row.organization}

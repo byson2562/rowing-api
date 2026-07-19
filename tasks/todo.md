@@ -343,3 +343,19 @@
 - 歴代記録はFinal A/B両方を対象（データはFinal A/Bのみ収録、time_seconds不正値0件を確認済み）。
 - 検証: next build（org 274 + records 30ページの静的生成を確認）/ next lint（新規エラーなし）/ dev serverで records・organizations・大会ページのシェアボタン・内部リンク・コンソールエラーなしを確認。
 - 未対応（優先度中以下）: 個人結果カードOGP、選手ページ、種目単位の大会ページ、RSS等リテンション導線。
+  → 優先度中は下記セクションで対応済み（2026-07-19）。
+
+## マーケレビュー優先度中対応（選手ページ・種目単位ページ・RSS） (2026-07-19)
+
+### Plan
+- [x] 1. 選手個人ページ `/athletes` `/athletes/[name]`（シングルスカル543名、種目別自己ベスト・出場レース一覧・個人OGPカード・シェアボタン・Person JSON-LD）
+- [x] 2. 種目単位の大会ページ `/results/[year]/[competition]/[event]`（653ページ、Final A/B全結果、優勝者入りOGP・シェアボタン）
+- [x] 3. RSSフィード `/feed.xml`（大会単位58件・年降順、layoutにalternate+フッターRSSリンク）
+- [x] 4. 内部リンク: 大会ページ種目見出し→種目ページ、スカルのクルー名→選手ページ（大会・記録ページ）、sitemapへathletes/種目ページ追加（計約2,200URL）
+- [x] 5. ナビに「選手別」追加
+
+### Review
+- 個人名が取れるのはシングルスカルのみ。`isAthleteRecord()` で判定し、`crew_name === organization` の欠損4行は除外。選手ページには同姓同名集約・団体種目非収録の注記を明示。
+- 「個人結果カードOGP」はX intentに任意画像を添付できないため、選手ページ/種目ページのOGP（自己ベスト・優勝者入り）として実装。シェアURLのカードで同等の効果を出す方式。
+- グローバル `table { table-layout: fixed }` が静的ページの多列テーブルにも適用され長い大会名がセルからはみ出すバグを発見 → `.static-table { table-layout: auto }` で上書き修正。
+- 検証: next build（静的1,591ページ）/ next lint エラーなし / devで選手・種目ページ・feed.xml（XML valid）・検索ページ無影響・コンソールエラーなしを確認。

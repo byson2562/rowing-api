@@ -3,7 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ShareXLink } from "../../components/share-x-link";
-import { getFilteredResults, listEventNames } from "../../../lib/results-data";
+import {
+  getFilteredResults,
+  isAthleteRecord,
+  listEventNames,
+  organizationSlug
+} from "../../../lib/results-data";
 import { siteUrl } from "../../../lib/site-url";
 
 type Params = { event: string };
@@ -145,8 +150,18 @@ export default async function EventRecordsPage({ params }: { params: Params }) {
                 <tr key={row.id}>
                   <td>{index + 1}</td>
                   <td>{row.time_display}</td>
-                  <td>{row.crew_name}</td>
-                  <td>{row.organization}</td>
+                  <td>
+                    {isAthleteRecord(row) ? (
+                      <Link href={`/athletes/${encodeURIComponent(row.crew_name)}`}>{row.crew_name}</Link>
+                    ) : (
+                      row.crew_name
+                    )}
+                  </td>
+                  <td>
+                    <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>
+                      {row.organization}
+                    </Link>
+                  </td>
                   <td>{row.year}</td>
                   <td>
                     <Link href={`/results/${row.year}/${encodeURIComponent(row.competition_name)}`}>

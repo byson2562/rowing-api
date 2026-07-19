@@ -48,6 +48,11 @@ export const metadata: Metadata = {
   ],
   // canonicalはページ側で出し分ける（Next 14はルートパス+クエリのcanonicalを
   // オリジンへ丸めてしまうため、レイアウトの一律指定はフィルタ付きURLと相性が悪い）
+  alternates: {
+    types: {
+      "application/rss+xml": [{ url: "/feed.xml", title: "RowingAPI 大会結果" }],
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -118,6 +123,9 @@ export default function RootLayout({
               <Link href="/organizations" className="site-nav-link">
                 団体別
               </Link>
+              <Link href="/athletes" className="site-nav-link">
+                選手別
+              </Link>
               <Link href="/rowing-results" className="site-nav-link">
                 RowingAPIとは
               </Link>
@@ -146,6 +154,12 @@ export default function RootLayout({
               <Link href="/organizations" className="site-footer-link">
                 団体別
               </Link>
+              <Link href="/athletes" className="site-footer-link">
+                選手別
+              </Link>
+              <a href="/feed.xml" className="site-footer-link">
+                RSS
+              </a>
               <Link href="/rowing-results" className="site-footer-link">
                 RowingAPIとは
               </Link>

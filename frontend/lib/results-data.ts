@@ -477,6 +477,27 @@ export async function listEventNames(): Promise<string[]> {
   return uniqueSorted(rows.map((row) => row.event_name));
 }
 
+// 個人名が記録されているのはシングルスカル種目のみ（団体種目のcrew_nameは団体名）。
+// crew_name === organization の行は個人名が欠損した不良データのため除外する
+export function isAthleteRecord(row: ResultRecord): boolean {
+  return row.event_name.includes("シングルスカル") && row.crew_name !== row.organization;
+}
+
+export async function listAthleteResults(): Promise<ResultRecord[]> {
+  const rows = await allResults();
+  return rows.filter(isAthleteRecord);
+}
+
+export async function listAthletes(): Promise<string[]> {
+  const rows = await listAthleteResults();
+  return uniqueSorted(rows.map((row) => row.crew_name));
+}
+
+export async function getAthleteResults(name: string): Promise<ResultRecord[]> {
+  const rows = await listAthleteResults();
+  return rows.filter((row) => row.crew_name === name);
+}
+
 function countByLabel(rows: ResultRecord[], pick: (row: ResultRecord) => string): Map<string, number> {
   const map = new Map<string, number>();
   rows.forEach((row) => {
