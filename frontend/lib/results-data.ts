@@ -304,7 +304,7 @@ function competitionCategoryFor(name: string): string | null {
   return null;
 }
 
-function isStudentOrganization(organization: string): boolean {
+export function isStudentOrganization(organization: string): boolean {
   if (STUDENT_KEYWORDS.some((keyword) => organization.includes(keyword))) return true;
   if (organization.includes("混成")) {
     return STUDENT_MIXED_ABBREV_KEYWORDS.some((keyword) => organization.includes(keyword));
@@ -454,6 +454,27 @@ export async function buildFiltersResponse(filters: QueryFilters): Promise<Filte
     organizations: uniqueSorted(organizationsRelation.map((row) => row.organization)),
     affiliation_types: [hasStudent ? "学生" : "", hasSocial ? "社会人" : ""].filter(Boolean),
   });
+}
+
+// 団体名には「CRIMSON/GANG」のように「/」を含むものがあり、URLパスセグメントに
+// そのまま使えないためスラグへ変換する（復元は一覧との突き合わせで行う）
+export function organizationSlug(name: string): string {
+  return name.replace(/\//g, "--");
+}
+
+export async function listOrganizations(): Promise<string[]> {
+  const rows = await allResults();
+  return uniqueSorted(rows.map((row) => row.organization));
+}
+
+export async function findOrganizationBySlug(slug: string): Promise<string | null> {
+  const organizations = await listOrganizations();
+  return organizations.find((name) => organizationSlug(name) === slug) ?? null;
+}
+
+export async function listEventNames(): Promise<string[]> {
+  const rows = await allResults();
+  return uniqueSorted(rows.map((row) => row.event_name));
 }
 
 function countByLabel(rows: ResultRecord[], pick: (row: ResultRecord) => string): Map<string, number> {

@@ -1878,6 +1878,71 @@ th {
   color: var(--muted);
 }
 
+/* Xシェアリンク（大会・団体・歴代記録ページ） */
+.share-x-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.share-x-link:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.static-section h2 .share-x-link {
+  margin-top: 0;
+  margin-left: auto;
+  font-size: 11px;
+  padding: 4px 12px;
+}
+
+/* 団体ページ: 通算成績サマリー */
+.org-medal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.org-medal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.org-medal-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.org-medal-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* 団体一覧: 件数付きリンク */
+.org-links li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
 /* LP: 大会結果アーカイブ・FAQ */
 .lp-archive-lead {
   margin: 0 0 14px;

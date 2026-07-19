@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ShareXLink } from "../../../components/share-x-link";
 import {
   availableYears,
   competitionsByRecency,
   getFilteredResults,
+  organizationSlug,
   sortForIndex,
   type ResultRecord
 } from "../../../../lib/results-data";
@@ -142,9 +144,22 @@ export default async function CompetitionResultsPage({ params }: { params: Param
         </div>
       </header>
 
-      {eventNames.map((eventName) => (
+      {eventNames.map((eventName) => {
+        const winner = (rowsByEvent.get(eventName) ?? []).find((row) => row.rank === 1);
+        return (
         <section key={eventName} className="static-section">
-          <h2>{eventName}</h2>
+          <h2>
+            {eventName}
+            <ShareXLink
+              text={
+                winner
+                  ? `${params.year}年 ${competition} ${eventName} 優勝は${winner.organization}（${winner.time_display}） | RowingAPI`
+                  : `${params.year}年 ${competition} ${eventName}の結果 | RowingAPI`
+              }
+              path={`/results/${params.year}/${encodeURIComponent(competition)}`}
+              hashtags={["ローイング", "ボート"]}
+            />
+          </h2>
           <div className="static-table-wrap">
             <table className="static-table">
               <caption className="static-table-caption">
@@ -163,7 +178,11 @@ export default async function CompetitionResultsPage({ params }: { params: Param
                   <tr key={row.id}>
                     <td>{row.rank}</td>
                     <td>{row.crew_name}</td>
-                    <td>{row.organization}</td>
+                    <td>
+                      <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>
+                        {row.organization}
+                      </Link>
+                    </td>
                     <td>{row.time_display}</td>
                   </tr>
                 ))}
@@ -171,7 +190,8 @@ export default async function CompetitionResultsPage({ params }: { params: Param
             </table>
           </div>
         </section>
-      ))}
+        );
+      })}
 
       <p className="static-cta">
         予選・敗者復活戦を含む全結果は

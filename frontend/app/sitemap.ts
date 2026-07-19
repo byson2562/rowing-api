@@ -1,6 +1,13 @@
 import type { MetadataRoute } from "next";
 
-import { availableYears, competitionsByRecency, getFilteredResults } from "../lib/results-data";
+import {
+  availableYears,
+  competitionsByRecency,
+  getFilteredResults,
+  listEventNames,
+  listOrganizations,
+  organizationSlug
+} from "../lib/results-data";
 import { siteUrl } from "../lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -29,8 +36,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.8
+    },
+    {
+      url: `${siteUrl}/records`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8
+    },
+    {
+      url: `${siteUrl}/organizations`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7
     }
   ];
+
+  (await listEventNames()).forEach((event) => {
+    entries.push({
+      url: `${siteUrl}/records/${encodeURIComponent(event)}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7
+    });
+  });
+
+  (await listOrganizations()).forEach((organization) => {
+    entries.push({
+      url: `${siteUrl}/organizations/${encodeURIComponent(organizationSlug(organization))}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6
+    });
+  });
 
   for (const year of availableYears()) {
     entries.push({

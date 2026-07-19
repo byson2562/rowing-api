@@ -112,6 +112,12 @@ export default function RootLayout({
               <Link href="/results" className="site-nav-link">
                 大会結果一覧
               </Link>
+              <Link href="/records" className="site-nav-link">
+                歴代記録
+              </Link>
+              <Link href="/organizations" className="site-nav-link">
+                団体別
+              </Link>
               <Link href="/rowing-results" className="site-nav-link">
                 RowingAPIとは
               </Link>
@@ -133,6 +139,12 @@ export default function RootLayout({
               </Link>
               <Link href="/results" className="site-footer-link">
                 大会結果一覧
+              </Link>
+              <Link href="/records" className="site-footer-link">
+                歴代記録
+              </Link>
+              <Link href="/organizations" className="site-footer-link">
+                団体別
               </Link>
               <Link href="/rowing-results" className="site-footer-link">
                 RowingAPIとは

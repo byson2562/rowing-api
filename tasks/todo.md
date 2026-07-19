@@ -1,5 +1,20 @@
 # Next.js一本化 (DBレス化) タスク
 
+## GitHub Actions PR作成権限 Terraform化 (2026-07-17)
+
+### Spec / Plan
+- [x] 1. AWS用Terraformとはstate・provider認証を分離し、`infra/github`でGitHubリポジトリ設定を管理する
+- [x] 2. `GITHUB_TOKEN`の既定権限はreadのまま、ActionsによるPull Request作成・承認設定だけを有効化する
+- [x] 3. owner/repositoryを変数化し、認証・plan/apply・import手順をREADMEへ記載する
+- [x] 4. `terraform fmt -check`、`terraform init`、`terraform validate`で定義を検証する
+
+### Review
+- AWS用の`infra/ec2`とは分離し、`infra/github`にGitHub Provider 6.xの独立構成を追加した。`terraform init`で6.13.0を選択し、lock fileを保存した。
+- `github_workflow_repository_permissions`で`default_workflow_permissions = "read"`を維持しつつ、`can_approve_pull_request_reviews = true`を設定した。GitHub UI上の「ActionsによるPull Requestの作成と承認を許可」に対応する。
+- owner/repositoryは変数化し、既定値を`byson2562/rowing-api`とした。tokenをstateやtfvarsへ保存しない`GITHUB_TOKEN`認証、plan/apply、既存stateからのimport方法をREADMEへ記載した。
+- `terraform fmt -check -recursive infra/github`、`terraform -chdir=infra/github init -backend=false`、`terraform -chdir=infra/github validate`が成功。provider schemaでも対象3属性の型と利用可否を確認した。
+- 実リポジトリへのplan/applyはAdministration権限付きtokenが必要なため未実施。定義の適用時に実施する。
+
 ## JARA大会結果 自動更新ワークフロー (2026-07-17)
 
 ### Spec / Plan
@@ -294,3 +309,37 @@
 - `/Users/tnakamura/git/rowing-api/frontend/app/globals.css`: デザインパス用スタイル追記（タイポ階層オーバーライド、hero-stats/波モチーフ、rank-badge、テーブル磨き込み、モバイル調整）。
 - バグ修正: モバイルのグラフ折りたたみ解除時にResizeObserverが発火せず幅0のままチャートが描画されない問題を、chartsExpanded/eventを幅計測エフェクトの依存に追加して解消。
 - 検証: tsc / next build / E2E(filter-selects, mobile-layout) 成功。chart-layout は仕様変更（推移カードの条件表示）に伴い書き直しが必要（既存失敗テスト、タスクチップ発行済み）。
+
+## Vercel移行（プロジェクト作成〜Git連携デプロイ） (2026-07-19)
+
+### Plan
+- [x] 1. Vercelプロジェクト `rowing-api` を作成しfrontendをリンク（Hobbyプラン、CLI認証済みアカウント）
+- [x] 2. `frontend/vercel.json` を追加（buildCommand: next build ※Docker用NEXT_DIST_DIRを回避、regions: hnd1）
+- [x] 3. プレビューデプロイで動作検証（SSR・APIルート・チャート）
+- [x] 4. GitHubリポジトリ連携＋Root Directory=frontend をAPIで設定
+- [x] 5. push起点の本番デプロイが成功し https://rowing-api-ashy.vercel.app で公開されることを確認
+- [x] 6a. NEXT_PUBLIC_SITE_URL=https://rowing-api-ashy.vercel.app をproductionへ設定・redeploy済み（2026-07-19。独自ドメイン確定時は値を差し替えて再デプロイ）
+- [ ] 6b. NEXT_PUBLIC_GA_MEASUREMENT_ID 設定 ※GA ID提供待ち
+- [ ] 7. 本番ドメインDNS切替 → EC2/ECR/self-hostedランナー/ci-deploy-prod.yml の廃止
+
+### Review
+- 初回デプロイは `npm run build` の `NEXT_DIST_DIR=.next-build` により出力先不一致で失敗 → vercel.json の buildCommand 上書きで解決。
+- プレビューURLはDeployment Protection(要Vercelログイン)のためChromeの実セッションで検証。
+- 本番URLで検索(364件)・URLフィルタ復元・API v1(JSON)・タイム表記を確認。JARA自動更新のcommit→pushがそのまま自動デプロイに繋がる構成になった。
+- 注意: NEXT_PUBLIC_SITE_URL未設定のため、canonical/OGPがlocalhostフォールバックの状態。ドメイン確定後に設定要。
+  → 2026-07-19 対応済み。vercel.app本番URLをproduction環境変数に設定しredeploy。canonical/og:url/og:imageが本番URLで出力されることをcurlで確認。
+
+## マーケレビュー優先度高対応（団体ページ・歴代記録・シェア導線・本番URL） (2026-07-19)
+
+### Plan
+- [x] 1. NEXT_PUBLIC_SITE_URL をVercel productionへ設定しredeploy・curl検証
+- [x] 2. 団体ページ `/organizations` `/organizations/[slug]`（274団体、通算メダル・種目別ベスト・年度別戦績、SportsOrganization JSON-LD）
+- [x] 3. 歴代記録ランキング `/records` `/records/[event]`（30種目、歴代最速Top20、ItemList JSON-LD）
+- [x] 4. Xシェアボタン（`app/components/share-x-link.tsx`）を大会ページ種目見出し・団体ページ・記録ページに設置
+- [x] 5. sitemap.xml へ records/organizations 系URLを追加、ヘッダー/フッターに「歴代記録」「団体別」ナビ追加、大会結果テーブルの団体名を団体ページへ内部リンク化
+
+### Review
+- 団体名に `/` を含むケース（CRIMSON/GANG等）があるため `organizationSlug()` で `--` に置換し、復元は一覧との突き合わせ（`findOrganizationBySlug`）で行う。
+- 歴代記録はFinal A/B両方を対象（データはFinal A/Bのみ収録、time_seconds不正値0件を確認済み）。
+- 検証: next build（org 274 + records 30ページの静的生成を確認）/ next lint（新規エラーなし）/ dev serverで records・organizations・大会ページのシェアボタン・内部リンク・コンソールエラーなしを確認。
+- 未対応（優先度中以下）: 個人結果カードOGP、選手ページ、種目単位の大会ページ、RSS等リテンション導線。
