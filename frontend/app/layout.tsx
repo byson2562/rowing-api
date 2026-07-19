@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter, Noto_Sans_JP } from "next/font/google";
 import Script from "next/script";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 
 import { siteUrl } from "../lib/site-url";
 
@@ -274,6 +275,7 @@ export default function RootLayout({
           src="https://mcp.figma.com/mcp/html-to-design/capture.js"
           strategy="afterInteractive"
         />
+        <Analytics />
       </body>
     </html>
   );
