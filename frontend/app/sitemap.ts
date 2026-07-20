@@ -13,6 +13,30 @@ import { siteUrl } from "../lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+
+  // データは年単位の粒度しか持たないため、lastModifiedは
+  // 「最終掲載年の年末（過年度）」または「現在時刻（最新年度=更新中）」で近似する
+  const latestDataYear = Math.max(...availableYears());
+  const dateForYear = (year: number): Date =>
+    year >= latestDataYear ? now : new Date(`${year}-12-31T00:00:00+09:00`);
+
+  const allRows = await getFilteredResults({});
+  const buildLatestYearMap = (pick: (row: (typeof allRows)[number]) => string): Map<string, number> => {
+    const map = new Map<string, number>();
+    allRows.forEach((row) => {
+      const key = pick(row);
+      const current = map.get(key);
+      if (current == null || row.year > current) map.set(key, row.year);
+    });
+    return map;
+  };
+  const organizationLatestYear = buildLatestYearMap((row) => row.organization);
+  const eventLatestYear = buildLatestYearMap((row) => row.event_name);
+  const athleteLatestYear = buildLatestYearMap((row) => row.crew_name);
+  const dateForEntity = (map: Map<string, number>, key: string): Date => {
+    const year = map.get(key);
+    return year == null ? now : dateForYear(year);
+  };
   const entries: MetadataRoute.Sitemap = [
     {
       url: siteUrl,
@@ -61,7 +85,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   (await listAthletes()).forEach((name) => {
     entries.push({
       url: `${siteUrl}/athletes/${encodeURIComponent(name)}`,
-      lastModified: now,
+      lastModified: dateForEntity(athleteLatestYear, name),
       changeFrequency: "monthly",
       priority: 0.5
     });
@@ -70,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   (await listEventNames()).forEach((event) => {
     entries.push({
       url: `${siteUrl}/records/${encodeURIComponent(event)}`,
-      lastModified: now,
+      lastModified: dateForEntity(eventLatestYear, event),
       changeFrequency: "weekly",
       priority: 0.7
     });
@@ -79,7 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   (await listOrganizations()).forEach((organization) => {
     entries.push({
       url: `${siteUrl}/organizations/${encodeURIComponent(organizationSlug(organization))}`,
-      lastModified: now,
+      lastModified: dateForEntity(organizationLatestYear, organization),
       changeFrequency: "monthly",
       priority: 0.6
     });
@@ -88,7 +112,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const year of availableYears()) {
     entries.push({
       url: `${siteUrl}/results/${year}`,
-      lastModified: now,
+      lastModified: dateForYear(year),
       changeFrequency: "monthly",
       priority: 0.7
     });
@@ -97,7 +121,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     competitionsByRecency(rows).forEach((competition) => {
       entries.push({
         url: `${siteUrl}/results/${year}/${encodeURIComponent(competition)}`,
-        lastModified: now,
+        lastModified: dateForYear(year),
         changeFrequency: "monthly",
         priority: 0.6
       });
@@ -110,7 +134,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       seen.add(key);
       entries.push({
         url: `${siteUrl}/results/${year}/${encodeURIComponent(row.competition_name)}/${encodeURIComponent(row.event_name)}`,
-        lastModified: now,
+        lastModified: dateForYear(year),
         changeFrequency: "monthly",
         priority: 0.5
       });
