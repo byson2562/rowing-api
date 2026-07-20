@@ -164,6 +164,9 @@ export default function RootLayout({
               <Link href="/rowing-results" className="site-footer-link">
                 RowingAPIとは
               </Link>
+              <Link href="/privacy" className="site-footer-link">
+                プライバシーポリシー
+              </Link>
             </nav>
           </div>
         </footer>
