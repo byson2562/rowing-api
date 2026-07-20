@@ -48,7 +48,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   const winner = rows.find((row) => row.final_group === "Final A" && row.rank === 1);
   const path = `/results/${params.year}/${encodeURIComponent(competition)}/${encodeURIComponent(event)}`;
-  const title = `${event}の結果 | ${competition}（${params.year}年）`;
+  // 大会名自体に「ローイング」を含まない場合（改称前の大会等）のみキーワードを補う
+  const title = competition.includes("ローイング")
+    ? `${event}の結果｜${competition}（${params.year}年）`
+    : `${event}の結果｜${competition}ローイング（${params.year}年）`;
   const description = `${params.year}年「${competition}」${event}のローイング（ボート）競技結果。${winner ? `優勝は${winner.organization}（${winner.time_display}）。` : ""}Final A・Final Bの順位・クルー・タイムを掲載しています。`;
   const ogImage = `${siteUrl}/og?title=${encodeURIComponent(event)}&subtitle=${encodeURIComponent(winner ? `優勝 ${winner.organization} ${winner.time_display}（${params.year}年）` : `${params.year}年 ${competition}`)}`;
 

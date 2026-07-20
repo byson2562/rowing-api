@@ -387,3 +387,17 @@
 - `/Users/tnakamura/git/rowing-api/frontend/app/search-page.tsx`: チャート配色を #4d94ff / #ffb84d に、ツールチップ・軸ラベルも新トークンへ。
 - CTAはオレンジ地 #ff8a3d + 濃色文字 #46240a でコントラスト確保（白文字はAA未達のため不採用）。
 - デザイン方向はA/B/C比較（design-concepts/ にPNG保存）からユーザーがCを選択。
+
+## SEO改善（優先度高: title最適化・不要スクリプト排除） (2026-07-20)
+
+### Plan
+- [x] 1. 大会別・イベント別結果ページのtitleに「ローイング」を注入（大会名に既に含む場合は二重回避の条件分岐）
+- [x] 2. 団体別・選手別・歴代記録ページのtitleに「ボート」を追加（旧称クエリ対策: 「◯◯のローイング・ボート記録」等）
+- [x] 3. Figmaキャプチャスクリプト（mcp.figma.com）を開発環境限定に変更（本番のCWV・セキュリティ配慮）
+- [x] 4. tsc / build / E2E で検証、devサーバーで各ページのtitleタグを実測確認
+
+### Review
+- 変更ファイル: results/[year]/[competition]/page.tsx、同[event]/page.tsx、organizations/[slug]/page.tsx、athletes/[name]/page.tsx、records/[event]/page.tsx、layout.tsx
+- 実測: 「第103回全日本ローイング選手権大会（2025年）結果」（二重回避）/「第88回全日本選手権大会（2010年）ローイング結果」（旧称に注入）/「早稲田大学のローイング・ボート記録」
+- 背景: 競技名が「ボート」→「ローイング」に改称された経緯があり、旧称系クエリ（団体名+ボート 記録 等）の取りこぼし防止が目的（marketerレビュー起点）
+- 優先度中の項目（本文へのボート/漕艇の自然な言及・sitemap lastModified・SportsEvent構造化データ）は未着手

@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const rows = await getFilteredResults({ organization });
   const medals = medalCounts(rows);
   const path = `/organizations/${encodeURIComponent(organizationSlug(organization))}`;
-  const title = `${organization}のローイング成績`;
+  const title = `${organization}のローイング・ボート記録`;
   const description = `${organization}のローイング（ボート）大会成績。通算${rows.length}件の記録、優勝${medals.gold}回・2位${medals.silver}回・3位${medals.bronze}回。種目別ベストタイムと年度別戦績を掲載しています。`;
   const ogImage = `${siteUrl}/og?title=${encodeURIComponent(organization)}&subtitle=${encodeURIComponent(`優勝${medals.gold}回 ・ 通算${rows.length}件の記録`)}`;
 

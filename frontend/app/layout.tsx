@@ -271,10 +271,13 @@ export default function RootLayout({
             />
           </>
         ) : null}
-        <Script
-          src="https://mcp.figma.com/mcp/html-to-design/capture.js"
-          strategy="afterInteractive"
-        />
+        {/* Figmaキャプチャは開発ツールのため本番では配信しない（CWV・セキュリティ配慮） */}
+        {process.env.NODE_ENV === "development" ? (
+          <Script
+            src="https://mcp.figma.com/mcp/html-to-design/capture.js"
+            strategy="afterInteractive"
+          />
+        ) : null}
         <Analytics />
       </body>
     </html>

@@ -44,7 +44,10 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   const year = params.year;
   const competition = decodeCompetition(params.competition);
   const path = `/results/${year}/${encodeURIComponent(competition)}`;
-  const title = `${competition}（${year}年）の結果`;
+  // 大会名自体に「ローイング」を含まない場合（改称前の大会等）のみキーワードを補う
+  const title = competition.includes("ローイング")
+    ? `${competition}（${year}年）結果`
+    : `${competition}（${year}年）ローイング結果`;
   const description = `${year}年開催「${competition}」のローイング（ボート）競技結果。種目別のFinal A順位・クルー・タイムを掲載しています。`;
   const ogImage = `${siteUrl}/og?title=${encodeURIComponent(competition)}&subtitle=${encodeURIComponent(`${year}年 ローイング大会結果`)}`;
 

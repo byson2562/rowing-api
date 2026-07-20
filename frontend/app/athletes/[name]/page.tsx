@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const best = bestOf(rows);
   const wins = rows.filter((row) => row.final_group === "Final A" && row.rank === 1).length;
   const path = `/athletes/${encodeURIComponent(name)}`;
-  const title = `${name}選手のシングルスカル成績`;
+  const title = `${name}選手のシングルスカル記録（ローイング・ボート）`;
   const description = `${name}選手（${best.organization}）のローイング・シングルスカル成績。自己ベストは${best.time_display}（${best.year}年 ${best.competition_name}）${wins > 0 ? `、全日本規模の大会で優勝${wins}回` : ""}。年度別の全成績を掲載しています。`;
   const ogImage = `${siteUrl}/og?title=${encodeURIComponent(name)}&subtitle=${encodeURIComponent(`${best.event_name} ${best.time_display}（${best.year}年）`)}`;
 
