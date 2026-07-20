@@ -360,3 +360,30 @@
 - 「個人結果カードOGP」はX intentに任意画像を添付できないため、選手ページ/種目ページのOGP（自己ベスト・優勝者入り）として実装。シェアURLのカードで同等の効果を出す方式。
 - グローバル `table { table-layout: fixed }` が静的ページの多列テーブルにも適用され長い大会名がセルからはみ出すバグを発見 → `.static-table { table-layout: auto }` で上書き修正。
 - 検証: next build（静的1,591ページ）/ next lint エラーなし / devで選手・種目ページ・feed.xml（XML valid）・検索ページ無影響・コンソールエラーなしを確認。
+
+## Vercel Web Analytics導入 (2026-07-20)
+
+### Plan
+- [x] 1. @vercel/analytics を導入し layout に <Analytics /> を追加（d028021）
+- [x] 2. ダッシュボードで有効化（ユーザー操作）→ 反映には再デプロイが必要なため redeploy 実施
+- [x] 3. 本番で計測動作を確認
+
+### Review
+- 有効化直後は /_vercel/insights/script.js が404 → 仕様上、有効化後の再デプロイで配信開始。
+- 本番(rowing-api.com)でスクリプト読込200・ページビュービーコン POST 200 を確認。スクリプトは難読化パス（/e03ad93f…/script.js）で配信される（アドブロッカー回避のVercel仕様）。
+- GA4は併存中。日常のアクセス把握はVercel Analytics、North Star KPI(search_execution等のカスタムイベント)はGA4継続。KPI表示の簡素化(Looker Studio 1枚 or Umami/Plausible移行)は今後の選択肢。
+
+## Clubhouseデザイン全面適用（モバイルファースト） (2026-07-20)
+
+### Plan
+- [x] Phase 1: デザイントークン再定義（:root変数拡張、旧パレット→新パレットの一括置換、背景グラデ）
+- [x] Phase 2: 検索ページ（カード角丸24px・入力2px枠/44px高・ピルボタン・オレンジCTA・チャート #4d94ff/#ffb84d）
+- [x] Phase 3: 周辺ページ（/records /organizations /rowing-results 等はトークン波及で追随を確認。LPの旧UIスクショ lp-fv-screenshot.png を新デザインで再生成）
+- [x] Phase 4: 状態磨き（フォーカスリング・ホバー・ページネーション active・単年表示の色）
+- [x] Phase 5: 検証（tsc / build / E2E 2本成功。モバイル390・デスクトップ1280でスクショ確認）
+
+### Review
+- `/Users/tnakamura/git/rowing-api/frontend/app/globals.css`: :rootにClubhouseトークン（--accent, --radius-card等）を新設し、旧色をperlで一括置換。末尾にClubhouseレイヤー（ピル化・角丸・CTA）を追加。カードは枠線なし+ソフトシャドウに統一。
+- `/Users/tnakamura/git/rowing-api/frontend/app/search-page.tsx`: チャート配色を #4d94ff / #ffb84d に、ツールチップ・軸ラベルも新トークンへ。
+- CTAはオレンジ地 #ff8a3d + 濃色文字 #46240a でコントラスト確保（白文字はAA未達のため不採用）。
+- デザイン方向はA/B/C比較（design-concepts/ にPNG保存）からユーザーがCを選択。

@@ -19,11 +19,11 @@ const DATASET_YEAR_MIN = Math.min(...DATASET_INDEX.years);
 const DATASET_YEAR_MAX = Math.max(...DATASET_INDEX.years);
 
 // チャート配色: メダル数はブランドブルー、金メダル数はゴールド、推移はブルー
-const CHART_BLUE = "#1f6fce";
-const CHART_GOLD = "#f0a92e";
+const CHART_BLUE = "#4d94ff";
+const CHART_GOLD = "#ffb84d";
 const CHART_TOOLTIP_STYLE = {
-  borderRadius: 10,
-  border: "1px solid #d6e0ef",
+  borderRadius: 14,
+  border: "2px solid #e3edfb",
   boxShadow: "0 8px 20px rgba(16, 32, 58, 0.12)",
   fontSize: 12,
   padding: "8px 10px"
@@ -137,7 +137,7 @@ function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps
   const chars = Array.from(label);
 
   return (
-    <text x={x} y={y} textAnchor="middle" fill="#6b7280" fontSize={11} dominantBaseline="hanging">
+    <text x={x} y={y} textAnchor="middle" fill="#5d7398" fontSize={11} dominantBaseline="hanging">
       {chars.map((char, index) => (
         <tspan key={`${char}-${index}`} x={x} dy={index === 0 ? 8 : 11}>
           {char}
@@ -1048,7 +1048,7 @@ export default function SearchPage({
                 layout="horizontal"
                 margin={{ top: 22, left: 0, right: 10, bottom: 34 }}
               >
-                <CartesianGrid vertical={false} stroke="#e3ecf7" />
+                <CartesianGrid vertical={false} stroke="#e4eefb" />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
                 <Tooltip
@@ -1086,7 +1086,7 @@ export default function SearchPage({
                 layout="horizontal"
                 margin={{ top: 22, left: 0, right: 10, bottom: 34 }}
               >
-                <CartesianGrid vertical={false} stroke="#e3ecf7" />
+                <CartesianGrid vertical={false} stroke="#e4eefb" />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
                 <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
                 <Tooltip
@@ -1121,7 +1121,7 @@ export default function SearchPage({
             {winnerTrendHasData ? (
               winnerTrendChartWidth > 0 ? (
                 <LineChart width={winnerTrendChartWidth} height={260} data={winnerTrend}>
-                  <CartesianGrid vertical={false} stroke="#e3ecf7" />
+                  <CartesianGrid vertical={false} stroke="#e4eefb" />
                   <XAxis dataKey="label" />
                   {/* タイム差が読めるようY軸は0起点にせずデータ範囲へフィットさせる */}
                   <YAxis tickFormatter={formatSecondsForAxis} domain={["dataMin - 5", "dataMax + 5"]} />
