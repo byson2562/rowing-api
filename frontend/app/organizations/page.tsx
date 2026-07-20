@@ -100,7 +100,6 @@ export default async function OrganizationsIndexPage() {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Organizations</p>
           <h1>団体別ローイング成績一覧</h1>
           <p className="subtitle">
             全{organizations.length}団体の通算メダル数・種目別ベストタイム・年度別戦績を団体ごとのページで確認できます。

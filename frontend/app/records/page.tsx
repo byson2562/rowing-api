@@ -86,7 +86,6 @@ export default async function RecordsIndexPage() {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing All-Time Records</p>
           <h1>種目別 歴代最速タイムランキング</h1>
           <p className="subtitle">
             収録している全日本規模の大会結果（2009年以降）から、種目ごとの歴代最速タイムをランキング形式で掲載しています。

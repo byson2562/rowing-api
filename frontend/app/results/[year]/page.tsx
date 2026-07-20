@@ -105,7 +105,6 @@ export default async function YearResultsPage({ params }: { params: Params }) {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Results {year}</p>
           <h1>{year}年のローイング大会結果</h1>
           <p className="subtitle">
             {year}年に開催された{competitions.length}大会・全{rows.length.toLocaleString()}

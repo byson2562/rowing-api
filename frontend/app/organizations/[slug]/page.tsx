@@ -138,12 +138,9 @@ export default async function OrganizationPage({ params }: { params: Params }) {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Organization</p>
           <h1>{organization}のローイング・ボート記録</h1>
           <p className="subtitle">
-            {organization}のローイング（ボート・漕艇）大会記録を通算{rows.length.toLocaleString()}
-            件収録。全日本選手権・全日本大学選手権などのFinal A実績は優勝{medals.gold}回・2位
-            {medals.silver}回・3位{medals.bronze}回です。
+            {organization}のローイング（ボート・漕艇）大会記録を通算{rows.length.toLocaleString()}件収録しています。
           </p>
           <ShareXLink
             text={`${organization}のローイング成績（優勝${medals.gold}回・通算${rows.length}件） | RowingAPI`}

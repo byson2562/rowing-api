@@ -136,15 +136,6 @@ body {
   margin-bottom: 14px;
 }
 
-.hero-kicker {
-  margin: 0 0 4px;
-  color: #365887;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .hero h1 {
   margin: 0;
   letter-spacing: 0.02em;
@@ -2307,10 +2298,6 @@ td.col-rank {
 }
 
 /* ヒーロー */
-.hero-kicker {
-  color: #7aa5e8;
-}
-
 .hero-stats li strong {
   color: var(--primary);
 }

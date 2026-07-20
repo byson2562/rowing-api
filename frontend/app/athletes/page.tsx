@@ -88,7 +88,6 @@ export default async function AthletesIndexPage() {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Athletes</p>
           <h1>選手別シングルスカル成績一覧</h1>
           <p className="subtitle">
             収録データで個人名が記録されているシングルスカル種目の選手、全{athletes.length}名の成績を所属団体別に掲載しています。

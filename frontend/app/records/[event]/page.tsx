@@ -113,12 +113,9 @@ export default async function EventRecordsPage({ params }: { params: Params }) {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing All-Time Records</p>
           <h1>{event}の歴代最速タイムランキング</h1>
           <p className="subtitle">
-            収録している全日本規模の大会結果（2009年以降・全{rows.length.toLocaleString()}件）から、
-            {event}の最速タイムTop{ranking.length}を掲載しています。現在の最速記録は
-            {best.organization}の{best.time_display}（{best.year}年）です。
+            全日本規模の大会結果（2009年以降）から、{event}の歴代最速タイムTop{ranking.length}を掲載しています。
           </p>
           <ShareXLink
             text={`${event}の歴代最速は ${best.time_display}（${best.organization}・${best.year}年） | RowingAPI`}

@@ -415,3 +415,16 @@
 - 変更: organizations/[slug]/page.tsx（h1・subtitle）、app/sitemap.ts、app/robots.ts
 - sitemap実測: /results/2010系がビルド時刻→2010-12-31(JST)に。トップ等の静的ページはnow維持
 - 本文の「ボート・漕艇」は団体ページのsubtitle 1箇所のみ（競艇との語衝突を避け複合語で自然に）
+
+## サブタイトル整理（ヒーロー圧縮） (2026-07-20)
+
+### Plan
+- [x] 1. 英語装飾ラベル(hero-kicker)を全ページから削除（CSSの残骸も掃除）
+- [x] 2. 検索トップのsubtitle削除（実績チップと重複のため）
+- [x] 3. 詳細ページのsubtitleを1文に圧縮（団体=銀銅は直下のメダルカードと重複、種目記録=最速記録はランキング1位と重複、選手=大会名を省略）
+- [x] 4. 一覧ページ（organizations/records/athletes/results）は実情報のため現状維持
+- [x] 5. tsc / build / E2E、モバイル390pxでファーストビュー改善を確認
+
+### Review
+- モバイルのファーストビューが圧縮され、検索トップでは結果ヘッダまで1画面に収まるようになった
+- SEOへの影響: キーワードはtitle/description/h1が担っており本文削減の影響は軽微

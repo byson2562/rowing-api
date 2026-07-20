@@ -73,7 +73,6 @@ export default async function ResultsIndexPage() {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Results Archive</p>
           <h1>年度別ローイング大会結果一覧</h1>
           <p className="subtitle">
             全日本選手権・全日本大学選手権・全日本新人選手権などのローイング（ボート）大会結果を年度別に掲載しています。

@@ -127,11 +127,10 @@ export default async function AthletePage({ params }: { params: Params }) {
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Athlete</p>
           <h1>{name}選手のシングルスカル成績</h1>
           <p className="subtitle">
-            {organizations.join("、")}所属として全{rows.length}レースを収録。自己ベストは{best.time_display}（{best.year}年{" "}
-            {best.competition_name}）{wins > 0 ? `、Final Aでの優勝は${wins}回` : ""}です。
+            {organizations.join("、")}所属・全{rows.length}レース収録。自己ベストは{best.time_display}（{best.year}年）
+            {wins > 0 ? `、Final A優勝${wins}回` : ""}です。
           </p>
           <ShareXLink
             text={`${name}選手のシングルスカル自己ベストは ${best.time_display}（${best.year}年） | RowingAPI`}

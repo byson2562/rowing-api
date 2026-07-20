@@ -142,7 +142,6 @@ export default async function CompetitionEventPage({ params }: { params: Params 
       </nav>
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Results {params.year}</p>
           <h1>
             {event}の結果（{params.year}年 {competition}）
           </h1>

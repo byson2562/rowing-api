@@ -656,9 +656,7 @@ export default function SearchPage({
     <main className="container">
       <header className="hero">
         <div>
-          <p className="hero-kicker">Rowing Results Database</p>
           <h1>ローイング大会結果データベース</h1>
-          <p className="subtitle">年度・大会・種目・団体で検索し、メダル傾向・優勝タイム推移を可視化</p>
           <ul className="hero-stats" aria-label="収録データの概要">
             <li>
               <strong>{DATASET_INDEX.total_count.toLocaleString()}</strong>レース収録
