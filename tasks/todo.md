@@ -428,3 +428,15 @@
 ### Review
 - モバイルのファーストビューが圧縮され、検索トップでは結果ヘッダまで1画面に収まるようになった
 - SEOへの影響: キーワードはtitle/description/h1が担っており本文削減の影響は軽微
+
+## GA4計測の復旧（Vercel移行後の停止対応） (2026-07-20)
+
+### Plan
+- [x] 1. NEXT_PUBLIC_GA_MEASUREMENT_ID（G-3WVHGY2Z3S）をVercel Production環境変数に設定
+- [x] 2. 本番を再デプロイして反映
+- [x] 3. 本番検証: gtag読み込み（正しいID）・page_view送信・カスタムイベント（search_execution等）のdataLayer流入を確認
+- [x] 4. Looker Studio KPIダッシュボード手順書（docs/kpi-dashboard.md）をコミット
+
+### Review
+- Vercel移行（7/19）〜本日までGA4は計測停止していたため、この期間のデータは欠損（復旧不能）
+- Vercel Web Analyticsは並行稼働中。日常はVercel、KPI（週次検索実行数）はGA4+Looker Studioの役割分担
