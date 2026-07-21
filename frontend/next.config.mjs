@@ -2,15 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
-  async redirects() {
-    return [
-      {
-        source: "/favicon.ico",
-        destination: "/favicon.svg",
-        permanent: true
-      }
-    ];
-  },
   webpack: (config, { dev }) => {
     if (dev) {
       config.cache = false;
