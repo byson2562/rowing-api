@@ -52,14 +52,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       type: "profile",
       locale: "ja_JP",
       url: path,
-      siteName: "RowingAPI",
-      title: `${title} | RowingAPI`,
+      siteName: "レガッタナビ",
+      title: `${title} | レガッタナビ`,
       description,
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }]
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | RowingAPI`,
+      title: `${title} | レガッタナビ`,
       description,
       images: [ogImage]
     }
@@ -133,7 +133,7 @@ export default async function AthletePage({ params }: { params: Params }) {
             {wins > 0 ? `、Final A優勝${wins}回` : ""}です。
           </p>
           <ShareXLink
-            text={`${name}選手のシングルスカル自己ベストは ${best.time_display}（${best.year}年） | RowingAPI`}
+            text={`${name}選手のシングルスカル自己ベストは ${best.time_display}（${best.year}年） | レガッタナビ`}
             path={path}
             hashtags={["ローイング", "ボート"]}
           />

@@ -110,14 +110,14 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
       type: "website",
       locale: "ja_JP",
       ...(canonical ? { url: canonical } : {}),
-      siteName: "RowingAPI",
-      title: `${title} | RowingAPI`,
+      siteName: "レガッタナビ",
+      title: `${title} | レガッタナビ`,
       description,
       images: [{ url: ogImage, width: 1200, height: 630, alt: label }]
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | RowingAPI`,
+      title: `${title} | レガッタナビ`,
       description,
       images: [ogImage]
     }
@@ -158,18 +158,18 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
     "@graph": [
       {
         "@type": "WebSite",
-        name: "RowingAPI",
+        name: "レガッタナビ",
         url: siteUrl,
         inLanguage: "ja"
       },
       {
         "@type": "Dataset",
-        name: "RowingAPI ローイング記録データセット",
+        name: "レガッタナビ ローイング記録データセット",
         description: "日本ローイング協会のボート・ローイング大会結果データを検索・可視化できるデータセット",
         url: siteUrl,
         creator: {
           "@type": "Organization",
-          name: "RowingAPI",
+          name: "レガッタナビ",
           logo: `${siteUrl}/og.svg`
         }
       }

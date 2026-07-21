@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ja_JP",
     url: "/athletes",
-    siteName: "RowingAPI",
-    title: "選手別シングルスカル成績一覧 | RowingAPI",
+    siteName: "レガッタナビ",
+    title: "選手別シングルスカル成績一覧 | レガッタナビ",
     description: "ローイング（ボート）シングルスカル種目の選手別成績一覧。",
     images: [
       {

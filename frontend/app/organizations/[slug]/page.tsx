@@ -59,14 +59,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       type: "website",
       locale: "ja_JP",
       url: path,
-      siteName: "RowingAPI",
-      title: `${title} | RowingAPI`,
+      siteName: "レガッタナビ",
+      title: `${title} | レガッタナビ`,
       description,
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }]
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | RowingAPI`,
+      title: `${title} | レガッタナビ`,
       description,
       images: [ogImage]
     }
@@ -143,7 +143,7 @@ export default async function OrganizationPage({ params }: { params: Params }) {
             {organization}のローイング（ボート・漕艇）大会記録を通算{rows.length.toLocaleString()}件収録しています。
           </p>
           <ShareXLink
-            text={`${organization}のローイング成績（優勝${medals.gold}回・通算${rows.length}件） | RowingAPI`}
+            text={`${organization}のローイング成績（優勝${medals.gold}回・通算${rows.length}件） | レガッタナビ`}
             path={path}
             hashtags={["ローイング", "ボート"]}
           />

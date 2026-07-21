@@ -37,14 +37,14 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
       type: "website",
       locale: "ja_JP",
       url: `/results/${year}`,
-      siteName: "RowingAPI",
-      title: `${title} | RowingAPI`,
+      siteName: "レガッタナビ",
+      title: `${title} | レガッタナビ`,
       description,
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }]
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | RowingAPI`,
+      title: `${title} | レガッタナビ`,
       description,
       images: [ogImage]
     }

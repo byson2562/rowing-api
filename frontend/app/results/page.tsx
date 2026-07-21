@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ja_JP",
     url: "/results",
-    siteName: "RowingAPI",
-    title: "年度別ローイング大会結果一覧 | RowingAPI",
+    siteName: "レガッタナビ",
+    title: "年度別ローイング大会結果一覧 | レガッタナビ",
     description: "ローイング（ボート）大会結果を年度別に一覧できます。",
     images: [
       {

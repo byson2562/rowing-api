@@ -1,6 +1,6 @@
-# RowingAPI
+# レガッタナビ (regattanavi)
 
-日本ローイング協会の大会記録を検索・可視化する Next.js サービスです。
+日本ローイング協会の大会記録を検索・可視化する Next.js サービスです。旧名称は RowingAPI（リポジトリ名・既存ドメイン rowing-api.com に名残があります）。
 
 ## 構成
 - Frontend/API: Next.js (App Router)

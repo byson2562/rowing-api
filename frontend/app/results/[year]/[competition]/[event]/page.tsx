@@ -63,14 +63,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       type: "website",
       locale: "ja_JP",
       url: path,
-      siteName: "RowingAPI",
-      title: `${title} | RowingAPI`,
+      siteName: "レガッタナビ",
+      title: `${title} | レガッタナビ`,
       description,
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }]
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | RowingAPI`,
+      title: `${title} | レガッタナビ`,
       description,
       images: [ogImage]
     }
@@ -154,8 +154,8 @@ export default async function CompetitionEventPage({ params }: { params: Params 
           <ShareXLink
             text={
               winner
-                ? `${params.year}年 ${competition} ${event} 優勝は${winner.organization}（${winner.time_display}） | RowingAPI`
-                : `${params.year}年 ${competition} ${event}の結果 | RowingAPI`
+                ? `${params.year}年 ${competition} ${event} 優勝は${winner.organization}（${winner.time_display}） | レガッタナビ`
+                : `${params.year}年 ${competition} ${event}の結果 | レガッタナビ`
             }
             path={path}
             hashtags={["ローイング", "ボート"]}

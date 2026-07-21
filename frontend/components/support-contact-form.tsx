@@ -18,9 +18,9 @@ export function SupportContactForm() {
     event.preventDefault();
     if (!canSubmit) return;
 
-    const subject = "RowingAPI 協賛・問い合わせ";
+    const subject = "レガッタナビ 協賛・問い合わせ";
     const body = [
-      "RowingAPI運営者様",
+      "レガッタナビ運営者様",
       "",
       `お名前: ${name.trim()}`,
       `団体名: ${organization.trim() || "未入力"}`,

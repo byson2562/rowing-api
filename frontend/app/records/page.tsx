@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ja_JP",
     url: "/records",
-    siteName: "RowingAPI",
-    title: "種目別 歴代最速タイムランキング | RowingAPI",
+    siteName: "レガッタナビ",
+    title: "種目別 歴代最速タイムランキング | レガッタナビ",
     description: "ローイング（ボート）の種目別・歴代最速タイムランキング。",
     images: [
       {

@@ -4,14 +4,14 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
   description:
-    "RowingAPIのプライバシーポリシー。アクセス解析・広告・掲載データの取り扱いと、訂正・削除依頼の窓口を案内しています。",
+    "レガッタナビのプライバシーポリシー。アクセス解析・広告・掲載データの取り扱いと、訂正・削除依頼の窓口を案内しています。",
   alternates: {
     canonical: "/privacy"
   },
   openGraph: {
-    title: "プライバシーポリシー | RowingAPI",
+    title: "プライバシーポリシー | レガッタナビ",
     description:
-      "RowingAPIのプライバシーポリシー。アクセス解析・広告・掲載データの取り扱いと、訂正・削除依頼の窓口を案内しています。",
+      "レガッタナビのプライバシーポリシー。アクセス解析・広告・掲載データの取り扱いと、訂正・削除依頼の窓口を案内しています。",
     url: "/privacy"
   }
 };
@@ -25,7 +25,7 @@ export default function PrivacyPage() {
         <div className="lp-hero-top">
           <h1>プライバシーポリシー</h1>
           <p className="lp-lead">
-            RowingAPI（以下「当サイト」）における利用者情報および掲載データの取り扱いについて定めます。
+            レガッタナビ（以下「当サイト」）における利用者情報および掲載データの取り扱いについて定めます。
           </p>
         </div>
       </section>
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
           <p>
             本ポリシーおよび掲載データに関するお問い合わせは、
             <a
-              href={`mailto:${contactEmail}?subject=RowingAPI%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6`}
+              href={`mailto:${contactEmail}?subject=レガッタナビ%20%E3%83%97%E3%83%A9%E3%82%A4%E3%83%90%E3%82%B7%E3%83%BC%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6`}
             >
               {contactEmail}
             </a>

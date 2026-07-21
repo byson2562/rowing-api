@@ -8,9 +8,9 @@ import {
 } from "../../lib/results-data";
 
 export const metadata: Metadata = {
-  title: "RowingAPIとは（データ範囲・使い方）",
+  title: "レガッタナビとは（データ範囲・使い方）",
   description:
-    "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果を横断して確認できます。",
+    "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるレガッタナビの案内ページ。全日本ローイング選手権を含む主要大会結果を横断して確認できます。",
   keywords: [
     "ローイング 大会 結果",
     "ローイング 大会結果",
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     canonical: "/rowing-results"
   },
   openGraph: {
-    title: "RowingAPIとは（データ範囲・使い方）",
+    title: "レガッタナビとは（データ範囲・使い方）",
     description:
-      "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるRowingAPIの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
+      "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるレガッタナビの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
     url: "/rowing-results"
   }
 };
@@ -48,7 +48,7 @@ export default async function RowingResultsPage() {
     {
       question: "ローイング（ボート）の大会結果はどこで見られますか？",
       answer:
-        "RowingAPIの検索ページで、全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は大会結果一覧ページからもたどれます。"
+        "レガッタナビの検索ページで、全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は大会結果一覧ページからもたどれます。"
     },
     {
       question: "どの期間・どの大会のデータを収録していますか？",
@@ -100,7 +100,7 @@ export default async function RowingResultsPage() {
         <img
           className="lp-hero-preview"
           src="/lp-fv-screenshot.png"
-          alt="RowingAPI検索画面のプレビュー"
+          alt="レガッタナビ検索画面のプレビュー"
           width={1446}
           height={1138}
         />
@@ -149,7 +149,7 @@ export default async function RowingResultsPage() {
       <section className="lp-detail" aria-labelledby="lp-detail-heading">
         <h2 id="lp-detail-heading" className="lp-section-title">機能とデータ概要</h2>
         <div className="lp-detail-main">
-          <h3>RowingAPIでできること</h3>
+          <h3>レガッタナビでできること</h3>
           <ul>
             <li>ローイング記録の検索（年・大会・種目・団体）</li>
             <li>Final A基準での団体別メダル傾向の可視化</li>

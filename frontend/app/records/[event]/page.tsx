@@ -50,14 +50,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       type: "website",
       locale: "ja_JP",
       url: path,
-      siteName: "RowingAPI",
-      title: `${title} | RowingAPI`,
+      siteName: "レガッタナビ",
+      title: `${title} | レガッタナビ`,
       description,
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }]
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | RowingAPI`,
+      title: `${title} | レガッタナビ`,
       description,
       images: [ogImage]
     }
@@ -118,7 +118,7 @@ export default async function EventRecordsPage({ params }: { params: Params }) {
             全日本規模の大会結果（2009年以降）から、{event}の歴代最速タイムTop{ranking.length}を掲載しています。
           </p>
           <ShareXLink
-            text={`${event}の歴代最速は ${best.time_display}（${best.organization}・${best.year}年） | RowingAPI`}
+            text={`${event}の歴代最速は ${best.time_display}（${best.organization}・${best.year}年） | レガッタナビ`}
             path={path}
             hashtags={["ローイング", "ボート"]}
           />

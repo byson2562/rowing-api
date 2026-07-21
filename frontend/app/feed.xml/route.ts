@@ -31,7 +31,7 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>RowingAPI 大会結果</title>
+    <title>レガッタナビ 大会結果</title>
     <link>${siteUrl}/results</link>
     <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
     <description>ローイング（ボート）大会結果の新着フィード。全日本選手権・全日本大学選手権などの記録を大会単位で配信します。</description>

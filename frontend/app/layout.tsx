@@ -27,11 +27,11 @@ const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "ローイング・ボート記録検索 | RowingAPI",
-    template: "%s | RowingAPI",
+    default: "ローイング・ボート記録検索 | レガッタナビ",
+    template: "%s | レガッタナビ",
   },
   description:
-    "ローイング（ボート）記録を年度・大会・種目・団体で検索できるRowingAPI。ローイング大会結果を横断して可視化できます。",
+    "ローイング（ボート）記録を年度・大会・種目・団体で検索できるレガッタナビ。ローイング大会結果を横断して可視化できます。",
   keywords: [
     "ローイング 記録",
     "ローイング 大会 結果",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   // オリジンへ丸めてしまうため、レイアウトの一律指定はフィルタ付きURLと相性が悪い）
   alternates: {
     types: {
-      "application/rss+xml": [{ url: "/feed.xml", title: "RowingAPI 大会結果" }],
+      "application/rss+xml": [{ url: "/feed.xml", title: "レガッタナビ 大会結果" }],
     },
   },
   icons: {
@@ -65,24 +65,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ja_JP",
     url: "/",
-    siteName: "RowingAPI",
-    title: "ローイング・ボート記録検索 | RowingAPI",
+    siteName: "レガッタナビ",
+    title: "ローイング・ボート記録検索 | レガッタナビ",
     description:
-      "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
+      "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるレガッタナビ。",
     images: [
       {
         url: `${siteUrl}/og`,
         width: 1200,
         height: 630,
-        alt: "RowingAPI",
+        alt: "レガッタナビ",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ローイング・ボート記録検索 | RowingAPI",
+    title: "ローイング・ボート記録検索 | レガッタナビ",
     description:
-      "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるRowingAPI。",
+      "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるレガッタナビ。",
     images: [`${siteUrl}/og`],
   },
   robots: {
@@ -109,7 +109,7 @@ export default function RootLayout({
         <header className="site-header">
           <div className="site-header-inner">
             <Link href="/" className="site-brand">
-              RowingAPI
+              レガッタナビ
             </Link>
             <nav className="site-nav" aria-label="グローバルナビゲーション">
               <Link href="/" className="site-nav-link">
@@ -128,7 +128,7 @@ export default function RootLayout({
                 選手別
               </Link>
               <Link href="/rowing-results" className="site-nav-link">
-                RowingAPIとは
+                レガッタナビとは
               </Link>
             </nav>
           </div>
@@ -137,7 +137,7 @@ export default function RootLayout({
         <footer className="site-footer">
           <div className="site-footer-inner">
             <p className="site-footer-copy">
-              © {new Date().getFullYear()} RowingAPI
+              © {new Date().getFullYear()} レガッタナビ
             </p>
             <nav
               className="site-footer-nav"
@@ -162,7 +162,7 @@ export default function RootLayout({
                 RSS
               </a>
               <Link href="/rowing-results" className="site-footer-link">
-                RowingAPIとは
+                レガッタナビとは
               </Link>
               <Link href="/privacy" className="site-footer-link">
                 プライバシーポリシー
