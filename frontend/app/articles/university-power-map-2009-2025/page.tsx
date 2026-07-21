@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     url: `/articles/${meta.slug}`,
     images: [
       {
-        url: `${siteUrl}/og?title=${encodeURIComponent("大学ボートの勢力図 2009-2025")}&subtitle=${encodeURIComponent("金メダル202個のデータ分析")}`,
+        url: `${siteUrl}/og?title=${encodeURIComponent("大学ボートの勢力図 2009-2025")}&subtitle=${encodeURIComponent("金メダル202個を男女別に集計")}`,
         width: 1200,
         height: 630,
         alt: meta.title
@@ -37,6 +37,62 @@ const ERA_SPLIT = 2018; // 前期: 2009-2017 / 後期: 2018-2025
 const isUnivChampionship = (name: string) => /大学(ローイング)?選手権/.test(name);
 const isUniversity = (org: string) => /大学$/.test(org);
 
+type GoldRow = Awaited<ReturnType<typeof allResults>>[number];
+
+function countBy(filtered: GoldRow[]): [string, number][] {
+  const map = new Map<string, number>();
+  filtered.forEach((r) => map.set(r.organization, (map.get(r.organization) ?? 0) + 1));
+  return [...map.entries()].sort((a, b) => b[1] - a[1]);
+}
+
+function OrgLink({ name }: { name: string }) {
+  return <Link href={`/organizations/${organizationSlug(name)}`}>{name}</Link>;
+}
+
+function GoldBarChart({ ranking, label }: { ranking: [string, number][]; label: string }) {
+  const max = ranking[0]?.[1] ?? 1;
+  return (
+    <div className="article-chart" role="img" aria-label={label}>
+      {ranking.map(([org, count]) => (
+        <div className="article-bar-row" key={org}>
+          <span className="article-bar-label">{org.replace(/大学$/, "大")}</span>
+          <span className="article-bar-track">
+            <span className="article-bar-fill" style={{ width: `${(count / max) * 100}%` }} />
+          </span>
+          <span className="article-bar-value">{count}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EraGrid({ first, second }: { first: [string, number][]; second: [string, number][] }) {
+  return (
+    <div className="article-era-grid">
+      <div>
+        <h3>2009-2017</h3>
+        <ol>
+          {first.map(([org, count]) => (
+            <li key={org}>
+              {org} <strong>{count}</strong>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div>
+        <h3>2018-2025</h3>
+        <ol>
+          {second.map(([org, count]) => (
+            <li key={org}>
+              {org} <strong>{count}</strong>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
+
 export default async function UniversityPowerMapArticle() {
   const rows = await allResults();
   const golds = rows.filter(
@@ -49,21 +105,28 @@ export default async function UniversityPowerMapArticle() {
       r.year <= TO_YEAR
   );
 
-  const countBy = (filtered: typeof golds) => {
-    const map = new Map<string, number>();
-    filtered.forEach((r) => map.set(r.organization, (map.get(r.organization) ?? 0) + 1));
-    return [...map.entries()].sort((a, b) => b[1] - a[1]);
-  };
+  const men = golds.filter((r) => r.event_name.startsWith("男子"));
+  const women = golds.filter((r) => r.event_name.startsWith("女子"));
 
-  const totalRanking = countBy(golds).slice(0, 10);
-  const maxTotal = totalRanking[0]?.[1] ?? 1;
-  const eraFirst = countBy(golds.filter((r) => r.year < ERA_SPLIT)).slice(0, 5);
-  const eraSecond = countBy(golds.filter((r) => r.year >= ERA_SPLIT)).slice(0, 5);
+  const menRanking = countBy(men).slice(0, 8);
+  const womenRanking = countBy(women).slice(0, 8);
+  const menEraFirst = countBy(men.filter((r) => r.year < ERA_SPLIT)).slice(0, 5);
+  const menEraSecond = countBy(men.filter((r) => r.year >= ERA_SPLIT)).slice(0, 5);
+  const womenEraFirst = countBy(women.filter((r) => r.year < ERA_SPLIT)).slice(0, 5);
+  const womenEraSecond = countBy(women.filter((r) => r.year >= ERA_SPLIT)).slice(0, 5);
 
-  const yearlyTop: { year: number; entries: [string, number][] }[] = [];
+  const yearlyTop: { year: number; men: string; women: string }[] = [];
+  const topLabel = (entries: [string, number][]) =>
+    entries
+      .slice(0, 1)
+      .map(([org, count]) => `${org}(${count})`)
+      .join("") || "-";
   for (let y = FROM_YEAR; y <= TO_YEAR; y++) {
-    const entries = countBy(golds.filter((r) => r.year === y)).slice(0, 2);
-    if (entries.length > 0) yearlyTop.push({ year: y, entries });
+    yearlyTop.push({
+      year: y,
+      men: topLabel(countBy(men.filter((r) => r.year === y))),
+      women: topLabel(countBy(women.filter((r) => r.year === y)))
+    });
   }
 
   const jsonLd = {
@@ -88,109 +151,89 @@ export default async function UniversityPowerMapArticle() {
           </p>
           <h1>データで見る大学ボートの勢力図 2009-2025</h1>
           <p className="lp-lead">
-            全日本大学ローイング選手権のFinal A優勝、17年分・202件。レガッタナビの収録データを大学別に集計すると、「日大一強」だけでは説明できない変化が見えてきました。
+            全日本大学ローイング選手権のFinal
+            A優勝は、17年間で202件(男子125・女子77)。男女別に数え直すと、「大学ボートの勢力図」はまったく別の2つの物語でした。
           </p>
         </header>
 
         <h2>集計の前提</h2>
         <p>
           対象は{FROM_YEAR}年から{TO_YEAR}
-          年までの全日本大学ローイング選手権(旧・全日本大学選手権)で、Final
-          Aを1位で終えたクルーを「金メダル」として数えています。合同開催のレガッタに出場した社会人クルーなどは除き、大学のクルーだけを集計対象にしました。元データはこのサイトの
+          年までの全日本大学ローイング選手権(旧・全日本大学選手権)。Final
+          Aを1位で終えたクルーを「金メダル」として数え、男子種目と女子種目を分けて集計しました。合同開催レガッタに出た社会人クルーは除外し、大学のクルーだけが対象です。元データは
           <Link href="/results">大会結果アーカイブ</Link>
-          と同じものなので、気になる数字があれば個別のレースまで遡って確認できます。
+          と同じものなので、疑わしい数字は個別のレースまで遡れます。
         </p>
 
-        <h2>累計ランキング: 日本大学が67個で頭ひとつ抜けている</h2>
+        <h2>男子: 125個中67個。日大の一強は今も続く</h2>
         <p>
-          まず17年分をまとめて見ると、<Link href={`/organizations/${organizationSlug("日本大学")}`}>日本大学</Link>
-          が67個。2位の<Link href={`/organizations/${organizationSlug("早稲田大学")}`}>早稲田大学</Link>
-          (36個)にほぼダブルスコアをつけています。
+          男子の主役は迷いなく<OrgLink name="日本大学" />
+          です。17年間の金125個のうち67個、割合にして54%。2位の<OrgLink name="仙台大学" />
+          が10個なので、比較の相手がいません。
         </p>
-        <div className="article-chart" role="img" aria-label="大学別の金メダル累計ランキング">
-          {totalRanking.map(([org, count]) => (
-            <div className="article-bar-row" key={org}>
-              <span className="article-bar-label">{org.replace(/大学$/, "大")}</span>
-              <span className="article-bar-track">
-                <span className="article-bar-fill" style={{ width: `${(count / maxTotal) * 100}%` }} />
-              </span>
-              <span className="article-bar-value">{count}</span>
-            </div>
-          ))}
-        </div>
+        <GoldBarChart ranking={menRanking} label="男子の大学別金メダル累計ランキング" />
+        <p>
+          ただ、時期を分けると勢いの変化は見えます。前期(2009-2017)の日大は9年で47個、年平均5個以上。筆者が現役だった2010年代前半、男子のFinal
+          Aで日大の金が5個を超える光景は「いつものこと」でした。後期(2018-2025)は20個で、首位のまま数を半分に減らしています。空いた分を拾ったのが仙台大(8個)、
+          <OrgLink name="富山国際大学" />(5個)、<OrgLink name="日本体育大学" />
+          あたりで、2019年と2020年は仙台大が、2023年は富山国際大が年間最多に立ちました。
+        </p>
+        <EraGrid first={menEraFirst} second={menEraSecond} />
 
-        <h2>前期と後期で分けると、景色が変わる</h2>
+        <h2>女子: 早稲田の牙城に、立命館が0から10個</h2>
         <p>
-          ところが{ERA_SPLIT}年を境に前後半へ分けると、印象はかなり違います。前期(2009-2017)の日本大学は9年で47個。年平均5個以上を獲り続けた、文字どおりの一強時代です。後期(2018-2025)も日本大学が20個で首位は守っているものの、ペースは半分以下に落ちました。
+          女子は男子と勢力図が重なりません。累計首位は<OrgLink name="早稲田大学" />
+          の30個で、女子の金77個の約4割。2015年には1年で4個を獲っています。
         </p>
-        <div className="article-era-grid">
-          <div>
-            <h3>2009-2017</h3>
-            <ol>
-              {eraFirst.map(([org, count]) => (
-                <li key={org}>
-                  {org} <strong>{count}</strong>
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div>
-            <h3>2018-2025</h3>
-            <ol>
-              {eraSecond.map(([org, count]) => (
-                <li key={org}>
-                  {org} <strong>{count}</strong>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
+        <GoldBarChart ranking={womenRanking} label="女子の大学別金メダル累計ランキング" />
         <p>
-          後期の2位に入ったのは<Link href={`/organizations/${organizationSlug("仙台大学")}`}>仙台大学</Link>
-          です。前期はわずか2個だったのが後期は14個。2019年・2023年・2025年には年間最多金メダル校になっています。
-          <Link href={`/organizations/${organizationSlug("立命館大学")}`}>立命館大学</Link>や
-          <Link href={`/organizations/${organizationSlug("立教大学")}`}>立教大学</Link>
-          も後期に数字を伸ばした一方、前期3位だった明治大学は14個から5個へ。関東の伝統校が上位を占める構図から、地方・関西勢を含めた分散へと移っています。
+          この8年で最も動いたのは<OrgLink name="立命館大学" />
+          です。前期は0個。それが後期だけで10個と、早稲田(後期11個)とほぼ並ぶところまで来ました。
+          <OrgLink name="明治大学" />
+          が9個から3個に減らした一方、仙台大は女子でも2023年・2025年に年間最多。男子で起きた「新興勢力の台頭」が、女子では数年遅れて、より急な角度で起きている印象です。
         </p>
+        <EraGrid first={womenEraFirst} second={womenEraSecond} />
 
-        <h2>年別の最多金メダル校: 「7個」の時代は終わった</h2>
+        <h2>年別の最多校を並べる</h2>
         <p>
-          年ごとの最多校を並べると、分散の進み方がはっきりします。2009年と2012年の日本大学は1校で7個。近年は最多校でも3〜5個で、2021年のように最多が2個という年もありました。1校が種目を総なめにする時代は、データ上はすでに終わっています。
+          年ごとの最多校です。男子は2009年・2012年に日大が7個。この「1校で7個」は後期には一度も出ていません。女子は2015年の早稲田4個が最多で、近年は男女とも2〜3個で最多が決まる年が続きます。
         </p>
         <table className="article-table">
           <thead>
             <tr>
               <th scope="col">年</th>
-              <th scope="col">最多金メダル校(個数)</th>
+              <th scope="col">男子の最多校(個数)</th>
+              <th scope="col">女子の最多校(個数)</th>
             </tr>
           </thead>
           <tbody>
-            {yearlyTop.map(({ year, entries }) => (
+            {yearlyTop.map(({ year, men: m, women: w }) => (
               <tr key={year}>
                 <td>
                   <Link href={`/results/${year}`}>{year}</Link>
                 </td>
-                <td>{entries.map(([org, count]) => `${org}(${count})`).join(" / ")}</td>
+                <td>{m}</td>
+                <td>{w}</td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        <h2>まとめ: 勢力図は「一強」から「群雄割拠」へ</h2>
+        <h2>まとめ</h2>
         <p>
-          累計では今も日本大学の存在感が圧倒的です。ただ、直近8年に限れば首位のリードは縮み、仙台大学をはじめ新しい常連校が増えました。個人的には、2019年に仙台大学が初めて年間最多に立った年が転換点だったと見ています。
+          男子は「日大の一強が緩みつつ続く」、女子は「早稲田の牙城に立命館と仙台大が食い込んだ」。男女を混ぜた集計では、この2つの物語が互いを打ち消してしまいます。勢力図の話をするときは、まず男女を分ける。今回いちばんの収穫はこれでした。
         </p>
         <p>
-          このあたりの変化は、大会や種目を絞って眺めるとさらに面白くなります。
-          <Link href="/">検索ページ</Link>で年度や団体を指定すれば、この記事の集計の元になった個々のレース結果をそのまま確認できます。
-          <Link href="/organizations">団体別ページ</Link>には各大学のメダル推移もあります。
+          気になった大学があれば、<Link href="/organizations">団体別ページ</Link>
+          でメダル推移を、<Link href="/">検索ページ</Link>
+          で個々のレース結果を確認できます。この記事の集計は全部そこから再現できます。
         </p>
 
         <aside className="article-note">
           <h3>データについての注記</h3>
           <ul>
             <li>集計対象はFinal Aの1位のみ。同一年に複数種目で優勝した場合はその数だけ数えています。</li>
-            <li>本サイトの収録範囲はFinal B以上です。2021年など、開催形態が特殊な年は種目数自体が少ないことがあります。</li>
+            <li>本サイトの収録範囲はFinal B以上です。2021年など開催形態が特殊な年は、種目数自体が少ないことがあります。</li>
             <li>大会名の表記は年により異なります(全日本大学選手権/全日本大学ローイング選手権)。両方を対象にしています。</li>
           </ul>
         </aside>
