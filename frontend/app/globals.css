@@ -1182,9 +1182,13 @@ th {
 
 .lp-hero h1 {
   margin: 8px 0 0;
-  max-width: 20ch;
-  font-size: clamp(1.95rem, 3.5vw, 2.6rem);
-  line-height: 1.16;
+  /* 折り返しはlp-h1-lineの文節境界でのみ発生させる(「を、」等の孤立行を防ぐ) */
+  font-size: clamp(1.75rem, 3.5vw, 2.3rem);
+  line-height: 1.22;
+}
+
+.lp-h1-line {
+  display: inline-block;
 }
 
 .lp-lead {
@@ -1261,16 +1265,42 @@ th {
   line-height: 1.2;
 }
 
+.lp-hero-preview-link {
+  display: block;
+  margin-top: 16px;
+  position: relative;
+  z-index: 2;
+  border-radius: 18px;
+}
+
 .lp-hero-preview {
   width: 100%;
   height: auto;
-  margin-top: 16px;
   border: 1px solid #c8d9ee;
   border-radius: 18px;
   box-shadow: 0 18px 34px rgba(18, 40, 70, 0.16);
   display: block;
-  position: relative;
-  z-index: 2;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.lp-hero-preview-link:hover .lp-hero-preview,
+.lp-hero-preview-link:focus-visible .lp-hero-preview {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 42px rgba(18, 40, 70, 0.22);
+}
+
+/* 広い画面ではコピーとプレビューを左右2カラムに(右側の空洞化を防ぐ) */
+@media (min-width: 960px) {
+  .lp-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 10fr) minmax(0, 11fr);
+    gap: 32px;
+    align-items: center;
+  }
+
+  .lp-hero-preview-link {
+    margin-top: 0;
+  }
 }
 
 .lp-btn {
