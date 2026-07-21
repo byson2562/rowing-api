@@ -198,6 +198,7 @@ export default async function UniversityPowerMapArticle() {
         <p>
           年ごとの最多校です。男子は2009年・2012年に日大が7個。この「1校で7個」は後期には一度も出ていません。女子は2015年の早稲田4個が最多で、近年は男女とも2〜3個で最多が決まる年が続きます。
         </p>
+        <div className="article-table-wrap">
         <table className="article-table">
           <thead>
             <tr>
@@ -218,6 +219,7 @@ export default async function UniversityPowerMapArticle() {
             ))}
           </tbody>
         </table>
+        </div>
 
         <h2>まとめ</h2>
         <p>

@@ -2436,6 +2436,23 @@ td.col-rank {
 
 .article-page {
   max-width: 820px;
+  /* .lp-pageのgridは暗黙列が子のmin-content幅まで広がるため、列を親幅で固定する
+     (表など幅の大きい要素がmax-widthを突き破るのを防ぐ) */
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.article-body {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.article-table-wrap {
+  margin: 1.4em 0 0;
+  overflow-x: auto;
+}
+
+.article-table-wrap .article-table {
+  margin: 0;
 }
 
 .article-header h1 {
