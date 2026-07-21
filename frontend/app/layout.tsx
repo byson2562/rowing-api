@@ -127,7 +127,7 @@ export default function RootLayout({
               <Link href="/athletes" className="site-nav-link">
                 選手別
               </Link>
-              <Link href="/rowing-results" className="site-nav-link">
+              <Link href="/about" className="site-nav-link">
                 レガッタナビとは
               </Link>
             </nav>
@@ -161,7 +161,7 @@ export default function RootLayout({
               <a href="/feed.xml" className="site-footer-link">
                 RSS
               </a>
-              <Link href="/rowing-results" className="site-footer-link">
+              <Link href="/about" className="site-footer-link">
                 レガッタナビとは
               </Link>
               <Link href="/privacy" className="site-footer-link">
@@ -207,7 +207,7 @@ export default function RootLayout({
                         });
                       }
 
-                      if (window.location.pathname === '/rowing-results') {
+                      if (window.location.pathname === '/about') {
                         sendEvent('rowing_results_page_view', {
                           page_path: window.location.pathname,
                           page_title: document.title

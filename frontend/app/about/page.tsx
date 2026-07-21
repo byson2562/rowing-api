@@ -18,13 +18,13 @@ export const metadata: Metadata = {
     "ボート 大会 結果"
   ],
   alternates: {
-    canonical: "/rowing-results"
+    canonical: "/about"
   },
   openGraph: {
     title: "レガッタナビとは（データ範囲・使い方）",
     description:
       "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるレガッタナビの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
-    url: "/rowing-results"
+    url: "/about"
   }
 };
 
