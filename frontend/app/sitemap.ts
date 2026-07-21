@@ -9,6 +9,7 @@ import {
   listOrganizations,
   organizationSlug
 } from "../lib/results-data";
+import { articles } from "../lib/articles";
 import { siteUrl } from "../lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -63,6 +64,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.3
     },
     {
+      url: `${siteUrl}/articles`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7
+    },
+    {
       url: `${siteUrl}/results`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -87,6 +94,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7
     }
   ];
+
+  articles.forEach((article) => {
+    entries.push({
+      url: `${siteUrl}/articles/${article.slug}`,
+      lastModified: new Date(`${article.updatedAt ?? article.publishedAt}T00:00:00+09:00`),
+      changeFrequency: "monthly",
+      priority: 0.7
+    });
+  });
 
   (await listAthletes()).forEach((name) => {
     entries.push({

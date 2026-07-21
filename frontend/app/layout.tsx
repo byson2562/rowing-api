@@ -127,6 +127,9 @@ export default function RootLayout({
               <Link href="/athletes" className="site-nav-link">
                 選手別
               </Link>
+              <Link href="/articles" className="site-nav-link">
+                記事
+              </Link>
               <Link href="/about" className="site-nav-link">
                 レガッタナビとは
               </Link>
@@ -157,6 +160,9 @@ export default function RootLayout({
               </Link>
               <Link href="/athletes" className="site-footer-link">
                 選手別
+              </Link>
+              <Link href="/articles" className="site-footer-link">
+                記事
               </Link>
               <a href="/feed.xml" className="site-footer-link">
                 RSS
