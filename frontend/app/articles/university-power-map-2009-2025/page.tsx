@@ -116,11 +116,15 @@ export default async function UniversityPowerMapArticle() {
   const womenEraSecond = countBy(women.filter((r) => r.year >= ERA_SPLIT)).slice(0, 5);
 
   const yearlyTop: { year: number; men: string; women: string }[] = [];
-  const topLabel = (entries: [string, number][]) =>
-    entries
-      .slice(0, 1)
+  // 最多と同数のクルーが複数あればすべて併記する(タイ記録を落とさない)
+  const topLabel = (entries: [string, number][]) => {
+    if (entries.length === 0) return "-";
+    const max = entries[0][1];
+    return entries
+      .filter(([, count]) => count === max)
       .map(([org, count]) => `${org}(${count})`)
-      .join("") || "-";
+      .join(" / ");
+  };
   for (let y = FROM_YEAR; y <= TO_YEAR; y++) {
     yearlyTop.push({
       year: y,
@@ -147,7 +151,7 @@ export default async function UniversityPowerMapArticle() {
       <article className="article-body">
         <header className="article-header">
           <p className="article-card-meta">
-            <time dateTime={meta.publishedAt}>2026年7月21日</time> · レガッタナビ編集(中村匠)
+            <time dateTime={meta.publishedAt}>2026年7月21日</time> · レガッタナビ編集
           </p>
           <h1>データで見る大学ボートの勢力図 2009-2025</h1>
           <p className="lp-lead">
@@ -210,11 +214,11 @@ export default async function UniversityPowerMapArticle() {
           <tbody>
             {yearlyTop.map(({ year, men: m, women: w }) => (
               <tr key={year}>
-                <td>
+                <td data-label="年" className="article-table-year">
                   <Link href={`/results/${year}`}>{year}</Link>
                 </td>
-                <td>{m}</td>
-                <td>{w}</td>
+                <td data-label="男子">{m}</td>
+                <td data-label="女子">{w}</td>
               </tr>
             ))}
           </tbody>

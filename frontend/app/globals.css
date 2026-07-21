@@ -2583,3 +2583,65 @@ td.col-rank {
   line-height: 1.8;
   font-size: 14px;
 }
+
+/* 記事テーブル: 狭い画面では横スクロールをやめ、年ごとのカードに積む */
+@media (max-width: 640px) {
+  .article-table-wrap {
+    overflow-x: visible;
+  }
+
+  .article-table {
+    min-width: 0;
+    font-size: 13px;
+  }
+
+  .article-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .article-table,
+  .article-table tbody,
+  .article-table tr,
+  .article-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .article-table tr {
+    border: 1px solid #d7e3f4;
+    border-radius: 12px;
+    padding: 4px 14px;
+    margin-bottom: 10px;
+    background: #ffffff;
+  }
+
+  .article-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1px solid #eef3fb;
+    padding: 8px 0;
+    text-align: right;
+  }
+
+  .article-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .article-table td::before {
+    content: attr(data-label);
+    color: #5d7398;
+    font-weight: 700;
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  .article-table-year {
+    font-weight: 800;
+  }
+}
