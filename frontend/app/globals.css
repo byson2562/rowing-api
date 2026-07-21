@@ -945,22 +945,38 @@ th {
 
 @media (max-width: 768px) {
   .site-header-inner {
-    padding: 9px 14px;
-    gap: 10px;
+    padding: 9px 0 0 0;
+    gap: 0;
     flex-wrap: wrap;
   }
 
   .site-brand {
     font-size: 15px;
+    padding: 0 14px;
   }
 
+  /* ナビは横スクロールのタブバーにする（リンクを隠さず、タップ領域を確保する） */
   .site-nav {
-    margin-left: auto;
-    gap: 14px;
+    width: 100%;
+    gap: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    /* 右パディングはフェード幅ぶん広げ、末尾までスクロールした時に最後のリンクがフェードに掛からないようにする */
+    padding: 0 32px 0 6px;
+    /* 右端をフェードさせて「まだ続きがある」ことを示唆する */
+    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  }
+
+  .site-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .site-nav-link {
-    font-size: 12px;
+    font-size: 13px;
+    padding: 12px 10px;
+    flex-shrink: 0;
   }
 
   .site-footer-inner {
