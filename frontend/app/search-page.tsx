@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -81,6 +81,10 @@ export type SearchPageProps = {
   initialOrganizationMedals: StatPoint[];
   initialOrganizationGolds: StatPoint[];
   initialWinnerTrend: StatPoint[];
+  // 着地時(フィルタ無し)は最新結果を主役にするため、ブランドヒーローと「検索してね」誘導を隠し、
+  // 代わりにサーバー描画した最新結果ブロックを先頭に差し込む
+  hideHero?: boolean;
+  featuredSlot?: ReactNode;
 };
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api").replace(/\/$/, "");
@@ -156,7 +160,9 @@ export default function SearchPage({
   initialFilterOptions,
   initialOrganizationMedals,
   initialOrganizationGolds,
-  initialWinnerTrend
+  initialWinnerTrend,
+  hideHero = false,
+  featuredSlot = null
 }: SearchPageProps) {
   const [results, setResults] = useState<Result[]>(initialResults);
   const [organizationMedals, setOrganizationMedals] = useState<StatPoint[]>(initialOrganizationMedals);
@@ -654,25 +660,33 @@ export default function SearchPage({
 
   return (
     <main className="container">
-      <header className="hero">
-        <div>
-          <h1>ローイング大会結果データベース</h1>
-          <ul className="hero-stats" aria-label="収録データの概要">
-            <li>
-              <strong>{DATASET_INDEX.total_count.toLocaleString()}</strong>レース収録
-            </li>
-            <li>
-              <strong>
-                {DATASET_YEAR_MIN}–{DATASET_YEAR_MAX}
-              </strong>
-              年
-            </li>
-            <li>
-              <strong>全日本級4大会</strong>
-            </li>
-          </ul>
-        </div>
-      </header>
+      {featuredSlot}
+
+      {!hideHero && (
+        <header className="hero">
+          <div>
+            <h1>ローイング大会結果データベース</h1>
+            <ul className="hero-stats" aria-label="収録データの概要">
+              <li>
+                <strong>{DATASET_INDEX.total_count.toLocaleString()}</strong>レース収録
+              </li>
+              <li>
+                <strong>
+                  {DATASET_YEAR_MIN}–{DATASET_YEAR_MAX}
+                </strong>
+                年
+              </li>
+              <li>
+                <strong>全日本級4大会</strong>
+              </li>
+            </ul>
+          </div>
+        </header>
+      )}
+
+      {hideHero && (
+        <h2 className="home-search-heading">記録を検索・比較する</h2>
+      )}
 
       <section className="filters-panel">
         <section className="gender-tabs" aria-label="性別フィルタ">
@@ -980,7 +994,7 @@ export default function SearchPage({
         </div>
       </section>
 
-      {shouldShowFilterGuide && (
+      {shouldShowFilterGuide && !hideHero && (
         <section className="empty-state-guide" aria-live="polite">
           <h2>まずは条件を1つ選んで検索を始めましょう</h2>
           <p>おすすめ: 年、Final、種目の順で絞り込むと目的の結果に早く到達できます。</p>

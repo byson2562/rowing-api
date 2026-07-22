@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import SearchPage, { type SearchPageInitialFilters } from "./search-page";
 import {
   availableYears,
   buildFiltersResponse,
   buildStats,
+  competitionsByRecency,
   getFilteredResults,
   paginate,
   parseQueryFilters,
@@ -12,6 +14,85 @@ import {
   type QueryFilters
 } from "../lib/results-data";
 import { siteUrl } from "../lib/site-url";
+
+// 最新結果ブロックの種目並び(花形のエイトを先頭に)
+const FEATURED_EVENT_ORDER = [
+  "男子エイト",
+  "女子エイト",
+  "男子舵手つきフォア",
+  "女子舵手つきフォア",
+  "男子フォア",
+  "男子クォドルプル",
+  "女子クォドルプル",
+  "男子ダブルスカル",
+  "女子ダブルスカル",
+  "男子ペア",
+  "女子ペア",
+  "男子シングルスカル",
+  "女子シングルスカル"
+];
+
+// 着地時(フィルタ無し)に主役として出す「最新の大会結果」。最新年の直近大会のFinal A優勝を並べる
+async function buildFeatured() {
+  const years = availableYears();
+  if (years.length === 0) return null;
+  const latestYear = Math.max(...years);
+  const latestYearRows = await getFilteredResults({ year: String(latestYear) });
+  const latestComp = competitionsByRecency(latestYearRows)[0];
+  if (!latestComp) return null;
+
+  const winners = latestYearRows
+    .filter(
+      (r) => r.competition_name === latestComp && r.final_group === "Final A" && r.rank === 1
+    )
+    .sort((a, b) => {
+      const ia = FEATURED_EVENT_ORDER.indexOf(a.event_name);
+      const ib = FEATURED_EVENT_ORDER.indexOf(b.event_name);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    });
+  if (winners.length === 0) return null;
+
+  return (
+    <section className="home-featured" aria-labelledby="home-featured-heading">
+      <p className="home-featured-kicker">最新の大会結果</p>
+      <h1 id="home-featured-heading">
+        {latestComp}
+        <span className="home-featured-year">{latestYear}年</span>
+      </h1>
+      <div className="home-featured-table-wrap">
+        <table className="home-featured-table">
+          <thead>
+            <tr>
+              <th scope="col">種目</th>
+              <th scope="col">優勝</th>
+              <th scope="col">タイム</th>
+            </tr>
+          </thead>
+          <tbody>
+            {winners.map((w) => (
+              <tr key={w.event_name}>
+                <td data-label="種目" className="home-featured-event">{w.event_name}</td>
+                <td data-label="優勝">{w.crew_name}</td>
+                <td data-label="タイム">{w.time_display}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="home-featured-actions">
+        <Link
+          href={`/results/${latestYear}/${encodeURIComponent(latestComp)}`}
+          className="lp-btn lp-btn-primary"
+        >
+          この大会の全結果
+        </Link>
+        <Link href="/results" className="lp-btn lp-btn-secondary">
+          過去の大会一覧
+        </Link>
+      </div>
+    </section>
+  );
+}
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -153,6 +234,10 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
   const rawPerPage = params.get("per_page") ?? "50";
   const initialPerPage = PER_PAGE_OPTIONS.includes(rawPerPage) ? rawPerPage : "50";
 
+  // フィルタもフリーワードも無い「素の着地」でのみ最新結果を主役にする
+  const hasAnyFilter = Object.values(filters).some((v) => Boolean(v));
+  const featured = hasAnyFilter ? null : await buildFeatured();
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -189,6 +274,8 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
         initialOrganizationMedals={organizationMedals}
         initialOrganizationGolds={organizationGolds}
         initialWinnerTrend={winnerTrend}
+        hideHero={Boolean(featured)}
+        featuredSlot={featured}
       />
     </>
   );
