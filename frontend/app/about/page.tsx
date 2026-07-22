@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+
+import ButtonLink from "../../components/ui/ButtonLink";
 import {
   availableYears,
   competitionsByRecency,
@@ -114,9 +116,7 @@ export default async function RowingResultsPage() {
               年度・大会名・種目・団体を横断して検索し、メダル傾向までまとめて確認。日本の主要大会記録を比較しやすい形で素早くたどれます。
             </p>
             <div className="lp-hero-actions">
-              <Link href="/" className="lp-btn lp-btn-primary">
-                今すぐ検索を始める
-              </Link>
+              <ButtonLink href="/">今すぐ検索を始める</ButtonLink>
             </div>
           </div>
         </div>
@@ -274,12 +274,12 @@ export default async function RowingResultsPage() {
             </div>
           </dl>
           <div className="lp-hero-actions">
-            <a
-              className="lp-btn lp-btn-secondary"
+            <ButtonLink
               href="mailto:takumi.nakamura.by@gmail.com?subject=%E3%83%AC%E3%82%AC%E3%83%83%E3%82%BF%E3%83%8A%E3%83%93%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"
+              variant="secondary"
             >
               メールで問い合わせる
-            </a>
+            </ButtonLink>
           </div>
         </div>
       </section>

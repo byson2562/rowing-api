@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+
+import ButtonLink from "../../components/ui/ButtonLink";
 import { SupportContactForm } from "../../components/support-contact-form";
 
 export const metadata: Metadata = {
@@ -45,18 +46,16 @@ export default function SupportPage() {
             サービス継続のため、個人寄付と企業・団体協賛を募集しています。
           </p>
           <div className="lp-hero-actions">
-            <Link href="/" className="lp-btn lp-btn-primary">
-              検索画面を見る
-            </Link>
-            <a
-              className="lp-btn lp-btn-secondary"
+            <ButtonLink href="/">検索画面を見る</ButtonLink>
+            <ButtonLink
               href="mailto:takumi.nakamura.by@gmail.com?subject=レガッタナビ%20%E5%8D%94%E8%B3%9B%E3%83%BB%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"
+              variant="secondary"
               data-ga-event="sponsor_inquiry_click"
               data-ga-label="support_inquiry_button"
               data-ga-location="/support"
             >
               問い合わせる
-            </a>
+            </ButtonLink>
           </div>
         </div>
       </section>
@@ -77,9 +76,8 @@ export default function SupportPage() {
           <div className="lp-donation-links" aria-label="寄付リンク">
             {stripeLinks.length > 0 ? (
               stripeLinks.map((item) => (
-                <a
+                <ButtonLink
                   key={item.key}
-                  className="lp-btn lp-btn-primary"
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -88,18 +86,17 @@ export default function SupportPage() {
                   data-ga-location="/support"
                 >
                   {item.label}
-                </a>
+                </ButtonLink>
               ))
             ) : (
-              <a
-                className="lp-btn lp-btn-primary"
+              <ButtonLink
                 href={fallbackDonationUrl}
                 data-ga-event="donation_click"
                 data-ga-label="support_donation_mail_fallback"
                 data-ga-location="/support"
               >
                 {fallbackDonationLabel}
-              </a>
+              </ButtonLink>
             )}
           </div>
         </article>

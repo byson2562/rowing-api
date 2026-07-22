@@ -2,6 +2,8 @@
 
 import { FormEvent, useMemo, useState } from "react";
 
+import Button from "./ui/Button";
+
 const DEFAULT_TO = "takumi.nakamura.by@gmail.com";
 
 export function SupportContactForm() {
@@ -55,16 +57,15 @@ export function SupportContactForm() {
         <textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={6} required />
       </label>
       <div className="lp-contact-actions">
-        <button
+        <Button
           type="submit"
-          className="lp-btn lp-btn-primary"
           disabled={!canSubmit}
           data-ga-event="sponsor_inquiry_click"
           data-ga-label="support_contact_form_submit"
           data-ga-location="/support"
         >
           メールで問い合わせる
-        </button>
+        </Button>
       </div>
     </form>
   );

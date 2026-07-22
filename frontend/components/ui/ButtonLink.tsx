@@ -1,48 +1,41 @@
 import Link from "next/link";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ReactNode } from "react";
 
-// lifecostのButtonLinkパターンを、レガッタナビ既存の .lp-btn の見た目に合わせて移植。
-// 色はrn-*トークン(= レガッタナビの:root変数)を使う。
-type ButtonLinkVariant = "primary" | "secondary";
-type ButtonLinkSize = "sm" | "md";
+import { buttonClass, type ButtonSize, type ButtonVariant } from "./button-classes";
 
-interface ButtonLinkProps
-  extends Omit<ComponentPropsWithoutRef<typeof Link>, "className" | "children"> {
+// リンク型ボタン。内部遷移は next/link、外部URL/mailto等は素の <a> を描画する。
+interface ButtonLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className"> {
+  href: string;
   children: ReactNode;
   className?: string;
-  size?: ButtonLinkSize;
-  variant?: ButtonLinkVariant;
+  size?: ButtonSize;
+  variant?: ButtonVariant;
 }
 
-const baseClass =
-  "inline-flex items-center justify-center rounded-[10px] font-bold no-underline " +
-  "transition-[transform,box-shadow,border-color] duration-200 " +
-  "hover:-translate-y-px hover:shadow-[0_8px_20px_rgba(14,56,113,0.2)] " +
-  "focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[color:var(--primary)]";
-
-const sizeClass: Record<ButtonLinkSize, string> = {
-  sm: "px-3 py-2 text-sm",
-  md: "px-3.5 py-2.5 text-base"
-};
-
-const variantClass: Record<ButtonLinkVariant, string> = {
-  primary:
-    "bg-[linear-gradient(135deg,var(--primary)_0%,var(--primary-dark)_100%)] text-white border border-rn-primary-dark",
-  secondary: "bg-white text-[#3f60a0] border border-rn-border"
-};
+function isExternal(href: string): boolean {
+  return /^(https?:|mailto:|tel:|\/\/)/.test(href);
+}
 
 export default function ButtonLink({
   children,
   className = "",
+  href,
   size = "md",
   variant = "primary",
   ...props
 }: ButtonLinkProps) {
+  const cls = `${buttonClass(variant, size)} ${className}`.trim();
+
+  if (isExternal(href)) {
+    return (
+      <a href={href} className={cls} {...props}>
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <Link
-      className={`${baseClass} ${sizeClass[size]} ${variantClass[variant]} ${className}`}
-      {...props}
-    >
+    <Link href={href} className={cls} {...props}>
       {children}
     </Link>
   );

@@ -1187,15 +1187,6 @@ th {
   }
 }
 
-.lp-btn {
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-}
-
-.lp-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(14, 56, 113, 0.2);
-}
-
 .lp-support-cta-card {
   background: var(--surface-solid);
   border: 1px solid #d4e0f0;
@@ -1210,27 +1201,7 @@ th {
   line-height: 1.7;
 }
 
-.lp-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.lp-btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: #fff;
-  border: 1px solid var(--primary-dark);
-}
-
-.lp-btn-secondary {
-  background: #fff;
-  color: #3f60a0;
-  border: 1px solid #dbe7fa;
-}
+/* .lp-btn 系は components/ui の Button/ButtonLink(rn-*トークン)へ移行済み(Phase 3) */
 
 .lp-value-grid {
   display: grid;
@@ -1445,11 +1416,6 @@ th {
   justify-content: flex-start;
 }
 
-.lp-contact-actions .lp-btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
 .lp-page .lp-tech-heading {
   margin: 26px 0 0;
 }
@@ -1536,7 +1502,6 @@ th {
 
 @media (prefers-reduced-motion: reduce) {
   .lp-value-card,
-  .lp-btn,
   .lp-page > section {
     animation: none;
     transition: none;
