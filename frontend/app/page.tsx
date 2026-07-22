@@ -48,8 +48,8 @@ const FEATURED_EVENT_ORDER = [
 // 記事テーブル(article-classes.ts)と同じカード積みパターン。<=640pxで
 // thead を視覚的に隠し、行を data-label 付きカードに積む。
 const featuredCard =
-  "mb-[18px] rounded-[20px] border border-[#cddcf0] bg-[linear-gradient(150deg,#ffffff_0%,#f2f8ff_100%)] " +
-  "px-6 pb-6 pt-[22px] shadow-[0_14px_30px_rgba(17,42,75,0.09)]";
+  "rounded-rn-card bg-[linear-gradient(150deg,#ffffff_0%,#f2f8ff_100%)] " +
+  "px-6 pb-6 pt-[22px] shadow-rn-soft";
 const featuredKicker = "m-0 text-[12px] font-extrabold tracking-[0.06em] text-[#2f66b8]";
 const featuredHeading =
   "mb-0 mt-1.5 text-[clamp(1.3rem,3vw,1.8rem)] leading-[1.3] text-rn-brand";
@@ -75,9 +75,17 @@ const featuredTdEvent = "font-bold text-[#24496f]";
 const featuredActions = "mt-[18px] flex flex-wrap gap-2.5";
 
 // ---- ホームの各セクション ----
-const homeSectionTitle = "mb-3.5 mt-0 text-[1.2rem] font-extrabold leading-[1.25] text-[#0f2647]";
-const homeCard =
-  "rounded-2xl border border-[#cfddf1] bg-white p-[18px] shadow-[0_12px_26px_rgba(60,110,200,0.08)]";
+// 他ページの .lp-section-title と同じ言語(太字 + グラデーション下線)
+const homeSectionTitle =
+  "mb-0 mt-0 text-[1.2rem] font-extrabold leading-[1.25] tracking-[0.01em] text-[#0f2647] " +
+  "after:mt-2 after:block after:h-[3px] after:w-11 after:rounded-full " +
+  "after:bg-[linear-gradient(90deg,#1d6ee0_0%,#6ca7ff_100%)] after:content-['']";
+// セクション見出し行(右端に「すべて見る」リンクを添える)
+const homeSectionHead = "mb-3.5 flex items-baseline justify-between gap-3";
+const homeMoreLink =
+  "text-[13px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline";
+// カードはサイト共通のボーダーレス+ソフト影
+const homeCard = "rounded-[18px] bg-white p-[18px] shadow-rn-soft";
 
 // 着地時の主役として出す「最新の大会結果」。最新年の直近大会のFinal A優勝を並べる
 async function buildFeatured() {
@@ -179,7 +187,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
   };
 
   return (
-    <main className="site-container grid gap-6">
+    <main className="site-container grid gap-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {featured && (
@@ -216,22 +224,22 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
             <ButtonLink href="/search" variant="secondary">
               記録を検索する
             </ButtonLink>
-            <ButtonLink href="/results" variant="secondary">
-              過去の大会一覧
-            </ButtonLink>
           </div>
         </section>
       )}
 
       {recent.length > 0 && (
         <section aria-labelledby="home-recent-heading">
-          <h2 id="home-recent-heading" className={homeSectionTitle}>直近の大会</h2>
+          <div className={homeSectionHead}>
+            <h2 id="home-recent-heading" className={homeSectionTitle}>直近の大会</h2>
+            <Link href="/results" className={homeMoreLink}>過去の大会一覧 →</Link>
+          </div>
           <ul className="m-0 grid list-none gap-2.5 p-0 md:grid-cols-2">
             {recent.map(({ year, competition }) => (
               <li key={`${year}-${competition}`}>
                 <Link
                   href={`/results/${year}/${encodeURIComponent(competition)}`}
-                  className="block rounded-[14px] border border-[#d7e3f4] bg-white px-4 py-3 no-underline shadow-[0_8px_20px_rgba(60,110,200,0.06)] transition-[border-color,box-shadow] duration-[180ms] hover:border-[#bdd2ee] hover:shadow-[0_12px_24px_rgba(60,110,200,0.1)] motion-reduce:transition-none"
+                  className="block rounded-[18px] bg-white px-4 py-3 no-underline shadow-rn-soft transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-rn motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
                   <span className="block text-[12px] font-bold text-rn-muted">{year}年</span>
                   <span className="block text-[14px] font-bold leading-[1.5] text-rn-brand">{competition}</span>
@@ -244,8 +252,11 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
 
       {latestArticles.length > 0 && (
         <section aria-labelledby="home-articles-heading">
-          <h2 id="home-articles-heading" className={homeSectionTitle}>記事・データ分析</h2>
-          <div className="grid gap-2.5">
+          <div className={homeSectionHead}>
+            <h2 id="home-articles-heading" className={homeSectionTitle}>記事・データ分析</h2>
+            <Link href="/articles" className={homeMoreLink}>記事一覧を見る →</Link>
+          </div>
+          <div className="grid gap-2.5 md:grid-cols-2">
             {latestArticles.map((a) => (
               <article key={a.slug} className={homeCard}>
                 <h3 className="m-0 text-[15px] leading-[1.5]">
@@ -263,15 +274,13 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
               </article>
             ))}
           </div>
-          <p className="mb-0 mt-2.5">
-            <Link href="/articles" className="text-[14px] font-bold text-rn-link no-underline hover:text-rn-primary hover:underline">
-              記事一覧を見る →
-            </Link>
-          </p>
         </section>
       )}
 
-      <section aria-labelledby="home-search-heading" className={homeCard}>
+      <section
+        aria-labelledby="home-search-heading"
+        className="rounded-rn-card bg-[linear-gradient(160deg,#f8fbff,#edf4ff)] p-6 shadow-rn-soft"
+      >
         <h2 id="home-search-heading" className={homeSectionTitle}>記録を検索する</h2>
         <p className="mb-0 mt-0 leading-[1.7] text-rn-muted">
           年度・大会・種目・団体を組み合わせて、目的のレース結果を検索できます。種目ごとの優勝タイム推移や、団体別のメダル数も確認できます。
