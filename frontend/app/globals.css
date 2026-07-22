@@ -2589,6 +2589,8 @@ td.col-rank {
   .home-featured-table td {
     display: block;
     width: 100%;
+    /* グローバルの table { min-width: 980px } を打ち消してカード幅に収める */
+    min-width: 0;
   }
 
   .home-featured-table tr {
