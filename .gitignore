@@ -18,3 +18,7 @@ infra/github/.terraform/
 infra/github/terraform.tfstate
 infra/github/terraform.tfstate.backup
 infra/github/terraform.tfvars
+
+# Claude Code local/personal (共有しない)
+.claude/settings.local.json
+.claude/worktrees/
