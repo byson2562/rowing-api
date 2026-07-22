@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+
+import { sx } from "../components/search/search-classes";
 import {
   Bar,
   BarChart,
@@ -459,9 +461,17 @@ export default function SearchPage({
 
   const rankCellClassName = (row: Result): string => {
     if (row.final_group !== "Final A") return "";
-    if (row.rank === 1) return "medal-rank medal-rank-gold";
-    if (row.rank === 2) return "medal-rank medal-rank-silver";
-    if (row.rank === 3) return "medal-rank medal-rank-bronze";
+    if (row.rank === 1) return "bg-[#fde68a] text-[#78350f]";
+    if (row.rank === 2) return "bg-[#e5e7eb] text-[#374151]";
+    if (row.rank === 3) return "bg-[#f5d0a9] text-[#7c2d12]";
+    return "";
+  };
+
+  // テーブルの順位バッジ用(デザインパスにより金のみ #ffd76e)
+  const rankBadgeMedalClassName = (row: Result) => {
+    if (row.rank === 1) return "font-bold bg-[#ffd76e] text-[#78350f]";
+    if (row.rank === 2) return "font-bold bg-[#e5e7eb] text-[#374151]";
+    if (row.rank === 3) return "font-bold bg-[#f5d0a9] text-[#7c2d12]";
     return "";
   };
 
@@ -657,25 +667,25 @@ export default function SearchPage({
       <header className="hero">
         <div>
           <h1>ローイング記録検索</h1>
-          <ul className="hero-stats" aria-label="収録データの概要">
+          <ul className={sx.heroStats} aria-label="収録データの概要">
             <li>
-              <strong>{DATASET_INDEX.total_count.toLocaleString()}</strong>レース収録
+              <strong className={sx.heroStatValue}>{DATASET_INDEX.total_count.toLocaleString()}</strong>レース収録
             </li>
             <li>
-              <strong>
+              <strong className={sx.heroStatValue}>
                 {DATASET_YEAR_MIN}–{DATASET_YEAR_MAX}
               </strong>
               年
             </li>
             <li>
-              <strong>全日本級4大会</strong>
+              <strong className={sx.heroStatValue}>全日本級4大会</strong>
             </li>
           </ul>
         </div>
       </header>
 
-      <section className="filters-panel">
-        <section className="gender-tabs" aria-label="性別フィルタ">
+      <section className={sx.panel}>
+        <section className={sx.genderTabs} aria-label="性別フィルタ">
           {genderTabOptions.map((option) => {
             const label = option === "" ? "すべて" : option;
             const active = gender === option;
@@ -683,7 +693,7 @@ export default function SearchPage({
               <button
                 key={label}
                 type="button"
-                className={active ? "active" : ""}
+                className={active ? sx.genderTabActive : sx.genderTabIdle}
                 onClick={() => {
                   setGender(option);
                   // 新しい性別と矛盾する種目フィルタは残しても0件になるだけなので自動解除する
@@ -703,10 +713,11 @@ export default function SearchPage({
           })}
         </section>
 
-        <section className="filters">
+        <section className={sx.filters}>
           <div>
-            <div className="filters-primary" aria-label="主要フィルター">
+            <div className={sx.filterRow} aria-label="主要フィルター">
             <select
+              className={sx.select}
               data-testid="year-select"
               value={year}
               onChange={(e) => {
@@ -725,6 +736,7 @@ export default function SearchPage({
             </select>
 
             <select
+              className={sx.select}
               data-testid="competition-category-select"
               value={competitionCategory}
               onChange={(e) => {
@@ -743,6 +755,7 @@ export default function SearchPage({
             </select>
 
             <select
+              className={sx.select}
               data-testid="competition-select"
               value={competition}
               onChange={(e) => {
@@ -761,6 +774,7 @@ export default function SearchPage({
             </select>
 
             <select
+              className={sx.select}
               data-testid="event-select"
               value={event}
               onChange={(e) => {
@@ -780,30 +794,31 @@ export default function SearchPage({
             </div>
           </div>
 
-          <div className="filters-secondary-wrap">
-            <div className="advanced-filter-header">
+          <div className={sx.secondaryWrap}>
+            <div className={sx.advHeader}>
               <button
                 type="button"
-                className="advanced-filter-toggle"
+                className={sx.advToggle}
                 aria-expanded={showAdvancedFilters}
                 aria-controls="advanced-filters-panel"
                 onClick={() => setShowAdvancedFilters((prev) => !prev)}
               >
                 <span>詳細条件</span>
-                <span className="advanced-filter-meta">
+                <span className={sx.advMeta}>
                   {advancedActiveCount > 0 ? `${advancedActiveCount}件選択中` : "未設定"}
                 </span>
-                <span aria-hidden="true" className="advanced-filter-caret">{showAdvancedFilters ? "▲" : "▼"}</span>
+                <span aria-hidden="true" className={sx.advCaret}>{showAdvancedFilters ? "▲" : "▼"}</span>
               </button>
             </div>
             <div
-              className={`filters-secondary-panel${showAdvancedFilters ? " open" : ""}`}
+              className={showAdvancedFilters ? sx.secondaryPanelOpen : sx.secondaryPanel}
               id="advanced-filters-panel"
               aria-label="詳細条件"
               aria-hidden={!showAdvancedFilters}
             >
-              <div className="filters-secondary">
+              <div className={sx.filterRowSecondary}>
             <select
+              className={sx.select}
               data-testid="final-group-select"
               value={finalGroup}
               onChange={(e) => {
@@ -822,6 +837,7 @@ export default function SearchPage({
             </select>
 
             <select
+              className={sx.select}
               data-testid="rank-select"
               value={rank}
               onChange={(e) => {
@@ -839,8 +855,9 @@ export default function SearchPage({
               ))}
             </select>
 
-            <div className={`organization-combobox${organizationMenuOpen ? " open" : ""}`}>
+            <div className={organizationMenuOpen ? sx.comboboxOpen : sx.combobox}>
               <input
+                className={sx.control}
                 data-testid="organization-combobox-input"
                 value={organizationSearch}
                 onFocus={() => setOrganizationMenuOpen(true)}
@@ -874,14 +891,14 @@ export default function SearchPage({
                 <div
                   id="organization-listbox"
                   role="listbox"
-                  className="organization-combobox-menu"
+                  className={sx.comboboxMenu}
                   data-testid="organization-combobox-menu"
                 >
                   <button
                     type="button"
                     role="option"
                     aria-selected={!organization}
-                    className={!organization ? "active" : ""}
+                    className={!organization ? sx.comboboxOptionActive : sx.comboboxOption}
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
                       setOrganization("");
@@ -899,7 +916,7 @@ export default function SearchPage({
                       role="option"
                       aria-selected={organization === option}
                       data-testid={`organization-option-${option}`}
-                      className={organization === option ? "active" : ""}
+                      className={organization === option ? sx.comboboxOptionActive : sx.comboboxOption}
                       key={option}
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => chooseOrganization(option)}
@@ -908,20 +925,21 @@ export default function SearchPage({
                     </button>
                   ))}
                   {filteredOrganizations.length === 0 && (
-                    <div className="combobox-no-match" data-testid="organization-no-match">
+                    <div className={sx.comboboxNoMatch} data-testid="organization-no-match">
                       該当する団体がありません
                     </div>
                   )}
                 </div>
               )}
               {!organizationMenuOpen && organizationSearch && !organization && (
-                <p className="combobox-hint" role="status">
+                <p className={sx.comboboxHint} role="status">
                   団体は候補から選択すると絞り込みに適用されます
                 </p>
               )}
             </div>
 
             <select
+              className={sx.select}
               data-testid="affiliation-type-select"
               value={affiliationType}
               onChange={(e) => {
@@ -943,26 +961,26 @@ export default function SearchPage({
           </div>
         </section>
 
-        <div className="filter-actions">
+        <div className={sx.filterActions}>
           {activeFilters.length > 0 && (
-            <a className="results-jump" href="#results" data-testid="results-jump">
+            <a className={sx.resultsJump} href="#results" data-testid="results-jump">
               該当 {pagination.total_count.toLocaleString()}件の結果へ移動 ↓
             </a>
           )}
-          <button type="button" onClick={clearFilters} data-ga-filter-action="clear_filters" data-ga-filter-value="all">
+          <button type="button" className={sx.filterActionBtn} onClick={clearFilters} data-ga-filter-action="clear_filters" data-ga-filter-value="all">
             フィルタをクリア
           </button>
         </div>
 
-        <div className="active-filter-chips">
+        <div className={sx.chips}>
           {activeFilters.length === 0 ? (
-            <span className="chip chip-empty">フィルタ未指定</span>
+            <span className={sx.chipEmpty}>フィルタ未指定</span>
           ) : (
             activeFilters.map((chip) => (
               <button
                 key={chip.key}
                 type="button"
-                className="chip chip-clearable"
+                className={sx.chipClearable}
                 onClick={() => {
                   chip.onClear();
                   emitFilterEvents("clear_filter_chip", chip.key);
@@ -971,7 +989,7 @@ export default function SearchPage({
                 data-ga-filter-value={chip.key}
               >
                 <span>{chip.text}</span>
-                <span className="chip-clear" aria-hidden="true">
+                <span className={sx.chipClear} aria-hidden="true">
                   ×
                 </span>
               </button>
@@ -981,12 +999,13 @@ export default function SearchPage({
       </section>
 
       {shouldShowFilterGuide && (
-        <section className="empty-state-guide" aria-live="polite">
-          <h2>まずは条件を1つ選んで検索を始めましょう</h2>
-          <p>おすすめ: 年、Final、種目の順で絞り込むと目的の結果に早く到達できます。</p>
-          <div className="empty-state-guide-actions">
+        <section className={sx.guide} aria-live="polite">
+          <h2 className={sx.guideTitle}>まずは条件を1つ選んで検索を始めましょう</h2>
+          <p className={sx.guideText}>おすすめ: 年、Final、種目の順で絞り込むと目的の結果に早く到達できます。</p>
+          <div className={sx.guideActions}>
             <button
               type="button"
+              className={sx.guideBtn}
               onClick={applyLatestYearFilter}
               disabled={filterOptions.years.length === 0}
               data-ga-filter-action="quick_filter"
@@ -996,6 +1015,7 @@ export default function SearchPage({
             </button>
             <button
               type="button"
+              className={sx.guideBtn}
               onClick={() => {
                 setFinalGroup("Final A");
                 emitFilterEvents("quick_filter", "final_a");
@@ -1007,6 +1027,7 @@ export default function SearchPage({
             </button>
             <button
               type="button"
+              className={sx.guideBtn}
               onClick={() => {
                 setCompetitionCategory("全日本大学選手権");
                 emitFilterEvents("quick_filter", "all_japan_university");
@@ -1020,10 +1041,10 @@ export default function SearchPage({
         </section>
       )}
 
-      <div className="charts-toggle-wrap">
+      <div className={sx.chartsToggleWrap}>
         <button
           type="button"
-          className="charts-toggle"
+          className={sx.chartsToggle}
           aria-expanded={chartsExpanded}
           onClick={() => setChartsExpanded((prev) => !prev)}
         >
@@ -1031,13 +1052,13 @@ export default function SearchPage({
         </button>
       </div>
 
-      <section className={`cards${isRefreshing ? " is-refreshing" : ""}${chartsExpanded ? "" : " cards-collapsed"}`}>
-        <article className="chart-card chart-card-primary medal-chart-card" data-ga-event="chart_interaction" data-ga-label="organization_medals_chart" data-ga-location="/">
-          <div className="chart-card-head">
-            <h2>団体別メダル数(Top8)</h2>
-            <span>Final A集計</span>
+      <section className={`${sx.cards}${isRefreshing ? " opacity-70" : ""}${chartsExpanded ? "" : " max-[768px]:hidden"}`}>
+        <article className={sx.chartCard} data-ga-event="chart_interaction" data-ga-label="organization_medals_chart" data-ga-location="/">
+          <div className={sx.chartCardHead}>
+            <h2 className={sx.chartCardTitle}>団体別メダル数(Top8)</h2>
+            <span className={sx.chartCardCaption}>Final A集計</span>
           </div>
-          <div className="chart-wrap" ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
+          <div className={sx.chartWrap} ref={organizationMedalChartRef} style={{ height: organizationBarChartHeight }}>
             {topOrganizationMedals.length > 0 && organizationMedalChartWidth > 0 ? (
               <BarChart
                 width={organizationMedalChartWidth}
@@ -1059,23 +1080,23 @@ export default function SearchPage({
                 </Bar>
               </BarChart>
             ) : !showChartLoading ? (
-              <div className="chart-empty-state">No data</div>
+              <div className={sx.chartEmpty}>No data</div>
             ) : null}
             {showChartLoading ? (
-              <div className="chart-loading-overlay" role="status" aria-live="polite">
-                <span className="chart-loading-spinner" aria-hidden="true" />
+              <div className={sx.chartLoading} role="status" aria-live="polite">
+                <span className={sx.chartSpinner} aria-hidden="true" />
                 <span>Loading...</span>
               </div>
             ) : null}
           </div>
         </article>
 
-        <article className="chart-card medal-chart-card" data-ga-event="chart_interaction" data-ga-label="organization_golds_chart" data-ga-location="/">
-          <div className="chart-card-head">
-            <h2>団体別金メダル数(Top8)</h2>
-            <span>Final A集計</span>
+        <article className={sx.chartCard} data-ga-event="chart_interaction" data-ga-label="organization_golds_chart" data-ga-location="/">
+          <div className={sx.chartCardHead}>
+            <h2 className={sx.chartCardTitle}>団体別金メダル数(Top8)</h2>
+            <span className={sx.chartCardCaption}>Final A集計</span>
           </div>
-          <div className="chart-wrap" ref={organizationGoldChartRef} style={{ height: organizationBarChartHeight }}>
+          <div className={sx.chartWrap} ref={organizationGoldChartRef} style={{ height: organizationBarChartHeight }}>
             {topOrganizationGolds.length > 0 && organizationGoldChartWidth > 0 ? (
               <BarChart
                 width={organizationGoldChartWidth}
@@ -1097,11 +1118,11 @@ export default function SearchPage({
                 </Bar>
               </BarChart>
             ) : !showChartLoading ? (
-              <div className="chart-empty-state">No data</div>
+              <div className={sx.chartEmpty}>No data</div>
             ) : null}
             {showChartLoading ? (
-              <div className="chart-loading-overlay" role="status" aria-live="polite">
-                <span className="chart-loading-spinner" aria-hidden="true" />
+              <div className={sx.chartLoading} role="status" aria-live="polite">
+                <span className={sx.chartSpinner} aria-hidden="true" />
                 <span>Loading...</span>
               </div>
             ) : null}
@@ -1110,12 +1131,12 @@ export default function SearchPage({
 
         {/* 種目未選択時は大きな空状態が一等地を占有するだけなのでカードごと出さない */}
         {event && (
-        <article className="chart-card winner-trend-card" data-ga-event="chart_interaction" data-ga-label="winner_trend_chart" data-ga-location="/">
-          <div className="chart-card-head">
-            <h2>優勝タイム推移</h2>
-            <span>{event}</span>
+        <article className={sx.winnerTrendCard} data-ga-event="chart_interaction" data-ga-label="winner_trend_chart" data-ga-location="/">
+          <div className={sx.chartCardHead}>
+            <h2 className={sx.chartCardTitle}>優勝タイム推移</h2>
+            <span className={sx.chartCardCaption}>{event}</span>
           </div>
-          <div className={`chart-wrap${winnerTrendHasData ? "" : " no-data"}`} ref={winnerTrendChartRef}>
+          <div className={winnerTrendHasData ? sx.winnerTrendWrap : sx.winnerTrendWrapNoData} ref={winnerTrendChartRef}>
             {winnerTrendHasData ? (
               winnerTrendChartWidth > 0 ? (
                 <LineChart width={winnerTrendChartWidth} height={260} data={winnerTrend}>
@@ -1128,18 +1149,18 @@ export default function SearchPage({
                 </LineChart>
               ) : null
             ) : winnerTrendSingle ? (
-              <div className="chart-empty-state chart-single-point">
-                <p className="single-point-value">
-                  {winnerTrendSingle.label}年の優勝タイム(平均): <strong>{formatSecondsToTime(winnerTrendSingle.value)}</strong>
+              <div className={`${sx.chartEmpty} ${sx.chartEmptyNoData} ${sx.chartSinglePoint}`}>
+                <p className={sx.singlePointValue}>
+                  {winnerTrendSingle.label}年の優勝タイム(平均): <strong className={sx.singlePointStrong}>{formatSecondsToTime(winnerTrendSingle.value)}</strong>
                 </p>
-                <p className="single-point-hint">年フィルタを解除すると、年ごとの推移を表示できます</p>
+                <p className={sx.singlePointHint}>年フィルタを解除すると、年ごとの推移を表示できます</p>
               </div>
             ) : (
-              <div className="chart-empty-state">{event ? "No data" : "種目を選択してください (No data)"}</div>
+              <div className={`${sx.chartEmpty} ${sx.chartEmptyNoData}`}>{event ? "No data" : "種目を選択してください (No data)"}</div>
             )}
             {showChartLoading ? (
-              <div className="chart-loading-overlay" role="status" aria-live="polite">
-                <span className="chart-loading-spinner" aria-hidden="true" />
+              <div className={sx.chartLoading} role="status" aria-live="polite">
+                <span className={sx.chartSpinner} aria-hidden="true" />
                 <span>Loading...</span>
               </div>
             ) : null}
@@ -1149,15 +1170,16 @@ export default function SearchPage({
 
       </section>
 
-      <section id="results" className={`table-card${isRefreshing ? " is-refreshing" : ""}`}>
-        <div className="table-head">
-          <h2>
+      <section id="results" className={`${sx.tableCard}${isRefreshing ? " opacity-70" : ""}`}>
+        <div className={sx.tableHead}>
+          <h2 className={sx.tableTitle}>
             検索結果 ({pagination.total_count}件){" "}
             {pagination.total_count > 0 ? ` ${pageStart}-${pageEnd}件を表示` : ""}
           </h2>
-          <label className="results-per-page">
-            <span>表示件数</span>
+          <label className={sx.perPage}>
+            <span className={sx.perPageLabel}>表示件数</span>
             <select
+              className={sx.perPageSelect}
               data-testid="per-page-select"
               value={perPage}
               onChange={(e) => {
@@ -1173,28 +1195,28 @@ export default function SearchPage({
             </select>
           </label>
         </div>
-        <div className="table-scroll">
-          <table className="results-table">
+        <div className={sx.tableScroll}>
+          <table>
             <thead>
               <tr>
-                <th className="col-year">年</th>
-                <th className="col-competition">大会</th>
-                <th className="col-event">種目</th>
-                <th className="col-final">Final</th>
-                <th className="col-crew">クルー</th>
-                <th className="col-organization">団体</th>
-                <th className="col-rank">順位</th>
-                <th className="col-time">タイム</th>
+                <th className={`${sx.th} ${sx.colYear}`}>年</th>
+                <th className={`${sx.th} ${sx.colCompetition}`}>大会</th>
+                <th className={`${sx.th} ${sx.colEvent}`}>種目</th>
+                <th className={`${sx.th} ${sx.colFinal}`}>Final</th>
+                <th className={`${sx.th} ${sx.colCrew}`}>クルー</th>
+                <th className={`${sx.th} ${sx.colOrganization}`}>団体</th>
+                <th className={`${sx.th} ${sx.colRank}`}>順位</th>
+                <th className={`${sx.th} ${sx.colTime}`}>タイム</th>
               </tr>
             </thead>
             <tbody>
               {results.length === 0 ? (
                 <tr>
-                  <td className="table-empty" colSpan={8}>
-                    <div className="empty-results">
-                      <p>{noResultMessage}</p>
+                  <td className={sx.tableEmpty} colSpan={8}>
+                    <div className={sx.emptyResults}>
+                      <p className={sx.emptyResultsText}>{noResultMessage}</p>
                       {activeFilters.length > 0 && (
-                        <button type="button" onClick={clearFilters}>
+                        <button type="button" className={sx.emptyResultsBtn} onClick={clearFilters}>
                           フィルタをクリアして再検索
                         </button>
                       )}
@@ -1203,25 +1225,25 @@ export default function SearchPage({
                 </tr>
               ) : (
                 results.map((row) => (
-                  <tr key={row.id} data-ga-event="result_open" data-ga-label={`${row.year}_${row.event_name}`} data-ga-location="/">
-                    <td className="col-year">{row.year}</td>
-                    <td className="col-competition" title={row.competition_name}>
-                      <div className="cell-competition">{row.competition_name}</div>
+                  <tr key={row.id} className={sx.tr} data-ga-event="result_open" data-ga-label={`${row.year}_${row.event_name}`} data-ga-location="/">
+                    <td className={`${sx.colYear} ${sx.tdHover}`}>{row.year}</td>
+                    <td className={`${sx.colCompetition} ${sx.tdHover}`} title={row.competition_name}>
+                      <div className={sx.cellClamp}>{row.competition_name}</div>
                     </td>
-                    <td className="col-event" title={row.event_name}>
-                      <div className="cell-event">{row.event_name}</div>
+                    <td className={`${sx.colEvent} ${sx.tdHover}`} title={row.event_name}>
+                      <div className={sx.cellClamp}>{row.event_name}</div>
                     </td>
-                    <td className="col-final">{row.final_group}</td>
-                    <td className="col-crew" title={row.crew_name}>
-                      <div className="cell-ellipsis">{row.crew_name}</div>
+                    <td className={`${sx.colFinal} ${sx.tdHover}`}>{row.final_group}</td>
+                    <td className={`${sx.colCrew} ${sx.tdHover}`} title={row.crew_name}>
+                      <div className={sx.cellEllipsis}>{row.crew_name}</div>
                     </td>
-                    <td className="col-organization" title={row.organization}>
-                      <div className="cell-ellipsis">{row.organization}</div>
+                    <td className={`${sx.colOrganization} ${sx.tdHover}`} title={row.organization}>
+                      <div className={sx.cellEllipsis}>{row.organization}</div>
                     </td>
-                    <td className="col-rank">
-                      <span className={`rank-badge ${rankCellClassName(row)}`}>{row.rank}</span>
+                    <td className={`${sx.colRank} ${sx.tdHover}`}>
+                      <span className={`${sx.rankBadge} ${rankBadgeMedalClassName(row) || sx.rankBadgePlain}`}>{row.rank}</span>
                     </td>
-                    <td className="col-time">{row.time_display}</td>
+                    <td className={`${sx.colTime} ${sx.tdHover}`}>{row.time_display}</td>
                   </tr>
                 ))
               )}
@@ -1229,13 +1251,13 @@ export default function SearchPage({
           </table>
         </div>
 
-        <div className="results-mobile-cards" aria-label="検索結果（モバイル表示）">
+        <div className={sx.mobileCards} aria-label="検索結果（モバイル表示）">
           {results.length === 0 ? (
-            <div className="result-card-empty">
-              <div className="empty-results">
-                <p>{noResultMessage}</p>
+            <div className={sx.resultCardEmpty}>
+              <div className={sx.emptyResults}>
+                <p className={sx.emptyResultsText}>{noResultMessage}</p>
                 {activeFilters.length > 0 && (
-                  <button type="button" onClick={clearFilters}>
+                  <button type="button" className={sx.emptyResultsBtn} onClick={clearFilters}>
                     フィルタをクリアして再検索
                   </button>
                 )}
@@ -1243,31 +1265,31 @@ export default function SearchPage({
             </div>
           ) : (
             results.map((row) => (
-              <article className="result-card" key={`mobile-${row.id}`} data-ga-event="result_open" data-ga-label={`${row.year}_${row.event_name}`} data-ga-location="/">
-                <header className="result-card-head">
-                  <span className="result-card-year">{row.year}</span>
-                  <span className="result-card-final">{row.final_group}</span>
-                  <span className={`result-card-rank ${rankCellClassName(row)}`}>{row.rank}位</span>
+              <article className={sx.resultCard} key={`mobile-${row.id}`} data-ga-event="result_open" data-ga-label={`${row.year}_${row.event_name}`} data-ga-location="/">
+                <header className={sx.resultCardHead}>
+                  <span className={sx.resultCardTag}>{row.year}</span>
+                  <span className={sx.resultCardTag}>{row.final_group}</span>
+                  <span className={rankCellClassName(row) ? `${sx.resultCardRankMedal} ${rankCellClassName(row)}` : sx.resultCardRank}>{row.rank}位</span>
                 </header>
-                <p className="result-card-event">{row.event_name}</p>
-                <p className="result-card-competition" title={row.competition_name}>
+                <p className={sx.resultCardEvent}>{row.event_name}</p>
+                <p className={sx.resultCardCompetition} title={row.competition_name}>
                   {row.competition_name}
                 </p>
-                <dl className="result-card-meta">
-                  <div>
-                    <dt>クルー</dt>
-                    <dd>{row.crew_name}</dd>
+                <dl className={sx.resultCardMeta}>
+                  <div className={sx.resultCardMetaRow}>
+                    <dt className={sx.resultCardMetaDt}>クルー</dt>
+                    <dd className={sx.resultCardMetaDd}>{row.crew_name}</dd>
                   </div>
                   {/* 団体名クルー（大学等）はクルーと同一値なので二重表示しない */}
                   {row.organization !== row.crew_name && (
-                    <div>
-                      <dt>団体</dt>
-                      <dd>{row.organization}</dd>
+                    <div className={sx.resultCardMetaRow}>
+                      <dt className={sx.resultCardMetaDt}>団体</dt>
+                      <dd className={sx.resultCardMetaDd}>{row.organization}</dd>
                     </div>
                   )}
-                  <div>
-                    <dt>タイム</dt>
-                    <dd>{row.time_display}</dd>
+                  <div className={sx.resultCardMetaRow}>
+                    <dt className={sx.resultCardMetaDt}>タイム</dt>
+                    <dd className={sx.resultCardMetaDd}>{row.time_display}</dd>
                   </div>
                 </dl>
               </article>
@@ -1275,17 +1297,17 @@ export default function SearchPage({
           )}
         </div>
 
-        <div className="pagination-controls">
-          <button type="button" disabled={pagination.page <= 1 || loading} onClick={() => goToPage(1)}>
+        <div className={sx.pagination}>
+          <button type="button" className={sx.pagBtn} disabled={pagination.page <= 1 || loading} onClick={() => goToPage(1)}>
             先頭
           </button>
-          <button type="button" disabled={pagination.page <= 1 || loading} onClick={() => goToPage(pagination.page - 1)}>
+          <button type="button" className={sx.pagBtn} disabled={pagination.page <= 1 || loading} onClick={() => goToPage(pagination.page - 1)}>
             前へ
           </button>
 
-          <div className="pagination-pages" aria-label="ページ番号">
+          <div className={sx.pagPages} aria-label="ページ番号">
             {pagination.total_pages <= 0 ? (
-              <span className="pagination-empty">0 / 0</span>
+              <span className={sx.pagEmpty}>0 / 0</span>
             ) : (
               pageNumbers.map((pageNumber, index) => {
                 const previous = index > 0 ? pageNumbers[index - 1] : null;
@@ -1293,10 +1315,10 @@ export default function SearchPage({
 
                 return (
                   <span key={`page-${pageNumber}`}>
-                    {showEllipsis ? <span className="pagination-ellipsis">…</span> : null}
+                    {showEllipsis ? <span className={sx.pagEllipsis}>…</span> : null}
                     <button
                       type="button"
-                      className={pageNumber === pagination.page ? "page-number active" : "page-number"}
+                      className={pageNumber === pagination.page ? sx.pageNumActive : sx.pageNum}
                       onClick={() => goToPage(pageNumber)}
                       disabled={loading}
                     >
@@ -1310,6 +1332,7 @@ export default function SearchPage({
 
           <button
             type="button"
+            className={sx.pagBtn}
             disabled={pagination.total_pages === 0 || pagination.page >= pagination.total_pages || loading}
             onClick={() => goToPage(pagination.page + 1)}
           >
@@ -1317,6 +1340,7 @@ export default function SearchPage({
           </button>
           <button
             type="button"
+            className={sx.pagBtn}
             disabled={pagination.total_pages === 0 || pagination.page >= pagination.total_pages || loading}
             onClick={() => goToPage(pagination.total_pages)}
           >
@@ -1324,7 +1348,7 @@ export default function SearchPage({
           </button>
 
           <form
-            className="pagination-jump"
+            className={sx.pagJump}
             onSubmit={(event) => {
               event.preventDefault();
               const parsed = Number(pageInput);
@@ -1332,16 +1356,17 @@ export default function SearchPage({
               goToPage(parsed);
             }}
           >
-            <label htmlFor="page-jump-input">移動</label>
+            <label htmlFor="page-jump-input" className={sx.pagJumpLabel}>移動</label>
             <input
               id="page-jump-input"
+              className={sx.pagJumpInput}
               type="number"
               min={1}
               max={Math.max(1, pagination.total_pages)}
               value={pageInput}
               onChange={(event) => setPageInput(event.target.value)}
             />
-            <button type="submit" disabled={loading || pagination.total_pages <= 0}>
+            <button type="submit" className={sx.pagBtn} disabled={loading || pagination.total_pages <= 0}>
               Go
             </button>
           </form>
