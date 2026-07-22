@@ -122,7 +122,7 @@ export default function RootLayout({
               className="inline-flex flex-wrap items-center gap-3 md:gap-4"
               aria-label="フッターナビゲーション"
             >
-              <Link href="/" className={footerLinkClass}>
+              <Link href="/search" className={footerLinkClass}>
                 検索
               </Link>
               <Link href="/results" className={footerLinkClass}>

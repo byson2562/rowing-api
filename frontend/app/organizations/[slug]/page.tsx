@@ -112,7 +112,7 @@ export default async function OrganizationPage({ params }: { params: Params }) {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "検索", item: siteUrl },
+          { "@type": "ListItem", position: 1, name: "ホーム", item: siteUrl },
           { "@type": "ListItem", position: 2, name: "団体別成績", item: `${siteUrl}/organizations` },
           { "@type": "ListItem", position: 3, name: organization, item: `${siteUrl}${path}` }
         ]
@@ -130,7 +130,7 @@ export default async function OrganizationPage({ params }: { params: Params }) {
     <main className="site-container static-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <nav className="breadcrumbs" aria-label="パンくずリスト">
-        <Link href="/">検索</Link>
+        <Link href="/">ホーム</Link>
         <span aria-hidden="true">›</span>
         <Link href="/organizations">団体別成績</Link>
         <span aria-hidden="true">›</span>

@@ -95,7 +95,7 @@ export default async function RowingResultsPage() {
         "レガッタナビの検索ページで、全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は大会結果一覧ページからもたどれます。",
       answerNode: (
         <>
-          レガッタナビの<Link href="/">検索ページ</Link>
+          レガッタナビの<Link href="/search">検索ページ</Link>
           で、全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は
           <Link href="/results">大会結果一覧ページ</Link>からもたどれます。
         </>
@@ -111,7 +111,7 @@ export default async function RowingResultsPage() {
         "検索ページで種目を選択すると、その種目のFinal A優勝タイムの年別推移をグラフで確認できます。年度・団体などの条件と組み合わせた絞り込みも可能です。",
       answerNode: (
         <>
-          <Link href="/">検索ページ</Link>
+          <Link href="/search">検索ページ</Link>
           で種目を選択すると、その種目のFinal
           A優勝タイムの年別推移をグラフで確認できます。年度・団体などの条件と組み合わせた絞り込みも可能です。
         </>
@@ -152,11 +152,11 @@ export default async function RowingResultsPage() {
               年度・大会名・種目・団体を横断して検索し、メダル傾向までまとめて確認。日本の主要大会記録を比較しやすい形で素早くたどれます。
             </p>
             <div className="lp-hero-actions">
-              <ButtonLink href="/">今すぐ検索を始める</ButtonLink>
+              <ButtonLink href="/search">今すぐ検索を始める</ButtonLink>
             </div>
           </div>
         </div>
-        <Link href="/" className="lp-hero-preview-link" aria-label="検索画面を開く">
+        <Link href="/search" className="lp-hero-preview-link" aria-label="検索画面を開く">
           <img
             className="lp-hero-preview"
             src="/lp-fv-screenshot.png"

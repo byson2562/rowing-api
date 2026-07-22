@@ -58,7 +58,7 @@ export default async function RecordsIndexPage() {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "検索", item: siteUrl },
+          { "@type": "ListItem", position: 1, name: "ホーム", item: siteUrl },
           { "@type": "ListItem", position: 2, name: "歴代最速タイム", item: `${siteUrl}/records` }
         ]
       },
@@ -79,7 +79,7 @@ export default async function RecordsIndexPage() {
     <main className="site-container static-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <nav className="breadcrumbs" aria-label="パンくずリスト">
-        <Link href="/">検索</Link>
+        <Link href="/">ホーム</Link>
         <span aria-hidden="true">›</span>
         <span>歴代最速タイム</span>
       </nav>
@@ -130,7 +130,7 @@ export default async function RecordsIndexPage() {
       ))}
 
       <p className="static-cta">
-        条件を組み合わせて探す場合は<Link href="/">記録検索ページ</Link>をご利用ください。
+        条件を組み合わせて探す場合は<Link href="/search">記録検索ページ</Link>をご利用ください。
       </p>
     </main>
   );

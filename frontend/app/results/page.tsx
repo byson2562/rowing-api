@@ -46,7 +46,7 @@ export default async function ResultsIndexPage() {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "検索", item: siteUrl },
+          { "@type": "ListItem", position: 1, name: "ホーム", item: siteUrl },
           { "@type": "ListItem", position: 2, name: "大会結果一覧", item: `${siteUrl}/results` }
         ]
       },
@@ -67,7 +67,7 @@ export default async function ResultsIndexPage() {
     <main className="site-container static-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <nav className="breadcrumbs" aria-label="パンくずリスト">
-        <Link href="/">検索</Link>
+        <Link href="/">ホーム</Link>
         <span aria-hidden="true">›</span>
         <span>大会結果一覧</span>
       </nav>
@@ -97,7 +97,7 @@ export default async function ResultsIndexPage() {
       ))}
 
       <p className="static-cta">
-        条件を組み合わせて探す場合は<Link href="/">記録検索ページ</Link>をご利用ください。
+        条件を組み合わせて探す場合は<Link href="/search">記録検索ページ</Link>をご利用ください。
       </p>
     </main>
   );

@@ -255,7 +255,7 @@ export default async function UniversityPowerMapArticle() {
         </p>
         <p>
           気になった大学があれば、<Link href="/organizations">団体別ページ</Link>
-          でメダル推移を、<Link href="/">検索ページ</Link>
+          でメダル推移を、<Link href="/search">検索ページ</Link>
           で個々のレース結果を確認できます。この記事の集計は全部そこから再現できます。
         </p>
 

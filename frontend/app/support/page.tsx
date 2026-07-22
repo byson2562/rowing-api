@@ -67,7 +67,7 @@ export default function SupportPage() {
             サービス継続のため、個人寄付と企業・団体協賛を募集しています。
           </p>
           <div className="lp-hero-actions">
-            <ButtonLink href="/">検索画面を見る</ButtonLink>
+            <ButtonLink href="/search">検索画面を見る</ButtonLink>
             <ButtonLink
               href="mailto:takumi.nakamura.by@gmail.com?subject=レガッタナビ%20%E5%8D%94%E8%B3%9B%E3%83%BB%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"
               variant="secondary"

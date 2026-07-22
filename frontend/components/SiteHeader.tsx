@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 const NAV_LINKS = [
-  { href: "/", label: "検索" },
+  { href: "/search", label: "検索" },
   { href: "/results", label: "大会結果一覧" },
   { href: "/records", label: "歴代記録" },
   { href: "/organizations", label: "団体別" },
