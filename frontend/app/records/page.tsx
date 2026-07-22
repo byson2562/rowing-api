@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { allResults, listEventNames, type ResultRecord } from "../../lib/results-data";
+import { allResults, listRecordEventNames, type ResultRecord } from "../../lib/results-data";
 import { siteUrl } from "../../lib/site-url";
 
 export const metadata: Metadata = {
@@ -30,12 +30,11 @@ export const metadata: Metadata = {
 const EVENT_GROUPS = [
   { label: "男子", match: (name: string) => name.startsWith("男子") },
   { label: "女子", match: (name: string) => name.startsWith("女子") },
-  { label: "軽量級", match: (name: string) => name.startsWith("軽量級") },
-  { label: "パラ・ジュニアオリンピック", match: () => true }
+  { label: "軽量級", match: (name: string) => name.startsWith("軽量級") }
 ] as const;
 
 export default async function RecordsIndexPage() {
-  const [events, rows] = await Promise.all([listEventNames(), allResults()]);
+  const [events, rows] = await Promise.all([listRecordEventNames(), allResults()]);
 
   const bestByEvent = new Map<string, ResultRecord>();
   rows.forEach((row) => {

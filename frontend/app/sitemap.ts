@@ -5,7 +5,7 @@ import {
   competitionsByRecency,
   getFilteredResults,
   listAthletes,
-  listEventNames,
+  listRecordEventNames,
   listOrganizations,
   organizationSlug
 } from "../lib/results-data";
@@ -113,7 +113,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   });
 
-  (await listEventNames()).forEach((event) => {
+  (await listRecordEventNames()).forEach((event) => {
     entries.push({
       url: `${siteUrl}/records/${encodeURIComponent(event)}`,
       lastModified: dateForEntity(eventLatestYear, event),

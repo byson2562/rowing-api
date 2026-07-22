@@ -477,6 +477,17 @@ export async function listEventNames(): Promise<string[]> {
   return uniqueSorted(rows.map((row) => row.event_name));
 }
 
+// パラ(PR*)・ジャパンオープン(JO*)種目は標準の2000m種目と条件が異なり歴代最速の比較になじまないため、
+// 歴代記録(/records)の対象からは除外する。検索など他機能では通常どおり扱う。
+export function isRecordEvent(eventName: string): boolean {
+  return !/^PR\d|^JO/.test(eventName);
+}
+
+export async function listRecordEventNames(): Promise<string[]> {
+  const events = await listEventNames();
+  return events.filter(isRecordEvent);
+}
+
 // 個人名が記録されているのはシングルスカル種目のみ（団体種目のcrew_nameは団体名）。
 // crew_name === organization の行は個人名が欠損した不良データのため除外する
 export function isAthleteRecord(row: ResultRecord): boolean {

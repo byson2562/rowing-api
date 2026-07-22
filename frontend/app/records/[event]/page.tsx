@@ -6,7 +6,7 @@ import { ShareXLink } from "../../components/share-x-link";
 import {
   getFilteredResults,
   isAthleteRecord,
-  listEventNames,
+  listRecordEventNames,
   organizationSlug
 } from "../../../lib/results-data";
 import { siteUrl } from "../../../lib/site-url";
@@ -26,13 +26,13 @@ function decodeEvent(raw: string): string {
 }
 
 export async function generateStaticParams(): Promise<Params[]> {
-  const events = await listEventNames();
+  const events = await listRecordEventNames();
   return events.map((event) => ({ event }));
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const event = decodeEvent(params.event);
-  const events = await listEventNames();
+  const events = await listRecordEventNames();
   if (!events.includes(event)) return {};
 
   const rows = await getFilteredResults({ event });
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function EventRecordsPage({ params }: { params: Params }) {
   const event = decodeEvent(params.event);
-  const events = await listEventNames();
+  const events = await listRecordEventNames();
   if (!events.includes(event)) notFound();
 
   const rows = await getFilteredResults({ event });
