@@ -12,7 +12,8 @@ import {
 import { siteUrl } from "../lib/site-url";
 
 export const metadata: Metadata = {
-  title: "ローイング大会結果・記録データベース",
+  // ルートセグメントでは layout の title.template が適用されないため、接尾辞まで明示する
+  title: "ローイング大会結果・記録データベース | レガッタナビ",
   description:
     "全日本選手権・全日本大学選手権など日本の主要ローイング（ボート）大会の最新結果と歴代記録。年度・大会・種目・団体での検索、記録の推移まで確認できます。",
   alternates: {
