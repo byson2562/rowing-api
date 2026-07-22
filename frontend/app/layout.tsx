@@ -24,6 +24,10 @@ const notoSansJp = Noto_Sans_JP({
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
+// フッターのリンク共通クラス(旧 .site-footer-link 相当。実効font-weightは500)
+const footerLinkClass =
+  "text-[11px] font-medium text-rn-link no-underline hover:underline hover:text-rn-primary md:text-xs";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -137,40 +141,40 @@ export default function RootLayout({
           </div>
         </header>
         {children}
-        <footer className="site-footer">
-          <div className="site-footer-inner">
-            <p className="site-footer-copy">
+        <footer className="border-t border-rn-border bg-white/45">
+          <div className="mx-auto flex max-w-[1220px] flex-col items-start gap-2 px-3.5 py-2.5 md:flex-row md:items-center md:justify-between md:gap-3 md:px-6 md:py-3">
+            <p className="m-0 text-[11px] text-[#4d6788] md:text-xs">
               © {new Date().getFullYear()} レガッタナビ
             </p>
             <nav
-              className="site-footer-nav"
+              className="inline-flex flex-wrap items-center gap-3 md:gap-4"
               aria-label="フッターナビゲーション"
             >
-              <Link href="/" className="site-footer-link">
+              <Link href="/" className={footerLinkClass}>
                 検索
               </Link>
-              <Link href="/results" className="site-footer-link">
+              <Link href="/results" className={footerLinkClass}>
                 大会結果一覧
               </Link>
-              <Link href="/records" className="site-footer-link">
+              <Link href="/records" className={footerLinkClass}>
                 歴代記録
               </Link>
-              <Link href="/organizations" className="site-footer-link">
+              <Link href="/organizations" className={footerLinkClass}>
                 団体別
               </Link>
-              <Link href="/athletes" className="site-footer-link">
+              <Link href="/athletes" className={footerLinkClass}>
                 選手別
               </Link>
-              <Link href="/articles" className="site-footer-link">
+              <Link href="/articles" className={footerLinkClass}>
                 記事
               </Link>
-              <a href="/feed.xml" className="site-footer-link">
+              <a href="/feed.xml" className={footerLinkClass}>
                 RSS
               </a>
-              <Link href="/about" className="site-footer-link">
+              <Link href="/about" className={footerLinkClass}>
                 レガッタナビとは
               </Link>
-              <Link href="/privacy" className="site-footer-link">
+              <Link href="/privacy" className={footerLinkClass}>
                 プライバシーポリシー
               </Link>
             </nav>

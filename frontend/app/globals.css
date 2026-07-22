@@ -21,6 +21,7 @@
   --color-rn-primary-soft: var(--primary-soft);
   --color-rn-accent: var(--accent);
   --color-rn-accent-ink: var(--accent-ink);
+  --color-rn-link: #3f60a0;
   --radius-rn-card: var(--radius-card);
   --radius-rn-control: var(--radius-control);
   --radius-rn-pill: var(--radius-pill);
@@ -113,44 +114,7 @@ body {
   color: var(--primary);
 }
 
-.site-footer {
-  border-top: 1px solid #dbe7fa;
-  background: rgba(255, 255, 255, 0.45);
-}
-
-.site-footer-inner {
-  max-width: 1220px;
-  margin: 0 auto;
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.site-footer-copy {
-  margin: 0;
-  color: #4d6788;
-  font-size: 12px;
-}
-
-.site-footer-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.site-footer-link {
-  color: #3f60a0;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.site-footer-link:hover {
-  text-decoration: underline;
-  color: var(--primary);
-}
+/* .site-footer 系は layout.tsx でTailwind(rn-*トークン)へ移行済み(Phase 3) */
 
 .container {
   max-width: 1220px;
@@ -1009,18 +973,6 @@ th {
     flex-shrink: 0;
   }
 
-  .site-footer-inner {
-    padding: 10px 14px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .site-footer-nav {
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
   .container {
     padding: 20px 14px 28px;
   }
@@ -1124,10 +1076,6 @@ th {
     font-size: 11px;
   }
 
-  .site-footer-copy,
-  .site-footer-link {
-    font-size: 11px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2088,7 +2036,6 @@ th {
 
 /* --- 1. タイポグラフィ階層: 本文400 / ラベル500 / 操作600 / 見出し・数値700 --- */
 .site-nav-link,
-.site-footer-link,
 .chip,
 .advanced-filter-meta,
 .chart-card-head span,
