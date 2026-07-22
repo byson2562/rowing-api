@@ -47,9 +47,7 @@ const FEATURED_EVENT_ORDER = [
 // ---- 最新の大会結果テーブル(旧 .home-featured-*)のTailwindクラス ----
 // 記事テーブル(article-classes.ts)と同じカード積みパターン。<=640pxで
 // thead を視覚的に隠し、行を data-label 付きカードに積む。
-const featuredCard =
-  "rounded-rn-card bg-[linear-gradient(150deg,#ffffff_0%,#f2f8ff_100%)] " +
-  "px-6 pb-6 pt-[22px] shadow-rn-soft";
+const featuredCard = "rounded-rn-card bg-white px-6 pb-6 pt-[22px] shadow-rn-soft";
 const featuredKicker = "m-0 text-[12px] font-extrabold tracking-[0.06em] text-[#2f66b8]";
 const featuredHeading =
   "mb-0 mt-1.5 text-[clamp(1.3rem,3vw,1.8rem)] leading-[1.3] text-rn-brand";
@@ -79,13 +77,13 @@ const featuredActions = "mt-[18px] flex flex-wrap gap-2.5";
 const homeSectionTitle =
   "mb-0 mt-0 text-[1.2rem] font-extrabold leading-[1.25] tracking-[0.01em] text-[#0f2647] " +
   "after:mt-2 after:block after:h-[3px] after:w-11 after:rounded-full " +
-  "after:bg-[linear-gradient(90deg,#1d6ee0_0%,#6ca7ff_100%)] after:content-['']";
+  "after:bg-rn-primary after:content-['']";
 // セクション見出し行(右端に「すべて見る」リンクを添える)
 const homeSectionHead = "mb-3.5 flex items-baseline justify-between gap-3";
 const homeMoreLink =
   "text-[13px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline";
 // カードはサイト共通のボーダーレス+ソフト影
-const homeCard = "rounded-[18px] bg-white p-[18px] shadow-rn-soft";
+const homeCard = "rounded-xl bg-white p-[18px] shadow-rn-soft";
 
 // 着地時の主役として出す「最新の大会結果」。最新年の直近大会のFinal A優勝を並べる
 async function buildFeatured() {
@@ -239,7 +237,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
               <li key={`${year}-${competition}`}>
                 <Link
                   href={`/results/${year}/${encodeURIComponent(competition)}`}
-                  className="block rounded-[18px] bg-white px-4 py-3 no-underline shadow-rn-soft transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-rn motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  className="block rounded-xl bg-white px-4 py-3 no-underline shadow-rn-soft transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(16,42,80,0.1)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
                   <span className="block text-[12px] font-bold text-rn-muted">{year}年</span>
                   <span className="block text-[14px] font-bold leading-[1.5] text-rn-brand">{competition}</span>
@@ -279,7 +277,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
 
       <section
         aria-labelledby="home-search-heading"
-        className="rounded-rn-card bg-[linear-gradient(160deg,#f8fbff,#edf4ff)] p-6 shadow-rn-soft"
+        className="rounded-rn-card border border-rn-border-soft bg-rn-surface-soft p-6"
       >
         <h2 id="home-search-heading" className={homeSectionTitle}>記録を検索する</h2>
         <p className="mb-0 mt-0 leading-[1.7] text-rn-muted">

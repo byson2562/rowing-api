@@ -22,14 +22,14 @@ export const articleBarValue = "text-[13px] font-bold text-rn-brand";
 export const articleEraGrid =
   "mt-[1.4em] grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5";
 export const articleEraCard =
-  "rounded-[14px] border border-[#d7e3f4] bg-white px-[18px] py-3.5";
+  "rounded-xl border border-[#d7e3f4] bg-white px-[18px] py-3.5";
 export const articleEraCardTitle =
   "m-0 text-[1rem] font-[750] leading-[1.35] text-[#33507a]";
 export const articleEraCardList = "mt-2.5 mb-0 pl-[1.4em] leading-[1.9] text-[#2c4364]";
 
 // ---- 注記(データについての注記) ----
 export const articleNote =
-  "mt-[2.6em] rounded-[14px] border border-[#d7e3f4] bg-[#f4f8fe] px-5 py-4";
+  "mt-[2.6em] rounded-xl border border-[#d7e3f4] bg-[#f4f8fe] px-5 py-4";
 export const articleNoteTitle =
   "m-0 text-[0.95rem] font-[750] leading-[1.35] text-[#33507a]";
 export const articleNoteList =

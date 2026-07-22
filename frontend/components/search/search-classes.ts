@@ -10,11 +10,11 @@
 // 注: 旧CSSでは select の矢印画像は Clubhouse パスの background ショートハンドで
 // 上書きされて消えていたため、矢印なしが現行の見た目。
 const control =
-  "h-11 w-full rounded-rn-control border-2 border-rn-border-soft bg-rn-surface-soft px-[11px] py-2 text-[14px] " +
-  "text-[#1d3557] focus:border-rn-primary focus:bg-white focus:outline-2 focus:outline-[rgba(29,110,224,0.25)]";
+  "h-11 w-full rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[14px] " +
+  "text-[#1d3557] focus:border-rn-primary focus:outline-2 focus:outline-[rgba(29,110,224,0.25)]";
 
 const genderTabBase =
-  "cursor-pointer rounded-[999px] border-2 px-[18px] py-[9px] font-semibold transition-all duration-[180ms] " +
+  "cursor-pointer rounded-[999px] border px-[18px] py-[9px] font-semibold transition-all duration-[180ms] " +
   "max-[768px]:py-2.5 ";
 
 const comboboxOptionBase =
@@ -23,7 +23,7 @@ const comboboxOptionBase =
 const chartCardBase = "rounded-rn-card bg-white p-3.5 shadow-rn-soft max-[768px]:col-span-full ";
 
 const pagBtnBase =
-  "cursor-pointer rounded-[999px] border-2 border-rn-border-soft bg-white font-semibold text-rn-link " +
+  "cursor-pointer rounded-[10px] border border-rn-border bg-white font-semibold text-rn-link " +
   "enabled:hover:border-rn-primary enabled:hover:text-rn-primary " +
   "disabled:cursor-not-allowed disabled:opacity-55 max-[768px]:min-h-10 ";
 
@@ -56,8 +56,8 @@ export const sx = {
   secondaryWrap: "mt-0.5 grid gap-1.5 border-t border-dashed border-rn-border-soft pt-1 max-[768px]:pt-2.5",
   advHeader: "flex items-center",
   advToggle:
-    "inline-flex w-full cursor-pointer items-center gap-2 rounded-rn-control border-2 border-rn-border-soft " +
-    "bg-rn-surface-soft px-[13px] py-[11px] text-[13px] font-semibold text-rn-link " +
+    "inline-flex w-full cursor-pointer items-center gap-2 rounded-rn-control border border-rn-border " +
+    "bg-white px-[13px] py-[11px] text-[13px] font-semibold text-rn-link " +
     "hover:border-rn-primary hover:bg-[#f1f7ff] hover:text-rn-primary",
   advMeta: "ml-auto text-[12px] font-medium text-[#557395]",
   advCaret: "text-[11px] text-[#6a84a5]",
@@ -75,7 +75,7 @@ export const sx = {
   comboboxOpen: "relative z-[80]",
   comboboxMenu:
     "absolute inset-x-0 top-[calc(100%+4px)] z-[90] flex max-h-[260px] flex-col gap-0.5 overflow-y-auto " +
-    "rounded-rn-control border-2 border-rn-border-soft bg-white p-1.5 shadow-rn",
+    "rounded-rn-control border border-rn-border bg-white p-1.5 shadow-[0_8px_24px_rgba(16,42,80,0.12)]",
   comboboxOption: comboboxOptionBase + "bg-transparent text-[#1d3557] hover:bg-[#f2f7ff]",
   comboboxOptionActive: comboboxOptionBase + "bg-[#e3edfb] font-bold text-[#0d4d9e]",
   comboboxNoMatch: "px-3 py-2.5 text-[13px] text-rn-muted",
@@ -84,11 +84,11 @@ export const sx = {
   // フィルタ操作列・チップ
   filterActions: "flex justify-end max-[768px]:flex-wrap max-[768px]:gap-2",
   filterActionBtn:
-    "cursor-pointer rounded-[999px] border-2 border-rn-border-soft bg-white px-3 py-2 font-semibold text-rn-link " +
+    "cursor-pointer rounded-[10px] border border-rn-border bg-white px-3 py-2 font-semibold text-rn-link " +
     "hover:border-rn-primary hover:text-rn-primary " +
     "disabled:cursor-not-allowed disabled:opacity-60 max-[768px]:ml-auto",
   resultsJump:
-    "mr-auto inline-flex items-center rounded-[999px] bg-rn-accent px-5 py-[11px] text-[13px] font-extrabold " +
+    "mr-auto inline-flex items-center rounded-[10px] bg-rn-accent px-5 py-[11px] text-[13px] font-extrabold " +
     "text-rn-accent-ink no-underline shadow-[0_8px_20px_rgba(255,138,61,0.35)] " +
     "hover:brightness-[1.05] hover:no-underline " +
     "max-[768px]:mr-0 max-[768px]:w-full max-[768px]:justify-center",
@@ -100,20 +100,19 @@ export const sx = {
     "inline-flex h-4 w-4 items-center justify-center rounded-[999px] bg-[#dbe9fc] leading-none text-[#2c4c82]",
 
   // 空状態ガイド
-  guide:
-    "mt-3.5 rounded-[14px] border border-dashed border-rn-border bg-[linear-gradient(160deg,#f8fbff,#edf4ff)] p-3.5",
+  guide: "mt-3.5 rounded-xl border border-dashed border-rn-border bg-rn-surface-soft p-3.5",
   guideTitle: "m-0 text-[1rem]",
   guideText: "mb-0 mt-1.5 text-[13px] text-[#4a678d]",
   guideActions: "mt-2.5 flex flex-wrap gap-2 max-[768px]:flex-col max-[768px]:items-stretch",
   guideBtn:
-    "cursor-pointer rounded-[999px] border-2 border-rn-border-soft bg-white px-[11px] py-1.5 font-semibold " +
+    "cursor-pointer rounded-[10px] border border-rn-border bg-white px-[11px] py-1.5 font-semibold " +
     "text-[#244a74] disabled:cursor-not-allowed disabled:opacity-60 " +
     "max-[768px]:w-full max-[768px]:px-2.5 max-[768px]:py-2",
 
   // グラフ
   chartsToggleWrap: "hidden max-[768px]:mt-3.5 max-[768px]:block",
   chartsToggle:
-    "w-full cursor-pointer rounded-[999px] border-2 border-rn-border-soft bg-white p-[13px] font-semibold " +
+    "w-full cursor-pointer rounded-xl border border-rn-border bg-white p-[13px] font-semibold " +
     "text-rn-link hover:border-rn-primary hover:text-rn-primary",
   cards:
     "relative z-[1] mt-3.5 grid grid-cols-[repeat(12,minmax(0,1fr))] items-start gap-3 " +
@@ -169,7 +168,7 @@ export const sx = {
   emptyResults: "flex flex-col items-center gap-2.5 py-1.5",
   emptyResultsText: "m-0",
   emptyResultsBtn:
-    "cursor-pointer rounded-[999px] border-2 border-rn-border-soft bg-white px-3.5 py-2 font-semibold text-rn-link " +
+    "cursor-pointer rounded-[10px] border border-rn-border bg-white px-3.5 py-2 font-semibold text-rn-link " +
     "hover:bg-[#eef5ff]",
   // 後段デザインパスの上書き(ひと回り大きい円 30px + primary-soft)適用後の実効値。
   // 色・太さはメダル/通常で排他になるため基底から分離する(ユーティリティ同士は後勝ちできない)
@@ -183,7 +182,7 @@ export const sx = {
   resultCardEmpty:
     "rounded-[10px] border border-dashed border-rn-border bg-[#f8fbff] px-3 py-3.5 text-center font-medium " +
     "text-rn-muted",
-  resultCard: "rounded-[18px] bg-white p-2.5 shadow-rn-soft",
+  resultCard: "rounded-xl bg-white p-2.5 shadow-rn-soft",
   resultCardHead: "mb-1.5 flex items-center gap-2",
   resultCardTag: "rounded-[999px] border border-rn-border px-2 py-0.5 text-[11px] font-medium text-[#2e4f77]",
   resultCardRank: resultCardRankBase + "rounded-lg font-extrabold",
@@ -202,7 +201,7 @@ export const sx = {
   pagBtn: pagBtnBase + "px-[11px] py-[7px]",
   pageNum: pagBtnBase + "h-[34px] min-w-[34px] px-2 py-0",
   pageNumActive:
-    "h-[34px] min-w-[34px] cursor-pointer rounded-[999px] border-2 border-rn-primary bg-rn-primary px-2 py-0 " +
+    "h-[34px] min-w-[34px] cursor-pointer rounded-[10px] border border-rn-primary bg-rn-primary px-2 py-0 " +
     "font-semibold text-white disabled:cursor-not-allowed disabled:opacity-55 max-[768px]:min-h-10",
   pagPages: "flex items-center gap-1.5",
   pagEmpty: "text-[13px] font-bold text-rn-muted",

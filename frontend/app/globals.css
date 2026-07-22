@@ -50,8 +50,8 @@
 @layer legacy {
 :root {
   /* Clubhouse デザイントークン: 明るく柔らかいブルー基調 + オレンジCTA */
-  --bg: #f2f8ff;
-  --bg-accent: #fff9f2;
+  --bg: #ffffff;
+  --bg-accent: #ffffff;
   --surface: #ffffff;
   --surface-solid: #ffffff;
   --surface-soft: #f8fbff;
@@ -64,11 +64,12 @@
   --primary-soft: #eef5ff;
   --accent: #ff8a3d;
   --accent-ink: #46240a;
-  --radius-card: 24px;
-  --radius-control: 14px;
+  --radius-card: 12px;
+  --radius-control: 10px;
   --radius-pill: 999px;
-  --shadow: 0 12px 40px rgba(60, 110, 200, 0.12);
-  --shadow-soft: 0 8px 22px rgba(60, 110, 200, 0.1);
+  /* フラット基調: 影は「ヘアライン+ごく薄い接地影」。浮遊感はホバー時のみ */
+  --shadow: 0 0 0 1px #e3edfb, 0 1px 2px rgba(16, 42, 80, 0.04);
+  --shadow-soft: 0 0 0 1px #e8effb, 0 1px 2px rgba(16, 42, 80, 0.03);
   color: var(--text);
   font-family: var(--font-inter), var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", sans-serif;
 }
@@ -86,9 +87,7 @@ select:focus-visible {
 
 body {
   margin: 0;
-  /* 青空→暖色へのやわらかな縦グラデ（Clubhouse基調） */
-  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
-  background-attachment: fixed;
+  background: var(--bg);
   min-height: 100vh;
 }
 
@@ -226,7 +225,7 @@ th {
   height: 3px;
   margin-top: 8px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #1d6ee0 0%, #6ca7ff 100%);
+  background: var(--primary);
 }
 
 .lp-page h3 {
@@ -237,12 +236,9 @@ th {
 }
 
 .lp-hero {
-  background:
-    radial-gradient(560px 220px at 95% -30%, rgba(113, 159, 232, 0.2) 0%, transparent 74%),
-    linear-gradient(150deg, #ffffff 0%, #f2f8ff 100%);
-  border: 1px solid #cddcf0;
-  border-radius: 24px;
-  box-shadow: 0 16px 34px rgba(17, 42, 75, 0.1);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
   padding: 28px;
   overflow: hidden;
   position: relative;
@@ -293,17 +289,17 @@ th {
 .lp-hero-preview {
   width: 100%;
   height: auto;
-  border: 1px solid #c8d9ee;
-  border-radius: 18px;
-  box-shadow: 0 18px 34px rgba(18, 40, 70, 0.16);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: none;
   display: block;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .lp-hero-preview-link:hover .lp-hero-preview,
 .lp-hero-preview-link:focus-visible .lp-hero-preview {
-  transform: translateY(-3px);
-  box-shadow: 0 22px 42px rgba(18, 40, 70, 0.22);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(18, 40, 70, 0.12);
 }
 
 /* 広い画面ではコピーとプレビューを左右2カラムに(右側の空洞化を防ぐ) */

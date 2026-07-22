@@ -10,8 +10,7 @@
 
 // ---- ヒーロー直下の帯(タグ + メトリクス) ----
 export const lpHeroStrip =
-  "grid gap-3 rounded-2xl border border-[#cfddf1] bg-white px-4 py-3.5 " +
-  "shadow-[0_10px_24px_rgba(60,110,200,0.07)] max-[900px]:p-3";
+  "grid gap-3 rounded-xl border border-rn-border bg-white px-4 py-3.5 max-[900px]:p-3";
 export const lpHeroTags = "m-0 flex list-none flex-wrap gap-[7px] p-0";
 export const lpHeroTag =
   "rounded-[999px] border border-[#c2d7f4] bg-[rgba(255,255,255,0.94)] px-[11px] py-[5px] text-[12px] font-bold text-[#24466e]";
@@ -27,10 +26,9 @@ export const lpHeroMetricValue = "text-[15px] leading-[1.2] text-[#0f2f54]";
 export const lpValueGrid =
   "grid grid-cols-[1.2fr_1fr_1fr] gap-3.5 max-[900px]:grid-cols-1";
 export const lpValueCard =
-  "rounded-2xl border border-[#d7e3f4] bg-white px-[17px] py-4 " +
-  "shadow-[0_10px_22px_rgba(60,110,200,0.08)] " +
+  "rounded-xl border border-rn-border bg-white px-[17px] py-4 " +
   "transition-[border-color,box-shadow] duration-[220ms] " +
-  "hover:border-[#bdd2ee] hover:shadow-[0_14px_28px_rgba(60,110,200,0.1)] " +
+  "hover:border-[#bdd2ee] hover:shadow-[0_8px_18px_rgba(60,110,200,0.1)] " +
   "motion-reduce:transition-none";
 export const lpValueCardBody = "mt-2 mb-0 leading-[1.6] text-rn-muted";
 
@@ -39,8 +37,7 @@ export const lpDetail = "grid grid-cols-[1.4fr_1fr] gap-3 max-[900px]:grid-cols-
 // lp-detail 直下の .lp-section-title に付ける(全幅 + 余白詰め)
 export const lpDetailTitle = "col-span-full mb-0";
 export const lpDetailCard =
-  "rounded-2xl border border-[#cfddf1] bg-white p-[18px] " +
-  "shadow-[0_12px_26px_rgba(60,110,200,0.08)]";
+  "rounded-xl border border-rn-border bg-white p-[18px]";
 export const lpDetailList = "mt-2.5 mb-0 pl-[18px] leading-[1.8]";
 
 // ---- 要約リスト(dl) ----
@@ -52,8 +49,7 @@ export const lpSummaryDdList = "mt-1.5 mb-0 pl-[18px]";
 
 // ---- 著者/連絡先カード ----
 export const lpAuthor =
-  "rounded-2xl border border-[#cfddf1] bg-white p-[18px] " +
-  "shadow-[0_12px_26px_rgba(60,110,200,0.08)]";
+  "rounded-xl border border-rn-border bg-white p-[18px]";
 export const lpAuthorBody = "mt-2.5 mb-0 leading-[1.7] text-rn-muted";
 export const lpAuthorMeta = "mt-3 mb-0 grid gap-2";
 export const lpAuthorMetaRow = "flex items-baseline gap-2.5";
@@ -72,7 +68,7 @@ export const lpArchiveLink =
 // ---- FAQ ----
 export const lpFaqList = "flex flex-col gap-3.5";
 export const lpFaqItem =
-  "rounded-[14px] border border-rn-border bg-white px-5 py-[18px] shadow-rn";
+  "rounded-xl border border-rn-border bg-white px-5 py-[18px]";
 export const lpFaqQuestion = "mt-0 mb-2 text-[15px]";
 export const lpFaqAnswer = "m-0 text-[14px] leading-[1.7] text-rn-text";
 
