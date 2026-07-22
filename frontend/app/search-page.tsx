@@ -659,7 +659,7 @@ export default function SearchPage({
   };
 
   return (
-    <main className="container">
+    <main className="site-container">
       {featuredSlot}
 
       {!hideHero && (

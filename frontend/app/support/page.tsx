@@ -36,7 +36,7 @@ export default function SupportPage() {
   const fallbackDonationLabel = "Stripeで寄付する";
 
   return (
-    <main className="container lp-page">
+    <main className="site-container lp-page">
       <section className="lp-hero">
         <div className="lp-hero-top">
           <p className="lp-kicker">Support レガッタナビ</p>

@@ -102,7 +102,7 @@ export default async function EventRecordsPage({ params }: { params: Params }) {
   };
 
   return (
-    <main className="container static-page">
+    <main className="site-container static-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <nav className="breadcrumbs" aria-label="パンくずリスト">
         <Link href="/">検索</Link>

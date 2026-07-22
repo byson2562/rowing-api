@@ -102,7 +102,7 @@ export default async function RowingResultsPage() {
   };
 
   return (
-    <main className="container lp-page">
+    <main className="site-container lp-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <section className="lp-hero">
         <div className="lp-hero-inner">

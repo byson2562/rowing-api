@@ -5,17 +5,25 @@
  * レガッタナビ既存の :root 変数を @theme inline で rn-* トークンとして公開し、
  * 今後の実装で bg-rn-primary / text-rn-muted のようなクラスを使えるようにする。
  */
+
+/*
+ * レイヤー順を最初に確定させる(この宣言は @import より前に置く必要がある)。
+ * 既存の手書きCSSは下記 @layer legacy に包み、utilities より低い優先度に
+ * 置くことで、Tailwindユーティリティが !important なしで既存CSSを上書きできる。
+ * 順序宣言を @import layer(utilities) より後ろに置くと、legacy が utilities の
+ * 後(上位)に配置されてしまい、既存CSSがユーティリティに勝ってしまう。
+ */
+@layer theme, legacy, utilities;
+
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
 /*
- * レイヤー順を明示する。既存の手書きCSSは下記 @layer legacy に包み、
- * utilities より低い優先度に置くことで、Tailwindユーティリティが
- * !important なしで既存CSSを上書きできるようにする(段階移行の土台)。
- * レイヤー無しのスタイルは常に @layer より優先されるため、手書きCSSを
- * unlayered のままにすると utilities が負けてしまう。
+ * ユーティリティのクラス文字列を定数として切り出したモジュール等も確実に
+ * スキャンさせる。dev(cwdがリポジトリルート)の自動検出漏れを防ぐため明示。
  */
-@layer theme, legacy, utilities;
+@source "../app/**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
 
 @theme inline {
   --color-rn-bg: var(--bg);
@@ -86,7 +94,9 @@ body {
 
 /* .site-header / .site-nav / .site-footer 系は layout.tsx・SiteHeaderでTailwind(rn-*トークン)へ移行済み(Phase 3)。スマホはハンバーガーメニュー化 */
 
-.container {
+/* サイト共通のコンテナ幅。Tailwind の container ユーティリティと同名衝突を避けるため
+   .site-container に改名している。 */
+.site-container {
   max-width: 1220px;
   margin: 0 auto;
   padding: 28px 24px 36px;
@@ -908,7 +918,7 @@ th {
 }
 
 @media (max-width: 768px) {
-  .container {
+  .site-container {
     padding: 20px 14px 28px;
   }
 
@@ -2251,13 +2261,10 @@ td.col-rank {
 }
 
 /* ===== 記事(articles) ===== */
-/* .article-list / .article-card* は app/articles/page.tsx でTailwindへ移行済み */
-
-.article-card-meta {
-  margin: 6px 0 0;
-  color: #7189a8;
-  font-size: 13px;
-}
+/* 記事の各コンポーネント(.article-list/.article-card*/.article-card-meta/.article-chart/
+   .article-bar-*/.article-era-grid*/.article-table*/.article-note*)は
+   components/article/article-classes.ts のTailwindクラスへ移行済み。
+   ここには本文の版面・タイポグラフィ(.article-page/.article-body/h1/h2/p)のみ残す。 */
 
 .article-page {
   max-width: 820px;
@@ -2269,15 +2276,6 @@ td.col-rank {
 .article-body {
   min-width: 0;
   max-width: 100%;
-}
-
-.article-table-wrap {
-  margin: 1.4em 0 0;
-  overflow-x: auto;
-}
-
-.article-table-wrap .article-table {
-  margin: 0;
 }
 
 .article-header h1 {
@@ -2298,177 +2296,6 @@ td.col-rank {
   margin: 1.1em 0 0;
   line-height: 1.95;
   color: #2c4364;
-}
-
-.article-chart {
-  margin: 1.4em 0 0;
-  display: grid;
-  gap: 8px;
-}
-
-.article-bar-row {
-  display: grid;
-  grid-template-columns: 6.5em minmax(0, 1fr) 2.4em;
-  align-items: center;
-  gap: 10px;
-}
-
-.article-bar-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #33507a;
-  text-align: right;
-}
-
-.article-bar-track {
-  background: #e8f0fb;
-  border-radius: 999px;
-  height: 18px;
-  overflow: hidden;
-}
-
-.article-bar-fill {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, #2f66b8, #5b93e3);
-  border-radius: 999px;
-}
-
-.article-bar-value {
-  font-size: 13px;
-  font-weight: 700;
-  color: #17345a;
-}
-
-.article-era-grid {
-  margin: 1.4em 0 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 14px;
-}
-
-.article-era-grid > div {
-  background: #ffffff;
-  border: 1px solid #d7e3f4;
-  border-radius: 14px;
-  padding: 14px 18px;
-}
-
-.article-era-grid h3 {
-  margin: 0;
-  font-size: 1rem;
-  color: #33507a;
-}
-
-.article-era-grid ol {
-  margin: 10px 0 0;
-  padding-left: 1.4em;
-  line-height: 1.9;
-  color: #2c4364;
-}
-
-.article-table {
-  margin: 1.4em 0 0;
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.article-table th,
-.article-table td {
-  border-bottom: 1px solid #dbe7fa;
-  padding: 8px 10px;
-  text-align: left;
-  line-height: 1.6;
-}
-
-.article-table th {
-  color: #33507a;
-  background: #f2f7ff;
-}
-
-.article-note {
-  margin: 2.6em 0 0;
-  background: #f4f8fe;
-  border: 1px solid #d7e3f4;
-  border-radius: 14px;
-  padding: 16px 20px;
-}
-
-.article-note h3 {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #33507a;
-}
-
-.article-note ul {
-  margin: 10px 0 0;
-  padding-left: 1.3em;
-  color: #4c6687;
-  line-height: 1.8;
-  font-size: 14px;
-}
-
-/* 記事テーブル: 狭い画面では横スクロールをやめ、年ごとのカードに積む */
-@media (max-width: 640px) {
-  .article-table-wrap {
-    overflow-x: visible;
-  }
-
-  .article-table {
-    min-width: 0;
-    font-size: 13px;
-  }
-
-  .article-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-  }
-
-  .article-table,
-  .article-table tbody,
-  .article-table tr,
-  .article-table td {
-    display: block;
-    width: 100%;
-  }
-
-  .article-table tr {
-    border: 1px solid #d7e3f4;
-    border-radius: 12px;
-    padding: 4px 14px;
-    margin-bottom: 10px;
-    background: #ffffff;
-  }
-
-  .article-table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 14px;
-    border-bottom: 1px solid #eef3fb;
-    padding: 8px 0;
-    text-align: right;
-  }
-
-  .article-table td:last-child {
-    border-bottom: 0;
-  }
-
-  .article-table td::before {
-    content: attr(data-label);
-    color: #5d7398;
-    font-weight: 700;
-    text-align: left;
-    flex-shrink: 0;
-  }
-
-  .article-table-year {
-    font-weight: 800;
-  }
 }
 
 /* ===== ホーム: 最新の大会結果(featured) ===== */

@@ -4,6 +4,20 @@ import Link from "next/link";
 import { allResults, organizationSlug } from "../../../lib/results-data";
 import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
+import {
+  articleMeta,
+  articleNote,
+  articleNoteList,
+  articleNoteTitle,
+  articleTable,
+  articleTableWrap,
+  articleTbody,
+  articleTd,
+  articleTdYear,
+  articleTh,
+  articleThead,
+  articleTr
+} from "../../../components/article/article-classes";
 
 const meta = getArticle("university-championship-guide")!;
 
@@ -81,11 +95,11 @@ export default async function UniversityChampionshipGuide() {
   };
 
   return (
-    <main className="container lp-page article-page">
+    <main className="site-container lp-page article-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <article className="article-body">
         <header className="article-header">
-          <p className="article-card-meta">
+          <p className={articleMeta}>
             <time dateTime={meta.publishedAt}>2026年7月22日</time> · レガッタナビ編集
           </p>
           <h1>全日本大学ローイング選手権(インカレ)とは</h1>
@@ -119,23 +133,23 @@ export default async function UniversityChampionshipGuide() {
           <Link href="/articles/university-power-map-2009-2025">勢力図の分析記事</Link>
           で17年分を追っています。
         </p>
-        <div className="article-table-wrap">
-          <table className="article-table">
-            <thead>
+        <div className={articleTableWrap}>
+          <table className={articleTable}>
+            <thead className={articleThead}>
               <tr>
-                <th scope="col">種目</th>
-                <th scope="col">優勝</th>
-                <th scope="col">タイム</th>
+                <th scope="col" className={articleTh}>種目</th>
+                <th scope="col" className={articleTh}>優勝</th>
+                <th scope="col" className={articleTh}>タイム</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className={articleTbody}>
               {champs2025.map((r) => (
-                <tr key={r.event_name}>
-                  <td data-label="種目" className="article-table-year">{r.event_name}</td>
-                  <td data-label="優勝">
+                <tr key={r.event_name} className={articleTr}>
+                  <td data-label="種目" className={`${articleTd} ${articleTdYear}`}>{r.event_name}</td>
+                  <td data-label="優勝" className={articleTd}>
                     <OrgLink name={r.organization} />
                   </td>
-                  <td data-label="タイム">{r.time_display}</td>
+                  <td data-label="タイム" className={articleTd}>{r.time_display}</td>
                 </tr>
               ))}
             </tbody>
@@ -149,23 +163,23 @@ export default async function UniversityChampionshipGuide() {
           <OrgLink name="中央大学" />(2019年)、<OrgLink name="仙台大学" />
           (2020年)、そして全日本選手権と合併開催だった2021年のNTT東日本(注記参照)です。2025年は早稲田が10年ぶりに勝ちました。
         </p>
-        <div className="article-table-wrap">
-          <table className="article-table">
-            <thead>
+        <div className={articleTableWrap}>
+          <table className={articleTable}>
+            <thead className={articleThead}>
               <tr>
-                <th scope="col">年</th>
-                <th scope="col">優勝</th>
-                <th scope="col">タイム</th>
+                <th scope="col" className={articleTh}>年</th>
+                <th scope="col" className={articleTh}>優勝</th>
+                <th scope="col" className={articleTh}>タイム</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className={articleTbody}>
               {menEight.map((r) => (
-                <tr key={r.year}>
-                  <td data-label="年" className="article-table-year">
+                <tr key={r.year} className={articleTr}>
+                  <td data-label="年" className={`${articleTd} ${articleTdYear}`}>
                     <Link href={`/results/${r.year}`}>{r.year}</Link>
                   </td>
-                  <td data-label="優勝">{r.organization}</td>
-                  <td data-label="タイム">{r.time_display}</td>
+                  <td data-label="優勝" className={articleTd}>{r.organization}</td>
+                  <td data-label="タイム" className={articleTd}>{r.time_display}</td>
                 </tr>
               ))}
             </tbody>
@@ -193,9 +207,9 @@ export default async function UniversityChampionshipGuide() {
           が出します。当サイトへの結果反映は大会後になります。
         </p>
 
-        <aside className="article-note">
-          <h3>データについての注記</h3>
-          <ul>
+        <aside className={articleNote}>
+          <h3 className={articleNoteTitle}>データについての注記</h3>
+          <ul className={articleNoteList}>
             <li>優勝はFinal Aの1位。収録範囲はFinal B以上です。</li>
             <li>2021年の男子エイトは全日本選手権との合併開催で、優勝は社会人のNTT東日本でした(歴代表にもそのまま載せています)。</li>
             <li>JO(ジャパンオープン)種目は社会人クルーも出場するオープン枠のため、種目別優勝の表から除いています。</li>

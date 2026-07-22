@@ -4,6 +4,30 @@ import Link from "next/link";
 import { allResults, organizationSlug } from "../../../lib/results-data";
 import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
+import {
+  articleBarFill,
+  articleBarLabel,
+  articleBarRow,
+  articleBarTrack,
+  articleBarValue,
+  articleChart,
+  articleEraCard,
+  articleEraCardList,
+  articleEraCardTitle,
+  articleEraGrid,
+  articleMeta,
+  articleNote,
+  articleNoteList,
+  articleNoteTitle,
+  articleTable,
+  articleTableWrap,
+  articleTbody,
+  articleTd,
+  articleTdYear,
+  articleTh,
+  articleThead,
+  articleTr
+} from "../../../components/article/article-classes";
 
 const meta = getArticle("university-power-map-2009-2025")!;
 
@@ -52,14 +76,14 @@ function OrgLink({ name }: { name: string }) {
 function GoldBarChart({ ranking, label }: { ranking: [string, number][]; label: string }) {
   const max = ranking[0]?.[1] ?? 1;
   return (
-    <div className="article-chart" role="img" aria-label={label}>
+    <div className={articleChart} role="img" aria-label={label}>
       {ranking.map(([org, count]) => (
-        <div className="article-bar-row" key={org}>
-          <span className="article-bar-label">{org.replace(/大学$/, "大")}</span>
-          <span className="article-bar-track">
-            <span className="article-bar-fill" style={{ width: `${(count / max) * 100}%` }} />
+        <div className={articleBarRow} key={org}>
+          <span className={articleBarLabel}>{org.replace(/大学$/, "大")}</span>
+          <span className={articleBarTrack}>
+            <span className={articleBarFill} style={{ width: `${(count / max) * 100}%` }} />
           </span>
-          <span className="article-bar-value">{count}</span>
+          <span className={articleBarValue}>{count}</span>
         </div>
       ))}
     </div>
@@ -68,10 +92,10 @@ function GoldBarChart({ ranking, label }: { ranking: [string, number][]; label: 
 
 function EraGrid({ first, second }: { first: [string, number][]; second: [string, number][] }) {
   return (
-    <div className="article-era-grid">
-      <div>
-        <h3>2009-2017</h3>
-        <ol>
+    <div className={articleEraGrid}>
+      <div className={articleEraCard}>
+        <h3 className={articleEraCardTitle}>2009-2017</h3>
+        <ol className={articleEraCardList}>
           {first.map(([org, count]) => (
             <li key={org}>
               {org} <strong>{count}</strong>
@@ -79,9 +103,9 @@ function EraGrid({ first, second }: { first: [string, number][]; second: [string
           ))}
         </ol>
       </div>
-      <div>
-        <h3>2018-2025</h3>
-        <ol>
+      <div className={articleEraCard}>
+        <h3 className={articleEraCardTitle}>2018-2025</h3>
+        <ol className={articleEraCardList}>
           {second.map(([org, count]) => (
             <li key={org}>
               {org} <strong>{count}</strong>
@@ -146,11 +170,11 @@ export default async function UniversityPowerMapArticle() {
   };
 
   return (
-    <main className="container lp-page article-page">
+    <main className="site-container lp-page article-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <article className="article-body">
         <header className="article-header">
-          <p className="article-card-meta">
+          <p className={articleMeta}>
             <time dateTime={meta.publishedAt}>2026年7月21日</time> · レガッタナビ編集
           </p>
           <h1>データで見る大学ボートの勢力図 2009-2025</h1>
@@ -202,23 +226,23 @@ export default async function UniversityPowerMapArticle() {
         <p>
           年ごとの最多校です。男子は2009年・2012年に日大が7個。この「1校で7個」は後期には一度も出ていません。女子は2015年の早稲田4個が最多で、近年は男女とも2〜3個で最多が決まる年が続きます。
         </p>
-        <div className="article-table-wrap">
-        <table className="article-table">
-          <thead>
+        <div className={articleTableWrap}>
+        <table className={articleTable}>
+          <thead className={articleThead}>
             <tr>
-              <th scope="col">年</th>
-              <th scope="col">男子の最多校(個数)</th>
-              <th scope="col">女子の最多校(個数)</th>
+              <th scope="col" className={articleTh}>年</th>
+              <th scope="col" className={articleTh}>男子の最多校(個数)</th>
+              <th scope="col" className={articleTh}>女子の最多校(個数)</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={articleTbody}>
             {yearlyTop.map(({ year, men: m, women: w }) => (
-              <tr key={year}>
-                <td data-label="年" className="article-table-year">
+              <tr key={year} className={articleTr}>
+                <td data-label="年" className={`${articleTd} ${articleTdYear}`}>
                   <Link href={`/results/${year}`}>{year}</Link>
                 </td>
-                <td data-label="男子">{m}</td>
-                <td data-label="女子">{w}</td>
+                <td data-label="男子" className={articleTd}>{m}</td>
+                <td data-label="女子" className={articleTd}>{w}</td>
               </tr>
             ))}
           </tbody>
@@ -235,9 +259,9 @@ export default async function UniversityPowerMapArticle() {
           で個々のレース結果を確認できます。この記事の集計は全部そこから再現できます。
         </p>
 
-        <aside className="article-note">
-          <h3>データについての注記</h3>
-          <ul>
+        <aside className={articleNote}>
+          <h3 className={articleNoteTitle}>データについての注記</h3>
+          <ul className={articleNoteList}>
             <li>集計対象はFinal Aの1位のみ。同一年に複数種目で優勝した場合はその数だけ数えています。</li>
             <li>本サイトの収録範囲はFinal B以上です。2021年など開催形態が特殊な年は、種目数自体が少ないことがあります。</li>
             <li>大会名の表記は年により異なります(全日本大学選手権/全日本大学ローイング選手権)。両方を対象にしています。</li>

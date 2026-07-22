@@ -27,7 +27,7 @@ export default function ArticlesPage() {
   const sorted = [...articles].sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
 
   return (
-    <main className="container lp-page">
+    <main className="site-container lp-page">
       <section className="lp-hero">
         <div className="lp-hero-inner">
           <div className="lp-hero-top">

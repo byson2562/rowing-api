@@ -20,7 +20,7 @@ const contactEmail = "takumi.nakamura.by@gmail.com";
 
 export default function PrivacyPage() {
   return (
-    <main className="container lp-page">
+    <main className="site-container lp-page">
       <section className="lp-hero">
         <div className="lp-hero-top">
           <h1>プライバシーポリシー</h1>
