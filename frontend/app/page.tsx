@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import ButtonLink from "../components/ui/ButtonLink";
 import SearchPage, { type SearchPageInitialFilters } from "./search-page";
 import {
   availableYears,
@@ -80,15 +81,12 @@ async function buildFeatured() {
         </table>
       </div>
       <div className="home-featured-actions">
-        <Link
-          href={`/results/${latestYear}/${encodeURIComponent(latestComp)}`}
-          className="lp-btn lp-btn-primary"
-        >
+        <ButtonLink href={`/results/${latestYear}/${encodeURIComponent(latestComp)}`}>
           この大会の全結果
-        </Link>
-        <Link href="/results" className="lp-btn lp-btn-secondary">
+        </ButtonLink>
+        <ButtonLink href="/results" variant="secondary">
           過去の大会一覧
-        </Link>
+        </ButtonLink>
       </div>
     </section>
   );
