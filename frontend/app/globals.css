@@ -1,3 +1,33 @@
+/*
+ * Tailwind v4 を段階導入(lifecostと同じ構成)。
+ * Preflight(CSSリセット)は既存の手書きCSSを壊すため読み込まず、
+ * テーマ(トークン)とユーティリティのレイヤーのみ取り込む。
+ * レガッタナビ既存の :root 変数を @theme inline で rn-* トークンとして公開し、
+ * 今後の実装で bg-rn-primary / text-rn-muted のようなクラスを使えるようにする。
+ */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme inline {
+  --color-rn-bg: var(--bg);
+  --color-rn-surface: var(--surface);
+  --color-rn-surface-soft: var(--surface-soft);
+  --color-rn-border: var(--border);
+  --color-rn-border-soft: var(--border-soft);
+  --color-rn-text: var(--text);
+  --color-rn-muted: var(--muted);
+  --color-rn-primary: var(--primary);
+  --color-rn-primary-dark: var(--primary-dark);
+  --color-rn-primary-soft: var(--primary-soft);
+  --color-rn-accent: var(--accent);
+  --color-rn-accent-ink: var(--accent-ink);
+  --radius-rn-card: var(--radius-card);
+  --radius-rn-control: var(--radius-control);
+  --radius-rn-pill: var(--radius-pill);
+  --shadow-rn: var(--shadow);
+  --shadow-rn-soft: var(--shadow-soft);
+}
+
 :root {
   /* Clubhouse デザイントークン: 明るく柔らかいブルー基調 + オレンジCTA */
   --bg: #f2f8ff;
