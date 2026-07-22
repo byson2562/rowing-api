@@ -2251,39 +2251,7 @@ td.col-rank {
 }
 
 /* ===== 記事(articles) ===== */
-.article-list {
-  display: grid;
-  gap: 16px;
-}
-
-.article-card {
-  background: #ffffff;
-  border: 1px solid #d7e3f4;
-  border-radius: 16px;
-  padding: 20px 22px;
-}
-
-.article-card h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  line-height: 1.5;
-}
-
-.article-card h2 a {
-  color: #17345a;
-  text-decoration: none;
-}
-
-.article-card h2 a:hover {
-  color: var(--primary);
-  text-decoration: underline;
-}
-
-.article-card p {
-  margin: 10px 0 0;
-  color: #4c6687;
-  line-height: 1.75;
-}
+/* .article-list / .article-card* は app/articles/page.tsx でTailwindへ移行済み */
 
 .article-card-meta {
   margin: 6px 0 0;

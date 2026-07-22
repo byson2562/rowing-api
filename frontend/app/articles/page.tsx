@@ -40,16 +40,24 @@ export default function ArticlesPage() {
       </section>
 
       <section aria-label="記事一覧">
-        <div className="article-list">
+        <div className="grid gap-4">
           {sorted.map((a) => (
-            <article className="article-card" key={a.slug}>
-              <h2>
-                <Link href={`/articles/${a.slug}`}>{a.title}</Link>
+            <article
+              className="rounded-2xl border border-[#d7e3f4] bg-white px-[22px] py-5"
+              key={a.slug}
+            >
+              <h2 className="m-0 text-[1.2rem] leading-[1.5]">
+                <Link
+                  href={`/articles/${a.slug}`}
+                  className="text-rn-brand no-underline hover:text-rn-primary hover:underline"
+                >
+                  {a.title}
+                </Link>
               </h2>
-              <p className="article-card-meta">
+              <p className="mb-0 mt-2.5 text-[13px] leading-[1.75] text-[#4c6687]">
                 <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
               </p>
-              <p>{a.description}</p>
+              <p className="mb-0 mt-2.5 leading-[1.75] text-[#4c6687]">{a.description}</p>
             </article>
           ))}
         </div>
