@@ -11,6 +11,13 @@ export type ArticleMeta = {
 
 export const articles: ArticleMeta[] = [
   {
+    slug: "university-championship-guide",
+    title: "全日本大学ローイング選手権(インカレ)とは | 2026年の日程・種目・歴代優勝校",
+    description:
+      "大学ボート日本一を決める全日本大学ローイング選手権(インカレ)のガイド。2026年は8月26日〜30日に戸田で開催。種目構成、2025年の種目別優勝校、男子エイトの歴代優勝、今年の見どころを収録データからまとめました。",
+    publishedAt: "2026-07-22"
+  },
+  {
     slug: "university-power-map-2009-2025",
     title: "データで見る大学ボートの勢力図 2009-2025 | 金メダル202個はどこへ渡ったか",
     description:
