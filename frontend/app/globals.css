@@ -8,6 +8,15 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
+/*
+ * レイヤー順を明示する。既存の手書きCSSは下記 @layer legacy に包み、
+ * utilities より低い優先度に置くことで、Tailwindユーティリティが
+ * !important なしで既存CSSを上書きできるようにする(段階移行の土台)。
+ * レイヤー無しのスタイルは常に @layer より優先されるため、手書きCSSを
+ * unlayered のままにすると utilities が負けてしまう。
+ */
+@layer theme, legacy, utilities;
+
 @theme inline {
   --color-rn-bg: var(--bg);
   --color-rn-surface: var(--surface);
@@ -30,6 +39,7 @@
   --shadow-rn-soft: var(--shadow-soft);
 }
 
+@layer legacy {
 :root {
   /* Clubhouse デザイントークン: 明るく柔らかいブルー基調 + オレンジCTA */
   --bg: #f2f8ff;
@@ -2623,3 +2633,5 @@ td.col-rank {
     flex-shrink: 0;
   }
 }
+}
+/* ↑ @layer legacy を閉じる */
