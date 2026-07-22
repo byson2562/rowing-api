@@ -22,6 +22,7 @@
   --color-rn-accent: var(--accent);
   --color-rn-accent-ink: var(--accent-ink);
   --color-rn-link: #3f60a0;
+  --color-rn-brand: #17345a;
   --radius-rn-card: var(--radius-card);
   --radius-rn-control: var(--radius-control);
   --radius-rn-pill: var(--radius-pill);
@@ -73,48 +74,7 @@ body {
   min-height: 100vh;
 }
 
-.site-header {
-  background: transparent;
-  border-bottom: 1px solid #dbe7fa;
-}
-
-.site-header-inner {
-  max-width: 1220px;
-  margin: 0 auto;
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.site-brand {
-  color: #17345a;
-  text-decoration: none;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-}
-
-.site-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.site-nav-link {
-  padding: 0;
-  color: #3f60a0;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 13px;
-}
-
-.site-nav-link:hover {
-  text-decoration: underline;
-  color: var(--primary);
-}
-
-/* .site-footer 系は layout.tsx でTailwind(rn-*トークン)へ移行済み(Phase 3) */
+/* .site-header / .site-nav / .site-footer 系は layout.tsx・SiteHeaderでTailwind(rn-*トークン)へ移行済み(Phase 3)。スマホはハンバーガーメニュー化 */
 
 .container {
   max-width: 1220px;
@@ -938,41 +898,6 @@ th {
 }
 
 @media (max-width: 768px) {
-  .site-header-inner {
-    padding: 9px 0 0 0;
-    gap: 0;
-    flex-wrap: wrap;
-  }
-
-  .site-brand {
-    font-size: 15px;
-    padding: 0 14px;
-  }
-
-  /* ナビは横スクロールのタブバーにする（リンクを隠さず、タップ領域を確保する） */
-  .site-nav {
-    width: 100%;
-    gap: 0;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-    /* 右パディングはフェード幅ぶん広げ、末尾までスクロールした時に最後のリンクがフェードに掛からないようにする */
-    padding: 0 32px 0 6px;
-    /* 右端をフェードさせて「まだ続きがある」ことを示唆する */
-    mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
-  }
-
-  .site-nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .site-nav-link {
-    font-size: 13px;
-    padding: 12px 10px;
-    flex-shrink: 0;
-  }
-
   .container {
     padding: 20px 14px 28px;
   }
@@ -1057,25 +982,6 @@ th {
     font-size: 12px;
     padding: 8px 6px;
   }
-}
-
-@media (max-width: 430px) {
-  .site-header-inner {
-    padding: 8px 12px;
-  }
-
-  .site-brand {
-    font-size: 14px;
-  }
-
-  .site-nav {
-    gap: 12px;
-  }
-
-  .site-nav-link {
-    font-size: 11px;
-  }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2035,7 +1941,6 @@ th {
 /* ===== デザインパス: タイポグラフィ階層・ヒーロー・チャート・テーブル ===== */
 
 /* --- 1. タイポグラフィ階層: 本文400 / ラベル500 / 操作600 / 見出し・数値700 --- */
-.site-nav-link,
 .chip,
 .advanced-filter-meta,
 .chart-card-head span,

@@ -5,6 +5,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 
+import SiteHeader from "../components/SiteHeader";
 import { siteUrl } from "../lib/site-url";
 
 // 数字・欧文はInter（タイム表示の判読性・桁揃えが和文フォントの従属欧文より良い）、
@@ -110,36 +111,7 @@ export default function RootLayout({
   return (
     <html lang="ja" className={`${inter.variable} ${notoSansJp.variable}`}>
       <body>
-        <header className="site-header">
-          <div className="site-header-inner">
-            <Link href="/" className="site-brand">
-              レガッタナビ
-            </Link>
-            <nav className="site-nav" aria-label="グローバルナビゲーション">
-              <Link href="/" className="site-nav-link">
-                検索
-              </Link>
-              <Link href="/results" className="site-nav-link">
-                大会結果一覧
-              </Link>
-              <Link href="/records" className="site-nav-link">
-                歴代記録
-              </Link>
-              <Link href="/organizations" className="site-nav-link">
-                団体別
-              </Link>
-              <Link href="/athletes" className="site-nav-link">
-                選手別
-              </Link>
-              <Link href="/articles" className="site-nav-link">
-                記事
-              </Link>
-              <Link href="/about" className="site-nav-link">
-                レガッタナビとは
-              </Link>
-            </nav>
-          </div>
-        </header>
+        <SiteHeader />
         {children}
         <footer className="border-t border-rn-border bg-white/45">
           <div className="mx-auto flex max-w-[1220px] flex-col items-start gap-2 px-3.5 py-2.5 md:flex-row md:items-center md:justify-between md:gap-3 md:px-6 md:py-3">
