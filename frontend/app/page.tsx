@@ -250,8 +250,12 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       {
         "@type": "Dataset",
         name: "レガッタナビ ローイング記録データセット",
-        description: "日本ローイング協会のボート・ローイング大会結果データを検索・可視化できるデータセット",
+        description:
+          "全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権など、日本ローイング協会が主催する全日本級大会のボート・ローイング大会結果を、2009年以降にわたり年度・大会・種目・団体で検索・比較・可視化できるデータセットです。",
         url: siteUrl,
+        keywords: ["ローイング", "ボート", "大会結果", "レース記録", "日本ローイング協会"],
+        isAccessibleForFree: true,
+        license: `${siteUrl}/privacy`,
         creator: {
           "@type": "Organization",
           name: "レガッタナビ",

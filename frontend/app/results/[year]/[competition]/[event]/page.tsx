@@ -114,14 +114,6 @@ export default async function CompetitionEventPage({ params }: { params: Params 
           },
           { "@type": "ListItem", position: 5, name: event, item: `${siteUrl}${path}` }
         ]
-      },
-      {
-        "@type": "SportsEvent",
-        name: `${competition} ${event}`,
-        sport: "Rowing",
-        startDate: params.year,
-        eventStatus: "https://schema.org/EventScheduled",
-        url: `${siteUrl}${path}`
       }
     ]
   };

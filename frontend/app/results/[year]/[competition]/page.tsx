@@ -112,14 +112,6 @@ export default async function CompetitionResultsPage({ params }: { params: Param
             item: `${siteUrl}/results/${params.year}/${encodeURIComponent(competition)}`
           }
         ]
-      },
-      {
-        "@type": "SportsEvent",
-        name: competition,
-        sport: "Rowing",
-        startDate: params.year,
-        eventStatus: "https://schema.org/EventScheduled",
-        url: `${siteUrl}/results/${params.year}/${encodeURIComponent(competition)}`
       }
     ]
   };
