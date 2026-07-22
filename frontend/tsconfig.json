@@ -35,6 +35,8 @@
     ".next-dev-preview2/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.test.ts",
+    "vitest.config.ts"
   ]
 }
