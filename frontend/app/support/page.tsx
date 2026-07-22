@@ -2,6 +2,27 @@ import type { Metadata } from "next";
 
 import ButtonLink from "../../components/ui/ButtonLink";
 import { SupportContactForm } from "../../components/support-contact-form";
+import {
+  lpAuthor,
+  lpAuthorMeta,
+  lpAuthorMetaDd,
+  lpAuthorMetaDt,
+  lpAuthorMetaLink,
+  lpAuthorMetaRow,
+  lpDetail,
+  lpDetailCard,
+  lpDetailList,
+  lpDetailTitle,
+  lpDonationLinks,
+  lpKicker,
+  lpSummaryDd,
+  lpSummaryDt,
+  lpSummaryItem,
+  lpSummaryList,
+  lpSupportNote,
+  lpSupportTemplate,
+  lpTechHeading
+} from "../../components/lp/lp-classes";
 
 export const metadata: Metadata = {
   title: "レガッタナビ サポート・協賛募集",
@@ -39,7 +60,7 @@ export default function SupportPage() {
     <main className="site-container lp-page">
       <section className="lp-hero">
         <div className="lp-hero-top">
-          <p className="lp-kicker">Support レガッタナビ</p>
+          <p className={lpKicker}>Support レガッタナビ</p>
           <h1>レガッタナビ サポート・協賛募集</h1>
           <p className="lp-lead">
             レガッタナビは、ローイング記録を継続的に検索・比較できる環境を目指して運営しています。
@@ -60,20 +81,20 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <section className="lp-detail" aria-labelledby="support-menu-heading">
-        <h2 id="support-menu-heading" className="lp-section-title">サポートメニュー</h2>
-        <article className="lp-detail-main">
+      <section className={lpDetail} aria-labelledby="support-menu-heading">
+        <h2 id="support-menu-heading" className={`lp-section-title ${lpDetailTitle}`}>サポートメニュー</h2>
+        <article className={lpDetailCard}>
           <h3>個人サポート（寄付）</h3>
-          <ul>
+          <ul className={lpDetailList}>
             <li>想定金額: 500円 / 1,000円 / 3,000円</li>
             <li>用途: データ更新、保守運用、機能改善</li>
             <li>寄付特典: 新機能や更新情報を優先案内</li>
           </ul>
-          <p className="lp-support-note">
+          <p className={lpSupportNote}>
             Stripe決済リンクを設置する場合は、以下の文言をそのまま利用できます。<br />
             「ご支援は、レガッタナビの運用継続・データ更新・機能改善に充てます。」
           </p>
-          <div className="lp-donation-links" aria-label="寄付リンク">
+          <div className={lpDonationLinks} aria-label="寄付リンク">
             {stripeLinks.length > 0 ? (
               stripeLinks.map((item) => (
                 <ButtonLink
@@ -101,20 +122,20 @@ export default function SupportPage() {
           </div>
         </article>
 
-        <aside className="lp-detail-side">
+        <aside className={lpDetailCard}>
           <h3>企業・団体協賛</h3>
-          <dl className="lp-summary-list">
-            <div>
-              <dt>ライトプラン</dt>
-              <dd>月額 5,000円: サイト内に協賛名を掲載</dd>
+          <dl className={lpSummaryList}>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>ライトプラン</dt>
+              <dd className={lpSummaryDd}>月額 5,000円: サイト内に協賛名を掲載</dd>
             </div>
-            <div>
-              <dt>スタンダード</dt>
-              <dd>月額 10,000円: 協賛名 + リンク掲載</dd>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>スタンダード</dt>
+              <dd className={lpSummaryDd}>月額 10,000円: 協賛名 + リンク掲載</dd>
             </div>
-            <div>
-              <dt>募集対象</dt>
-              <dd>ボート・ローイング関連企業、大学・団体、OB会 など</dd>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>募集対象</dt>
+              <dd className={lpSummaryDd}>ボート・ローイング関連企業、大学・団体、OB会 など</dd>
             </div>
           </dl>
         </aside>
@@ -122,9 +143,9 @@ export default function SupportPage() {
 
       <section className="lp-author-section" aria-labelledby="support-contact-heading">
         <h2 id="support-contact-heading" className="lp-section-title">問い合わせテンプレ</h2>
-        <div className="lp-author">
+        <div className={lpAuthor}>
           <h3>協賛問い合わせ文（コピー可）</h3>
-          <pre className="lp-support-template">
+          <pre className={lpSupportTemplate}>
 {`件名: レガッタナビ 協賛のご相談
 
 レガッタナビ運営者様
@@ -135,13 +156,14 @@ export default function SupportPage() {
 
 ご確認のほど、よろしくお願いいたします。`}
           </pre>
-          <h3 className="lp-tech-heading">連絡先</h3>
+          <h3 className={lpTechHeading}>連絡先</h3>
           <SupportContactForm />
-          <dl className="lp-author-meta">
-            <div>
-              <dt>メール</dt>
-              <dd>
+          <dl className={lpAuthorMeta}>
+            <div className={lpAuthorMetaRow}>
+              <dt className={lpAuthorMetaDt}>メール</dt>
+              <dd className={lpAuthorMetaDd}>
                 <a
+                  className={lpAuthorMetaLink}
                   href="mailto:takumi.nakamura.by@gmail.com"
                   data-ga-event="sponsor_inquiry_click"
                   data-ga-label="support_contact_mail"

@@ -3,6 +3,42 @@ import Link from "next/link";
 
 import ButtonLink from "../../components/ui/ButtonLink";
 import {
+  lpArchiveLead,
+  lpArchiveLink,
+  lpArchiveLinks,
+  lpAuthor,
+  lpAuthorBody,
+  lpAuthorMeta,
+  lpAuthorMetaDd,
+  lpAuthorMetaDt,
+  lpAuthorMetaRow,
+  lpDetail,
+  lpDetailCard,
+  lpDetailList,
+  lpDetailTitle,
+  lpFaqAnswer,
+  lpFaqItem,
+  lpFaqList,
+  lpFaqQuestion,
+  lpH1Line,
+  lpHeadingIcon,
+  lpHeroMetric,
+  lpHeroMetricLabel,
+  lpHeroMetrics,
+  lpHeroMetricValue,
+  lpHeroStrip,
+  lpHeroTag,
+  lpHeroTags,
+  lpSummaryDd,
+  lpSummaryDdList,
+  lpSummaryDt,
+  lpSummaryItem,
+  lpSummaryList,
+  lpValueCard,
+  lpValueCardBody,
+  lpValueGrid
+} from "../../components/lp/lp-classes";
+import {
   availableYears,
   competitionsByRecency,
   getDatasetSummary,
@@ -108,9 +144,9 @@ export default async function RowingResultsPage() {
         <div className="lp-hero-inner">
           <div className="lp-hero-top">
             <h1>
-              <span className="lp-h1-line">ローイング記録・</span>
-              <span className="lp-h1-line">大会結果を、</span>
-              <span className="lp-h1-line">ひとつの画面で。</span>
+              <span className={lpH1Line}>ローイング記録・</span>
+              <span className={lpH1Line}>大会結果を、</span>
+              <span className={lpH1Line}>ひとつの画面で。</span>
             </h1>
             <p className="lp-lead">
               年度・大会名・種目・団体を横断して検索し、メダル傾向までまとめて確認。日本の主要大会記録を比較しやすい形で素早くたどれます。
@@ -131,69 +167,69 @@ export default async function RowingResultsPage() {
         </Link>
       </section>
 
-      <section className="lp-hero-strip" aria-label="サービス要点">
-        <ul className="lp-hero-tags" aria-label="機能タグ">
-          <li>横断検索</li>
-          <li>メダル可視化</li>
-          <li>時系列比較</li>
+      <section className={lpHeroStrip} aria-label="サービス要点">
+        <ul className={lpHeroTags} aria-label="機能タグ">
+          <li className={lpHeroTag}>横断検索</li>
+          <li className={lpHeroTag}>メダル可視化</li>
+          <li className={lpHeroTag}>時系列比較</li>
         </ul>
-        <ul className="lp-hero-metrics" aria-label="サービス概要">
-          <li>
-            <span>収録レース</span>
-            <strong>{totalCountLabel}</strong>
+        <ul className={lpHeroMetrics} aria-label="サービス概要">
+          <li className={lpHeroMetric}>
+            <span className={lpHeroMetricLabel}>収録レース</span>
+            <strong className={lpHeroMetricValue}>{totalCountLabel}</strong>
           </li>
-          <li>
-            <span>対象期間</span>
-            <strong>{periodLabel}</strong>
+          <li className={lpHeroMetric}>
+            <span className={lpHeroMetricLabel}>対象期間</span>
+            <strong className={lpHeroMetricValue}>{periodLabel}</strong>
           </li>
-          <li>
-            <span>対象大会</span>
-            <strong>全日本級 {summary.competitionCategoryCount}大会</strong>
+          <li className={lpHeroMetric}>
+            <span className={lpHeroMetricLabel}>対象大会</span>
+            <strong className={lpHeroMetricValue}>全日本級 {summary.competitionCategoryCount}大会</strong>
           </li>
         </ul>
       </section>
 
       <section aria-labelledby="lp-features-heading">
         <h2 id="lp-features-heading" className="lp-section-title">主な特徴</h2>
-        <div className="lp-value-grid">
-          <article className="lp-value-card">
-            <h3><img className="lp-heading-icon" src="/icons/search.svg" alt="" width={18} height={18} />横断検索</h3>
-            <p>大会・年・種目・団体の条件を組み合わせて、目的のレース結果を素早く絞り込み。</p>
+        <div className={lpValueGrid}>
+          <article className={lpValueCard}>
+            <h3><img className={lpHeadingIcon} src="/icons/search.svg" alt="" width={18} height={18} />横断検索</h3>
+            <p className={lpValueCardBody}>大会・年・種目・団体の条件を組み合わせて、目的のレース結果を素早く絞り込み。</p>
           </article>
-          <article className="lp-value-card">
-            <h3><img className="lp-heading-icon" src="/icons/chart.svg" alt="" width={18} height={18} />可視化</h3>
-            <p>団体別の金メダル数・メダル数をグラフで確認し、勢力図の変化を把握。</p>
+          <article className={lpValueCard}>
+            <h3><img className={lpHeadingIcon} src="/icons/chart.svg" alt="" width={18} height={18} />可視化</h3>
+            <p className={lpValueCardBody}>団体別の金メダル数・メダル数をグラフで確認し、勢力図の変化を把握。</p>
           </article>
-          <article className="lp-value-card">
-            <h3><img className="lp-heading-icon" src="/icons/trend.svg" alt="" width={18} height={18} />時系列比較</h3>
-            <p>種目ごとの優勝タイム推移を追い、記録トレンドを直感的に分析。</p>
+          <article className={lpValueCard}>
+            <h3><img className={lpHeadingIcon} src="/icons/trend.svg" alt="" width={18} height={18} />時系列比較</h3>
+            <p className={lpValueCardBody}>種目ごとの優勝タイム推移を追い、記録トレンドを直感的に分析。</p>
           </article>
         </div>
       </section>
 
-      <section className="lp-detail" aria-labelledby="lp-detail-heading">
-        <h2 id="lp-detail-heading" className="lp-section-title">機能とデータ概要</h2>
-        <div className="lp-detail-main">
+      <section className={lpDetail} aria-labelledby="lp-detail-heading">
+        <h2 id="lp-detail-heading" className={`lp-section-title ${lpDetailTitle}`}>機能とデータ概要</h2>
+        <div className={lpDetailCard}>
           <h3>レガッタナビでできること</h3>
-          <ul>
+          <ul className={lpDetailList}>
             <li>ローイング記録の検索（年・大会・種目・団体）</li>
             <li>Final A基準での団体別メダル傾向の可視化</li>
             <li>種目別の優勝タイム推移の確認</li>
             <li>ページングで大量データを段階的に閲覧</li>
           </ul>
         </div>
-        <aside className="lp-detail-side">
+        <aside className={lpDetailCard}>
           <h3>データ概要</h3>
-          <dl className="lp-summary-list">
-            <div>
-              <dt>収録データ</dt>
-              <dd>現在は{coverageLabel}の大会記録を掲載しています（Final B以上が対象）。</dd>
+          <dl className={lpSummaryList}>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>収録データ</dt>
+              <dd className={lpSummaryDd}>現在は{coverageLabel}の大会記録を掲載しています（Final B以上が対象）。</dd>
             </div>
-            <div>
-              <dt>集計対象大会</dt>
-              <dd>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>集計対象大会</dt>
+              <dd className={lpSummaryDd}>
                 集計対象は全日本級の大会です。
-                <ul>
+                <ul className={lpSummaryDdList}>
                   <li>全日本ローイング選手権（全日本選手権）</li>
                   <li>全日本大学ローイング選手権（全日本大学選手権）</li>
                   <li>全日本新人ローイング選手権（全日本新人選手権）</li>
@@ -201,13 +237,13 @@ export default async function RowingResultsPage() {
                 </ul>
               </dd>
             </div>
-            <div>
-              <dt>North Star KPI</dt>
-              <dd>週次検索実行数（検索を実行したセッション数）を最重要指標として運用しています。</dd>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>North Star KPI</dt>
+              <dd className={lpSummaryDd}>週次検索実行数（検索を実行したセッション数）を最重要指標として運用しています。</dd>
             </div>
-            <div>
-              <dt>データ更新方針</dt>
-              <dd>大会期間中は月次更新を目安にデータ反映します（大会公開状況により遅延する場合があります）。</dd>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>データ更新方針</dt>
+              <dd className={lpSummaryDd}>大会期間中は月次更新を目安にデータ反映します（大会公開状況により遅延する場合があります）。</dd>
             </div>
           </dl>
         </aside>
@@ -215,27 +251,27 @@ export default async function RowingResultsPage() {
 
       <section aria-labelledby="lp-archive-heading">
         <h2 id="lp-archive-heading" className="lp-section-title">大会結果アーカイブ</h2>
-        <p className="lp-archive-lead">
+        <p className={lpArchiveLead}>
           年度・大会ごとの結果ページを用意しています。最新の結果は以下からご覧いただけます。
         </p>
-        <ul className="lp-archive-links">
+        <ul className={lpArchiveLinks}>
           <li>
-            <Link href="/results">年度別ローイング大会結果一覧</Link>
+            <Link className={lpArchiveLink} href="/results">年度別ローイング大会結果一覧</Link>
           </li>
           {latestYear !== null && (
             <li>
-              <Link href={`/results/${latestYear}`}>{latestYear}年のローイング大会結果</Link>
+              <Link className={lpArchiveLink} href={`/results/${latestYear}`}>{latestYear}年のローイング大会結果</Link>
             </li>
           )}
           {previousYear !== null && (
             <li>
-              <Link href={`/results/${previousYear}`}>{previousYear}年のローイング大会結果</Link>
+              <Link className={lpArchiveLink} href={`/results/${previousYear}`}>{previousYear}年のローイング大会結果</Link>
             </li>
           )}
           {latestYear !== null &&
             latestCompetitions.map((competition) => (
               <li key={competition}>
-                <Link href={`/results/${latestYear}/${encodeURIComponent(competition)}`}>
+                <Link className={lpArchiveLink} href={`/results/${latestYear}/${encodeURIComponent(competition)}`}>
                   {competition}（{latestYear}年）の結果
                 </Link>
               </li>
@@ -245,11 +281,11 @@ export default async function RowingResultsPage() {
 
       <section aria-labelledby="lp-faq-heading">
         <h2 id="lp-faq-heading" className="lp-section-title">よくある質問</h2>
-        <div className="lp-faq-list">
+        <div className={lpFaqList}>
           {faqItems.map((item) => (
-            <article className="lp-faq-item" key={item.question}>
-              <h3>{item.question}</h3>
-              <p>{item.answerNode ?? item.answer}</p>
+            <article className={lpFaqItem} key={item.question}>
+              <h3 className={lpFaqQuestion}>{item.question}</h3>
+              <p className={lpFaqAnswer}>{item.answerNode ?? item.answer}</p>
             </article>
           ))}
         </div>
@@ -257,16 +293,16 @@ export default async function RowingResultsPage() {
 
       <section className="lp-author-section" aria-labelledby="lp-author-heading">
         <h2 id="lp-author-heading" className="lp-section-title">開発者について</h2>
-        <div className="lp-author">
+        <div className={lpAuthor}>
           <h3>プロフィール</h3>
-          <p>
+          <p className={lpAuthorBody}>
             本サービスは <strong>中村匠</strong> が開発・運営しています。データ整備と検索体験の改善を継続し、
             ローイング記録を調べやすい形で提供することを目指しています。
           </p>
-          <dl className="lp-author-meta">
-            <div>
-              <dt>経歴</dt>
-              <dd>
+          <dl className={lpAuthorMeta}>
+            <div className={lpAuthorMetaRow}>
+              <dt className={lpAuthorMetaDt}>経歴</dt>
+              <dd className={lpAuthorMetaDd}>
                 早稲田大学漕艇部OB（2015年卒）
                 <br />
                 関東学連OB（2014 - 2015年 水路部長）

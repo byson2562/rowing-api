@@ -1042,14 +1042,6 @@ th {
   line-height: 1.35;
 }
 
-.lp-heading-icon {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  margin-right: 6px;
-  vertical-align: -0.18em;
-}
-
 .lp-hero {
   background:
     radial-gradient(560px 220px at 95% -30%, rgba(113, 159, 232, 0.2) 0%, transparent 74%),
@@ -1075,24 +1067,11 @@ th {
   display: block;
 }
 
-.lp-kicker {
-  margin: 0;
-  color: #365887;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .lp-hero h1 {
   margin: 8px 0 0;
   /* 折り返しはlp-h1-lineの文節境界でのみ発生させる(「を、」等の孤立行を防ぐ) */
   font-size: clamp(1.75rem, 3.5vw, 2.3rem);
   line-height: 1.22;
-}
-
-.lp-h1-line {
-  display: inline-block;
 }
 
 .lp-lead {
@@ -1107,66 +1086,6 @@ th {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-}
-
-.lp-hero-strip {
-  display: grid;
-  gap: 12px;
-  background: #ffffff;
-  border: 1px solid #cfddf1;
-  border-radius: 16px;
-  box-shadow: 0 10px 24px rgba(60, 110, 200, 0.07);
-  padding: 14px 16px;
-}
-
-.lp-hero-tags {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.lp-hero-tags li {
-  border: 1px solid #c2d7f4;
-  background: rgba(255, 255, 255, 0.94);
-  border-radius: 999px;
-  padding: 5px 11px;
-  color: #24466e;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.lp-hero-metrics {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.lp-hero-metrics li {
-  border: 1px solid #d6e3f4;
-  background: #f8fbff;
-  border-radius: 12px;
-  padding: 11px 12px;
-  box-shadow: none;
-  display: grid;
-  gap: 4px;
-}
-
-.lp-hero-metrics span {
-  color: #4c678b;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.lp-hero-metrics strong {
-  color: #0f2f54;
-  font-size: 15px;
-  line-height: 1.2;
 }
 
 .lp-hero-preview-link {
@@ -1207,283 +1126,14 @@ th {
   }
 }
 
-.lp-support-cta-card {
-  background: var(--surface-solid);
-  border: 1px solid #d4e0f0;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(60, 110, 200, 0.07);
-  padding: 16px 17px;
-}
-
-.lp-support-cta-card p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
 /* .lp-btn 系は components/ui の Button/ButtonLink(rn-*トークン)へ移行済み(Phase 3) */
-
-.lp-value-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 14px;
-}
-
-.lp-value-card {
-  background: #ffffff;
-  border: 1px solid #d7e3f4;
-  border-radius: 16px;
-  box-shadow: 0 10px 22px rgba(60, 110, 200, 0.08);
-  padding: 16px 17px;
-  transition: border-color 0.22s ease, box-shadow 0.22s ease;
-}
-
-.lp-value-card:hover {
-  border-color: #bdd2ee;
-  box-shadow: 0 14px 28px rgba(60, 110, 200, 0.1);
-}
-
-.lp-value-card p {
-  margin: 8px 0 0;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
-.lp-detail {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 12px;
-}
-
-.lp-detail > .lp-section-title {
-  grid-column: 1 / -1;
-  margin-bottom: 0;
-}
-
-.lp-detail-main,
-.lp-detail-side {
-  background: var(--surface-solid);
-  border: 1px solid #cfddf1;
-  border-radius: 16px;
-  box-shadow: 0 12px 26px rgba(60, 110, 200, 0.08);
-  padding: 18px;
-}
-
-.lp-detail-main ul {
-  margin: 10px 0 0;
-  padding-left: 18px;
-  line-height: 1.8;
-}
-
-.lp-detail-side p {
-  margin: 8px 0 0;
-  color: var(--muted);
-  line-height: 1.65;
-}
-
-.lp-summary-list {
-  margin: 10px 0 0;
-  display: grid;
-  gap: 10px;
-}
-
-.lp-summary-list div {
-  margin: 0;
-  padding-left: 10px;
-  border-left: 3px solid #d7e2f2;
-}
-
-.lp-summary-list dt {
-  margin: 0;
-  color: #1f3d64;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.lp-summary-list dd {
-  margin: 4px 0 0;
-  color: var(--muted);
-  line-height: 1.65;
-}
-
-.lp-summary-list dd ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
-}
-
-.lp-author {
-  background: var(--surface-solid);
-  border: 1px solid #cfddf1;
-  border-radius: 16px;
-  box-shadow: 0 12px 26px rgba(60, 110, 200, 0.08);
-  padding: 18px;
-}
-
-.lp-author p {
-  margin: 10px 0 0;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
-.lp-author-meta {
-  margin: 12px 0 0;
-  display: grid;
-  gap: 8px;
-}
-
-.lp-author-meta div {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-}
-
-.lp-author-meta dt {
-  flex: 0 0 64px;
-  margin: 0;
-  color: #4d6788;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 18px;
-}
-
-.lp-author-meta dd {
-  flex: 1 1 auto;
-  margin: 0;
-  color: #1f3d64;
-  line-height: 18px;
-}
-
-.lp-author-meta a {
-  color: #1d6ee0;
-  text-decoration: none;
-  line-height: 18px;
-}
-
-.lp-author-meta a:hover {
-  text-decoration: underline;
-}
-
-.lp-support-note {
-  margin: 12px 0 0;
-  color: #4f6f93;
-  line-height: 1.6;
-  font-size: 13px;
-}
-
-.lp-donation-links {
-  margin-top: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.lp-support-template {
-  margin: 10px 0 0;
-  background: #f8fbff;
-  border: 1px solid #e3edfb;
-  border-radius: 10px;
-  padding: 12px;
-  color: #1e3d66;
-  font-family: var(--font-inter), var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", sans-serif;
-  font-size: 13px;
-  line-height: 1.7;
-  white-space: pre-wrap;
-}
-
-.lp-contact-form {
-  margin-top: 14px;
-  display: grid;
-  gap: 10px;
-}
-
-.lp-contact-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.lp-contact-form label {
-  display: grid;
-  gap: 5px;
-  color: #365778;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.lp-contact-form input,
-.lp-contact-form textarea {
-  width: 100%;
-  border: 1px solid #dbe7fa;
-  border-radius: 10px;
-  background: #fff;
-  color: #1d3557;
-  font-size: 14px;
-  padding: 8px 10px;
-}
-
-.lp-contact-form textarea {
-  resize: vertical;
-}
-
-.lp-contact-form input:focus,
-.lp-contact-form textarea:focus {
-  outline: 2px solid rgba(29, 110, 224, 0.25);
-  border-color: var(--primary);
-}
-
-.lp-contact-actions {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.lp-page .lp-tech-heading {
-  margin: 26px 0 0;
-}
-
-.lp-tech-list {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.lp-tech-list li {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid #d0def2;
-  border-radius: 999px;
-  padding: 6px 11px;
-  background: #f7fbff;
-  color: #1f3d64;
-  font-size: 12px;
-  font-weight: 700;
-}
 
 .lp-page > section {
   animation: lpFadeUp 0.46s ease both;
 }
 
-.lp-tech-list img {
-  display: block;
-}
-
 @media (max-width: 900px) {
   .lp-hero-inner {
-    grid-template-columns: 1fr;
-  }
-
-  .lp-contact-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .lp-value-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .lp-detail {
     grid-template-columns: 1fr;
   }
 
@@ -1495,18 +1145,6 @@ th {
     line-height: 1.64;
   }
 
-  .lp-hero-strip {
-    padding: 12px;
-  }
-
-  .lp-hero-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-
-  .lp-hero-metrics li:last-child {
-    grid-column: 1 / -1;
-  }
 }
 
 @keyframes lpFadeUp {
@@ -1521,7 +1159,6 @@ th {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lp-value-card,
   .lp-page > section {
     animation: none;
     transition: none;
@@ -1870,59 +1507,6 @@ th {
 }
 
 /* LP: 大会結果アーカイブ・FAQ */
-.lp-archive-lead {
-  margin: 0 0 14px;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.lp-archive-links {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.lp-archive-links a {
-  color: #3f60a0;
-  font-weight: 700;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.lp-archive-links a:hover {
-  color: var(--primary);
-  text-decoration: underline;
-}
-
-.lp-faq-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.lp-faq-item {
-  padding: 18px 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-}
-
-.lp-faq-item h3 {
-  margin: 0 0 8px;
-  font-size: 15px;
-}
-
-.lp-faq-item p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
-}
-
 /* ===== デザインパス: タイポグラフィ階層・ヒーロー・チャート・テーブル ===== */
 
 /* --- 1. タイポグラフィ階層: 本文400 / ラベル500 / 操作600 / 見出し・数値700 --- */

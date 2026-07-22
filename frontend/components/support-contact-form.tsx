@@ -3,6 +3,14 @@
 import { FormEvent, useMemo, useState } from "react";
 
 import Button from "./ui/Button";
+import {
+  lpContactActions,
+  lpContactForm,
+  lpContactGrid,
+  lpContactInput,
+  lpContactLabel,
+  lpContactTextarea
+} from "./lp/lp-classes";
 
 const DEFAULT_TO = "takumi.nakamura.by@gmail.com";
 
@@ -37,26 +45,26 @@ export function SupportContactForm() {
   };
 
   return (
-    <form className="lp-contact-form" onSubmit={handleSubmit}>
-      <div className="lp-contact-grid">
-        <label>
+    <form className={lpContactForm} onSubmit={handleSubmit}>
+      <div className={lpContactGrid}>
+        <label className={lpContactLabel}>
           お名前
-          <input value={name} onChange={(event) => setName(event.target.value)} required />
+          <input className={lpContactInput} value={name} onChange={(event) => setName(event.target.value)} required />
         </label>
-        <label>
+        <label className={lpContactLabel}>
           メールアドレス
-          <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+          <input className={lpContactInput} type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
         </label>
       </div>
-      <label>
+      <label className={lpContactLabel}>
         団体名（任意）
-        <input value={organization} onChange={(event) => setOrganization(event.target.value)} />
+        <input className={lpContactInput} value={organization} onChange={(event) => setOrganization(event.target.value)} />
       </label>
-      <label>
+      <label className={lpContactLabel}>
         お問い合わせ内容
-        <textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={6} required />
+        <textarea className={lpContactTextarea} value={message} onChange={(event) => setMessage(event.target.value)} rows={6} required />
       </label>
-      <div className="lp-contact-actions">
+      <div className={lpContactActions}>
         <Button
           type="submit"
           disabled={!canSubmit}
