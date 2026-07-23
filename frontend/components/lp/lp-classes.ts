@@ -94,6 +94,13 @@ export const lpContactInput =
 export const lpContactTextarea = `${lpContactInput} resize-y`;
 export const lpContactActions = "flex justify-start";
 
+// ---- ファクトブロック(データについて等の項目をカード状に並べる) ----
+export const lpFactGrid = "grid gap-3 md:grid-cols-2";
+export const lpFactBlock = "rounded-xl border border-rn-border bg-white p-4";
+export const lpFactLabel = "m-0 text-[12px] font-bold text-rn-muted";
+export const lpFactBody = "mb-0 mt-1.5 text-[14px] leading-[1.7] text-rn-text";
+export const lpFactList = "mb-0 mt-1.5 list-disc pl-[18px] text-[14px] leading-[1.8] text-rn-text";
+
 // ---- ヒーロー内の小物 ----
 export const lpKicker =
   "m-0 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#365887]";

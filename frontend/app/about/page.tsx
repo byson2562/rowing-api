@@ -9,13 +9,12 @@ import {
   lpAuthorMetaDdMultiline,
   lpAuthorMetaDt,
   lpAuthorMetaRow,
-  lpDetailCard,
-  lpH1Line,
-  lpSummaryDd,
-  lpSummaryDdList,
-  lpSummaryDt,
-  lpSummaryItem,
-  lpSummaryList
+  lpFactBlock,
+  lpFactBody,
+  lpFactGrid,
+  lpFactLabel,
+  lpFactList,
+  lpH1Line
 } from "../../components/lp/lp-classes";
 import { getDatasetSummary } from "../../lib/results-data";
 
@@ -83,40 +82,40 @@ export default async function AboutPage() {
 
       <section aria-labelledby="about-data-heading">
         <h2 id="about-data-heading" className="lp-section-title">データについて</h2>
-        <div className={lpDetailCard}>
-          <dl className={lpSummaryList}>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>収録範囲</dt>
-              <dd className={lpSummaryDd}>
-                {coverageLabel}の{totalCountLabel}レース（Final B以上）を掲載しています。
-              </dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>対象大会</dt>
-              <dd className={lpSummaryDd}>
-                <ul className={lpSummaryDdList}>
-                  <li>全日本ローイング選手権（全日本選手権）</li>
-                  <li>全日本大学ローイング選手権（全日本大学選手権）</li>
-                  <li>全日本新人ローイング選手権（全日本新人選手権）</li>
-                  <li>全日本軽量級選手権</li>
-                </ul>
-              </dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>更新方針</dt>
-              <dd className={lpSummaryDd}>大会期間中はできるだけリアルタイム（1週間以内）を目安に反映します（結果の公開状況により遅れる場合があります）。</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>探し方</dt>
-              <dd className={lpSummaryDd}>
-                年度別の<Link href="/results">大会結果一覧</Link>のほか、
-                <Link href="/search">検索</Link>・<Link href="/organizations">団体別</Link>・
-                <Link href="/athletes">選手別</Link>・<Link href="/records">歴代記録</Link>
-                の各ページからたどれます。
-              </dd>
-            </div>
-          </dl>
-        </div>
+        <dl className={lpFactGrid}>
+          <div className={lpFactBlock}>
+            <dt className={lpFactLabel}>収録範囲</dt>
+            <dd className={`ml-0 ${lpFactBody}`}>
+              {coverageLabel}の{totalCountLabel}レース（Final B以上）を掲載しています。
+            </dd>
+          </div>
+          <div className={lpFactBlock}>
+            <dt className={lpFactLabel}>対象大会</dt>
+            <dd className="ml-0">
+              <ul className={lpFactList}>
+                <li>全日本ローイング選手権（全日本選手権）</li>
+                <li>全日本大学ローイング選手権（全日本大学選手権）</li>
+                <li>全日本新人ローイング選手権（全日本新人選手権）</li>
+                <li>全日本軽量級選手権</li>
+              </ul>
+            </dd>
+          </div>
+          <div className={lpFactBlock}>
+            <dt className={lpFactLabel}>更新方針</dt>
+            <dd className={`ml-0 ${lpFactBody}`}>
+              大会期間中はできるだけリアルタイム（1週間以内）を目安に反映します（結果の公開状況により遅れる場合があります）。
+            </dd>
+          </div>
+          <div className={lpFactBlock}>
+            <dt className={lpFactLabel}>探し方</dt>
+            <dd className={`ml-0 ${lpFactBody}`}>
+              年度別の<Link href="/results">大会結果一覧</Link>のほか、
+              <Link href="/search">検索</Link>・<Link href="/organizations">団体別</Link>・
+              <Link href="/athletes">選手別</Link>・<Link href="/records">歴代記録</Link>
+              の各ページからたどれます。
+            </dd>
+          </div>
+        </dl>
       </section>
 
       <section aria-labelledby="lp-author-heading">
