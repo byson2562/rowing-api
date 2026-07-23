@@ -113,18 +113,19 @@ export default async function AboutPage() {
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>結果ページ</dt>
               <dd className={lpSummaryDd}>
-                <Link href="/results">年度別の大会結果一覧</Link>
+                <Link href="/results">大会結果一覧</Link>から年度別にたどれます
                 {latestYear !== null && (
                   <>
-                    、<Link href={`/results/${latestYear}`}>{latestYear}年</Link>
+                    （直近: <Link href={`/results/${latestYear}`}>{latestYear}年</Link>
+                    {previousYear !== null && (
+                      <>
+                        ・<Link href={`/results/${previousYear}`}>{previousYear}年</Link>
+                      </>
+                    )}
+                    ）
                   </>
                 )}
-                {previousYear !== null && (
-                  <>
-                    ・<Link href={`/results/${previousYear}`}>{previousYear}年</Link>
-                  </>
-                )}
-                の結果ページからたどれます。
+                。
               </dd>
             </div>
           </dl>
