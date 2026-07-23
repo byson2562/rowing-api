@@ -280,7 +280,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         className="rounded-rn-card border border-rn-border-soft bg-rn-surface-soft p-6"
       >
         <h2 id="home-search-heading" className={homeSectionTitle}>記録を検索する</h2>
-        <p className="mb-0 mt-0 leading-[1.7] text-rn-muted">
+        <p className="mb-0 mt-3 leading-[1.7] text-rn-muted">
           年度・大会・種目・団体を組み合わせて、目的のレース結果を検索できます。種目ごとの優勝タイム推移や、団体別のメダル数も確認できます。
         </p>
         <div className="mt-3.5 flex flex-wrap gap-2.5">
