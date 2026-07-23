@@ -17,7 +17,7 @@ import {
   lpSummaryItem,
   lpSummaryList
 } from "../../components/lp/lp-classes";
-import { availableYears, getDatasetSummary } from "../../lib/results-data";
+import { getDatasetSummary } from "../../lib/results-data";
 
 export const metadata: Metadata = {
   title: "レガッタナビとは（データ範囲・使い方）",
@@ -47,10 +47,6 @@ export default async function AboutPage() {
     summary.minYear !== null && summary.maxYear !== null
       ? `${summary.minYear}年から${summary.maxYear}年まで`
       : "主要大会";
-
-  const years = availableYears();
-  const latestYear = years[0] ?? null;
-  const previousYear = years[1] ?? null;
 
   return (
     <main className="site-container lp-page">
@@ -113,19 +109,7 @@ export default async function AboutPage() {
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>結果ページ</dt>
               <dd className={lpSummaryDd}>
-                <Link href="/results">大会結果一覧</Link>から年度別にたどれます
-                {latestYear !== null && (
-                  <>
-                    （直近: <Link href={`/results/${latestYear}`}>{latestYear}年</Link>
-                    {previousYear !== null && (
-                      <>
-                        ・<Link href={`/results/${previousYear}`}>{previousYear}年</Link>
-                      </>
-                    )}
-                    ）
-                  </>
-                )}
-                。
+                <Link href="/results">大会結果一覧</Link>から年度別にたどれます。
               </dd>
             </div>
           </dl>
