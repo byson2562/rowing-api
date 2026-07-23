@@ -4,7 +4,7 @@ export type Sponsor = {
   name: string;
   /** リンクは個別相談の企業・団体協賛のみ設定する */
   url?: string;
-  /** goldはフッターで先頭+金色の強調表示になる */
+  /** goldはフッターで先頭+太字で表示される */
   plan?: "silver" | "gold" | "corporate";
 };
 

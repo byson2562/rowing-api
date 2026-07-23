@@ -68,7 +68,7 @@ export default function SponsorPage() {
             </div>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>Gold</dt>
-              <dd className={lpSummaryDd}>月額 3,000円: お名前を先頭に、金色の強調表示で掲載します</dd>
+              <dd className={lpSummaryDd}>月額 3,000円: お名前を先頭に、太字で掲載します</dd>
             </div>
           </dl>
           <p className="mt-3 mb-0 text-[14px] leading-[1.7] text-rn-text">

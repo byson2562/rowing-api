@@ -119,8 +119,7 @@ export default function RootLayout({
             <div className="mx-auto flex max-w-[1220px] flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-rn-border-soft px-3.5 py-2.5 md:px-6" aria-label="協賛">
               <span className="text-[11px] font-medium text-rn-muted">協賛</span>
               {sortedSponsors().map((sponsor) => {
-                const goldClass =
-                  "rounded-[999px] bg-[#ffd76e] px-2 py-0.5 text-[12px] font-semibold text-[#78350f]";
+                const goldClass = "text-[12px] font-bold text-rn-brand";
                 if (sponsor.url) {
                   return (
                     <a
