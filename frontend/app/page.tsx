@@ -232,12 +232,12 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
             <h2 id="home-recent-heading" className={homeSectionTitle}>直近の大会</h2>
             <Link href="/results" className={homeMoreLink}>過去の大会一覧 →</Link>
           </div>
-          <ul className="m-0 grid list-none gap-2.5 p-0 md:grid-cols-2">
+          <ul className="m-0 grid auto-rows-fr list-none gap-2.5 p-0 md:grid-cols-2">
             {recent.map(({ year, competition }) => (
               <li key={`${year}-${competition}`}>
                 <Link
                   href={`/results/${year}/${encodeURIComponent(competition)}`}
-                  className="block rounded-xl bg-white px-4 py-3 no-underline shadow-rn-soft transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(16,42,80,0.1)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  className="block h-full rounded-xl bg-white px-4 py-3 no-underline shadow-rn-soft transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(16,42,80,0.1)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 >
                   <span className="block text-[12px] font-bold text-rn-muted">{year}年</span>
                   <span className="block text-[14px] font-bold leading-[1.5] text-rn-brand">{competition}</span>
@@ -251,12 +251,12 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
       {latestArticles.length > 0 && (
         <section aria-labelledby="home-articles-heading">
           <div className={homeSectionHead}>
-            <h2 id="home-articles-heading" className={homeSectionTitle}>記事・データ分析</h2>
+            <h2 id="home-articles-heading" className={homeSectionTitle}>記事</h2>
             <Link href="/articles" className={homeMoreLink}>記事一覧を見る →</Link>
           </div>
-          <div className="grid gap-2.5 md:grid-cols-2">
+          <div className="grid auto-rows-fr gap-2.5 md:grid-cols-2">
             {latestArticles.map((a) => (
-              <article key={a.slug} className={homeCard}>
+              <article key={a.slug} className={`${homeCard} h-full`}>
                 <h3 className="m-0 text-[15px] leading-[1.5]">
                   <Link
                     href={`/articles/${a.slug}`}
