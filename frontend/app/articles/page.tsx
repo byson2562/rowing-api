@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { articles } from "../../lib/articles";
+import { siteUrl } from "../../lib/site-url";
 
 export const metadata: Metadata = {
   title: "記事・データ分析",
@@ -26,8 +27,23 @@ function formatDate(iso: string): string {
 export default function ArticlesPage() {
   const sorted = [...articles].sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "ホーム", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "記事", item: `${siteUrl}/articles` }
+    ]
+  };
+
   return (
     <main className="site-container lp-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <nav className="breadcrumbs" aria-label="パンくずリスト">
+        <Link href="/">ホーム</Link>
+        <span aria-hidden="true">›</span>
+        <span>記事</span>
+      </nav>
       <section className="lp-hero">
         <div className="lp-hero-inner">
           <div className="lp-hero-top">

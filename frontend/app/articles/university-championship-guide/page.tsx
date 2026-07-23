@@ -84,6 +84,16 @@ export default async function UniversityChampionshipGuide() {
 
   const jsonLd = {
     "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "ホーム", item: siteUrl },
+          { "@type": "ListItem", position: 2, name: "記事", item: `${siteUrl}/articles` },
+          { "@type": "ListItem", position: 3, name: meta.title, item: `${siteUrl}/articles/${meta.slug}` }
+        ]
+      },
+      {
     "@type": "Article",
     headline: meta.title,
     description: meta.description,
@@ -92,11 +102,20 @@ export default async function UniversityChampionshipGuide() {
     author: { "@type": "Person", name: "中村匠" },
     publisher: { "@type": "Organization", name: "レガッタナビ", url: siteUrl },
     mainEntityOfPage: `${siteUrl}/articles/${meta.slug}`
+      }
+    ]
   };
 
   return (
     <main className="site-container lp-page article-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <nav className="breadcrumbs" aria-label="パンくずリスト">
+        <Link href="/">ホーム</Link>
+        <span aria-hidden="true">›</span>
+        <Link href="/articles">記事</Link>
+        <span aria-hidden="true">›</span>
+        <span>{"全日本大学ローイング選手権(インカレ)とは"}</span>
+      </nav>
       <article className="article-body">
         <header className="article-header">
           <p className={articleMeta}>
