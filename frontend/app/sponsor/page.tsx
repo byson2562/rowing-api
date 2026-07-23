@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { SupportContactForm } from "../../components/support-contact-form";
+import { SponsorApplyForm } from "../../components/contact-forms";
 import {
   lpAuthor,
   lpAuthorMeta,
@@ -13,8 +13,7 @@ import {
   lpKicker,
   lpSummaryDd,
   lpSummaryItem,
-  lpSummaryList,
-  lpTechHeading
+  lpSummaryList
 } from "../../components/lp/lp-classes";
 import { getDatasetSummary } from "../../lib/results-data";
 
@@ -67,35 +66,22 @@ export default function SponsorPage() {
         </div>
       </section>
 
-      <section aria-labelledby="sponsor-contact-heading">
-        <h2 id="sponsor-contact-heading" className="lp-section-title">お問い合わせ</h2>
+      <section aria-labelledby="sponsor-apply-heading">
+        <h2 id="sponsor-apply-heading" className="lp-section-title">申し込みフォーム</h2>
         <div className={lpAuthor}>
           <p className="mt-0 mb-0 text-[14px] leading-[1.7] text-rn-text">
-            協賛のご相談・その他のお問い合わせは、フォームまたはメールでお気軽にどうぞ。
+            送信いただいた内容を確認のうえ、お支払い方法などをメールでご連絡します。
           </p>
-          <h3 className={lpTechHeading}>フォームから問い合わせる</h3>
-          <SupportContactForm />
+          <SponsorApplyForm />
           <dl className={lpAuthorMeta}>
             <div className={lpAuthorMetaRow}>
-              <dt className={lpAuthorMetaDt}>メール</dt>
+              <dt className={lpAuthorMetaDt}>その他</dt>
               <dd className={lpAuthorMetaDd}>
-                <a
-                  className={lpAuthorMetaLink}
-                  href="mailto:takumi.nakamura.by@gmail.com"
-                  data-ga-event="sponsor_inquiry_click"
-                  data-ga-label="sponsor_contact_mail"
-                  data-ga-location="/sponsor"
-                >
-                  takumi.nakamura.by@gmail.com
-                </a>
-              </dd>
-            </div>
-            <div className={lpAuthorMetaRow}>
-              <dt className={lpAuthorMetaDt}>運営者</dt>
-              <dd className={lpAuthorMetaDd}>
-                <Link className={lpAuthorMetaLink} href="/about">
-                  レガッタナビについて(開発者情報)
-                </Link>
+                企業・団体でのご協賛のご相談や、スポンサー以外のご用件は{" "}
+                <Link className={lpAuthorMetaLink} href="/contact">
+                  お問い合わせ
+                </Link>{" "}
+                からお願いします。
               </dd>
             </div>
           </dl>

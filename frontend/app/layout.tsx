@@ -172,6 +172,9 @@ export default function RootLayout({
               <Link href="/about" className={footerLinkClass}>
                 レガッタナビとは
               </Link>
+              <Link href="/contact" className={footerLinkClass}>
+                お問い合わせ
+              </Link>
               <Link href="/privacy" className={footerLinkClass}>
                 プライバシーポリシー
               </Link>
