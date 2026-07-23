@@ -108,7 +108,7 @@ export default async function AboutPage() {
             </div>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>更新方針</dt>
-              <dd className={lpSummaryDd}>大会期間中は月次更新を目安に反映します（結果の公開状況により遅れる場合があります）。</dd>
+              <dd className={lpSummaryDd}>大会期間中はできるだけリアルタイム（1週間以内）を目安に反映します（結果の公開状況により遅れる場合があります）。</dd>
             </div>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>結果ページ</dt>
