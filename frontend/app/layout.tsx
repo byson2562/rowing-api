@@ -164,7 +164,7 @@ export default function RootLayout({
                 記事
               </Link>
               <Link href="/sponsor" className={footerLinkClass}>
-                スポンサー・寄付
+                スポンサー
               </Link>
               <a href="/feed.xml" className={footerLinkClass}>
                 RSS
