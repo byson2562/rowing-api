@@ -52,23 +52,14 @@ export default function SponsorPage() {
       </section>
 
       <section aria-labelledby="sponsor-plans-heading">
-        <h2 id="sponsor-plans-heading" className="lp-section-title">スポンサープラン</h2>
+        <h2 id="sponsor-plans-heading" className="lp-section-title">スポンサーになる</h2>
         <div className={lpDetailCard}>
-          <p className="mt-0 mb-0 text-[14px] leading-[1.7] text-rn-text">
-            個人の方の応援を想定したプランです。Silver以上は、全ページ共通のフッター協賛枠にお名前を掲載します(掲載は希望制)。
-          </p>
           <dl className={lpSummaryList}>
             <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>Bronze</dt>
-              <dd className={lpSummaryDd}>月額 500円: お礼のメッセージをお送りします</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>Silver</dt>
-              <dd className={lpSummaryDd}>月額 1,000円: フッター協賛枠にお名前を掲載</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>Gold</dt>
-              <dd className={lpSummaryDd}>月額 3,000円: お名前を先頭に、太字で掲載します</dd>
+              <dt className={lpSummaryDt}>一口 月500円</dt>
+              <dd className={lpSummaryDd}>
+                何口でも歓迎です。お礼のメッセージをお送りします。ご希望があれば、全ページ共通のフッター協賛枠にお名前を掲載します。
+              </dd>
             </div>
           </dl>
           <p className="mt-3 mb-0 text-[14px] leading-[1.7] text-rn-text">
