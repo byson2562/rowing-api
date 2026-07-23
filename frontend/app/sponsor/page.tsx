@@ -61,7 +61,7 @@ export default function SponsorPage() {
           <dl className={lpSummaryList}>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>Bronze</dt>
-              <dd className={lpSummaryDd}>月額 500円: 運営を支える応援メンバー</dd>
+              <dd className={lpSummaryDd}>月額 500円: お礼のメッセージをお送りします</dd>
             </div>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>Silver</dt>
