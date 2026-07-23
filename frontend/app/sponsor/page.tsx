@@ -51,7 +51,7 @@ export default function SponsorPage() {
             <div className={lpSummaryItem}>
               <dt className="m-0 text-[18px] font-bold text-[#1f3d64]">一口 年5,000円</dt>
               <dd className={lpSummaryDd}>
-                何口でも歓迎です。お礼のメッセージをお送りします。ご希望があれば、サイトにお名前を掲載します。
+                何口でも歓迎です。お礼のメッセージをお送りします。ご希望があれば、サイト内の協賛枠にお名前を掲載させていただきます。
               </dd>
             </div>
           </dl>
