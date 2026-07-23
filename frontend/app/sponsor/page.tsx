@@ -52,28 +52,29 @@ export default function SponsorPage() {
         </div>
       </section>
 
-      <section aria-labelledby="sponsor-corporate-heading">
-        <h2 id="sponsor-corporate-heading" className="lp-section-title">企業・団体の方へ</h2>
+      <section aria-labelledby="sponsor-plans-heading">
+        <h2 id="sponsor-plans-heading" className="lp-section-title">スポンサープラン</h2>
         <div className={lpDetailCard}>
           <p className={`mt-0 ${lpFactBody}`}>
-            協賛いただいた企業・団体は、全ページ共通のフッター協賛枠にお名前を掲載します。
+            個人の方の応援を想定したプランです。SilverとGoldは、全ページ共通のフッター協賛枠にお名前を掲載します(掲載は希望制)。
           </p>
           <dl className={lpSummaryList}>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>Bronze</dt>
-              <dd className={lpSummaryDd}>月額 3,000円: 協賛名を掲載</dd>
+              <dd className={lpSummaryDd}>月額 500円: 運営を支える応援メンバー</dd>
             </div>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>Silver</dt>
-              <dd className={lpSummaryDd}>月額 5,000円: 協賛名+リンクを掲載</dd>
+              <dd className={lpSummaryDd}>月額 1,000円: フッター協賛枠にお名前を掲載</dd>
             </div>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>Gold</dt>
-              <dd className={lpSummaryDd}>
-                月額 10,000円: 協賛名+リンクを先頭に掲載。協賛開始時にX(@regattanavi)でご紹介します
-              </dd>
+              <dd className={lpSummaryDd}>月額 3,000円: お名前+リンク(X・ブログ等)を掲載</dd>
             </div>
           </dl>
+          <p className={`mb-0 mt-3 ${lpFactBody}`}>
+            企業・団体でのご協賛は、内容・金額とも個別にご相談ください。
+          </p>
         </div>
       </section>
 
