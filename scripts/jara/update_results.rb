@@ -344,6 +344,7 @@ class JaraResultsUpdater
     normalized
       .gsub("舵手付き", "舵手つき")
       .gsub("舵手付", "舵手つき")
+      .gsub("舵手なし", "")
       .gsub("クオドルプル", "クォドルプル")
   end
 

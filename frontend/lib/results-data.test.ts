@@ -12,6 +12,8 @@ describe("normalizeEventName", () => {
     expect(normalizeEventName("男子舵手付きフォア")).toBe("男子舵手つきフォア");
     expect(normalizeEventName("男子舵手付フォア")).toBe("男子舵手つきフォア");
     expect(normalizeEventName("男子クオドルプル")).toBe("男子クォドルプル");
+    expect(normalizeEventName("男子舵手なしペア")).toBe("男子ペア");
+    expect(normalizeEventName("軽量級女子舵手なしペア")).toBe("軽量級女子ペア");
   });
 
   it("正規の表記はそのまま返す", () => {

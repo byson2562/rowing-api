@@ -233,10 +233,14 @@ async function importYear(year: number): Promise<ResultRecord[]> {
 // 元データの種目名には「舵手つき/舵手付き/舵手付」「クォドルプル/クオドルプル」の
 // 表記ゆれが混在するため、正書法のみを名寄せする（舵手有無が不明な種目名は触らない）
 export function normalizeEventName(name: string): string {
-  return name
-    .replace(/舵手付き/g, "舵手つき")
-    .replace(/舵手付/g, "舵手つき")
-    .replace(/クオドルプル/g, "クォドルプル");
+  return (
+    name
+      .replace(/舵手付き/g, "舵手つき")
+      .replace(/舵手付/g, "舵手つき")
+      .replace(/クオドルプル/g, "クォドルプル")
+      // JARAは2021年に「舵手なし」冠称を廃止(舵手なしペア→ペア等)。現行表記へ名寄せする
+      .replace(/舵手なし/g, "")
+  );
 }
 
 // 競漕記録の慣例表記 m:ss.cc（例 6:12.08）

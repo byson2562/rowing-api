@@ -12,7 +12,9 @@ function normalizeEventName(name) {
   return name
     .replaceAll("舵手付き", "舵手つき")
     .replaceAll("舵手付", "舵手つき")
-    .replaceAll("クオドルプル", "クォドルプル");
+    .replaceAll("クオドルプル", "クォドルプル")
+    // JARAは2021年に「舵手なし」冠称を廃止。現行表記へ名寄せする
+    .replaceAll("舵手なし", "");
 }
 
 let changedFiles = 0;
