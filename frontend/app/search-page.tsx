@@ -670,7 +670,7 @@ export default function SearchPage({
               年
             </li>
             <li>
-              <strong className={sx.heroStatValue}>全日本級4大会</strong>
+              <strong className={sx.heroStatValue}>全日本級5大会</strong>
             </li>
           </ul>
         </div>

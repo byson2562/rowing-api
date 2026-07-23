@@ -66,6 +66,7 @@ const COMPETITION_CATEGORY_RULES = [
   { label: "全日本選手権", keywords: ["全日本選手権", "全日本ローイング"] },
   { label: "全日本軽量級選手権", keywords: ["全日本軽量級選手権", "全日本軽量級ローイング"] },
   { label: "全日本新人選手権", keywords: ["全日本新人選手権", "全日本新人ローイング"] },
+  { label: "全日本社会人選手権", keywords: ["全日本社会人選手権", "全日本社会人ローイング"] },
 ] as const;
 
 export function availableYears(): number[] {

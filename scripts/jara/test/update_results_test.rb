@@ -75,6 +75,24 @@ class JaraResultsUpdaterTest < Minitest::Test
     refute JSON.parse((@data_dir / "2027.json").read).any? { |row| row["crew_name"] == "消失予定の選手" }
   end
 
+  def test_targets_society_championship_names_old_and_new
+    instance = updater(2027)
+    assert instance.send(:target_competition?, "第75回全日本社会人ローイング選手権大会")
+    assert instance.send(:target_competition?, "第70回全日本社会人選手権大会")
+    refute instance.send(:target_competition?, "全日本マスターズレガッタ")
+  end
+
+  def test_maps_multi_group_final_labels_by_letter
+    instance = updater(2027)
+    assert_equal "Final A", instance.send(:extract_final_group, "組別: 決勝A組")
+    assert_equal "Final A", instance.send(:extract_final_group, "組別: 決勝A")
+    assert_equal "Final B", instance.send(:extract_final_group, "組別: 決勝B")
+    assert_equal "Final B", instance.send(:extract_final_group, "組別: 順決B組")
+    assert_nil instance.send(:extract_final_group, "組別: 決勝C")
+    assert_nil instance.send(:extract_final_group, "組別: 順決E組")
+    assert_nil instance.send(:extract_final_group, "組別: 予選A組")
+  end
+
   def test_does_not_create_empty_year_before_results_are_published
     result = updater(2028).run!
 

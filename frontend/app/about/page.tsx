@@ -98,6 +98,7 @@ export default async function AboutPage() {
                 <li>全日本大学ローイング選手権（全日本大学選手権）</li>
                 <li>全日本新人ローイング選手権（全日本新人選手権）</li>
                 <li>全日本軽量級選手権</li>
+                <li>全日本社会人ローイング選手権（全日本社会人選手権）</li>
               </ul>
             </dd>
           </div>

@@ -21,7 +21,11 @@ class JaraResultsUpdater
     "全日本大学ローイング選手権",
     "全日本大学選手権",
     "全日本新人ローイング選手権",
-    "全日本新人選手権"
+    "全日本新人選手権",
+    "全日本社会人ローイング選手権",
+    "全日本社会人選手権",
+    "全日本軽量級ローイング選手権",
+    "全日本軽量級選手権"
   ].freeze
   ORGANIZATION_NORMALIZATION = { "慶応義塾大学" => "慶應義塾大学" }.freeze
   EVENT_NORMALIZATION = {
@@ -310,8 +314,12 @@ class JaraResultsUpdater
 
   def extract_final_group(value)
     label = normalize_space(value).split(":").last.to_s.strip
-    return "Final A" if label.match?(/\AFinal\s*A組?\z/i) || label == "決勝"
-    return "Final B" if label.match?(/\AFinal\s*B組?\z/i) || %w[順決 順位決定].include?(label)
+    # 表記ゆれ: Final A / 決勝 / 決勝A(組) を最上位、Final B / 順決 / 順位決定 /
+    # 決勝B(組) / 順決B(組) を第2グループとして扱う(社会人選手権は決勝A〜D組・
+    # 順決B〜E組の多組形式。C組以下は「Final B以上」の収録方針に従い対象外)
+    return "Final A" if label.match?(/\AFinal\s*A組?\z/i) || label == "決勝" || label.match?(/\A決勝A組?\z/)
+    return "Final B" if label.match?(/\AFinal\s*B組?\z/i) || %w[順決 順位決定].include?(label) ||
+      label.match?(/\A(?:決勝|順決)B組?\z/)
 
     nil
   end
