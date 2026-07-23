@@ -56,7 +56,7 @@ export default function SponsorPage() {
         <h2 id="sponsor-plans-heading" className="lp-section-title">スポンサープラン</h2>
         <div className={lpDetailCard}>
           <p className={`mt-0 ${lpFactBody}`}>
-            個人の方の応援を想定したプランです。SilverとGoldは、全ページ共通のフッター協賛枠にお名前を掲載します(掲載は希望制)。
+            個人の方の応援を想定したプランです。Silver以上は、全ページ共通のフッター協賛枠にお名前を掲載します(掲載は希望制)。
           </p>
           <dl className={lpSummaryList}>
             <div className={lpSummaryItem}>
@@ -69,7 +69,7 @@ export default function SponsorPage() {
             </div>
             <div className={lpSummaryItem}>
               <dt className={lpSummaryDt}>Gold</dt>
-              <dd className={lpSummaryDd}>月額 3,000円: お名前+リンク(X・ブログ等)を掲載</dd>
+              <dd className={lpSummaryDd}>月額 3,000円: お名前を先頭に、金色の強調表示で掲載します</dd>
             </div>
           </dl>
           <p className={`mb-0 mt-3 ${lpFactBody}`}>

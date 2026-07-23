@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 
 import SiteHeader from "../components/SiteHeader";
-import { sponsors } from "../lib/sponsors";
+import { sponsors, sortedSponsors } from "../lib/sponsors";
 import { siteUrl } from "../lib/site-url";
 
 // 数字・欧文はInter（タイム表示の判読性・桁揃えが和文フォントの従属欧文より良い）、
@@ -118,23 +118,31 @@ export default function RootLayout({
           {sponsors.length > 0 && (
             <div className="mx-auto flex max-w-[1220px] flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-rn-border-soft px-3.5 py-2.5 md:px-6" aria-label="協賛">
               <span className="text-[11px] font-medium text-rn-muted">協賛</span>
-              {sponsors.map((sponsor) =>
-                sponsor.url ? (
-                  <a
+              {sortedSponsors().map((sponsor) => {
+                const goldClass =
+                  "rounded-[999px] bg-[#ffd76e] px-2 py-0.5 text-[12px] font-semibold text-[#78350f]";
+                if (sponsor.url) {
+                  return (
+                    <a
+                      key={sponsor.name}
+                      href={sponsor.url}
+                      target="_blank"
+                      rel="noopener sponsored"
+                      className="text-[12px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline"
+                    >
+                      {sponsor.name}
+                    </a>
+                  );
+                }
+                return (
+                  <span
                     key={sponsor.name}
-                    href={sponsor.url}
-                    target="_blank"
-                    rel="noopener sponsored"
-                    className="text-[12px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline"
+                    className={sponsor.plan === "gold" ? goldClass : "text-[12px] font-semibold text-[#33507a]"}
                   >
                     {sponsor.name}
-                  </a>
-                ) : (
-                  <span key={sponsor.name} className="text-[12px] font-semibold text-[#33507a]">
-                    {sponsor.name}
                   </span>
-                )
-              )}
+                );
+              })}
             </div>
           )}
           <div className="mx-auto flex max-w-[1220px] flex-col items-start gap-2 px-3.5 py-2.5 md:flex-row md:items-center md:justify-between md:gap-3 md:px-6 md:py-3">
