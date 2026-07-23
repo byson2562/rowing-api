@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { SponsorApplyForm } from "../../components/contact-forms";
+import ButtonLink from "../../components/ui/ButtonLink";
 import {
   lpAuthor,
   lpAuthorMeta,
@@ -15,6 +16,9 @@ import {
   lpSummaryItem,
   lpSummaryList
 } from "../../components/lp/lp-classes";
+
+// Stripe の決済リンク(レガッタナビ スポンサー 一口 年5,000円・数量1〜10)
+const SPONSOR_CHECKOUT_URL = "https://buy.stripe.com/dRmcN51H8fY47wT7Ct8N200";
 
 export const metadata: Metadata = {
   title: "スポンサー募集",
@@ -55,6 +59,19 @@ export default function SponsorPage() {
               </dd>
             </div>
           </dl>
+          <div className="mt-4">
+            <ButtonLink
+              href={SPONSOR_CHECKOUT_URL}
+              data-ga-event="sponsor_checkout_click"
+              data-ga-label="sponsor_stripe_checkout"
+              data-ga-location="/sponsor"
+            >
+              カードで申し込む
+            </ButtonLink>
+          </div>
+          <p className="mt-2.5 mb-0 text-[13px] leading-[1.7] text-rn-muted">
+            口数は決済画面で選べます。毎年自動で更新され、いつでも解約できます。
+          </p>
           <p className="mt-3 mb-0 text-[14px] leading-[1.7] text-rn-text">
             企業・団体でのご協賛は、内容・金額とも個別にご相談ください。
           </p>
@@ -62,10 +79,10 @@ export default function SponsorPage() {
       </section>
 
       <section aria-labelledby="sponsor-apply-heading">
-        <h2 id="sponsor-apply-heading" className="lp-section-title">申し込みフォーム</h2>
+        <h2 id="sponsor-apply-heading" className="lp-section-title">銀行振込で申し込む</h2>
         <div className={lpAuthor}>
           <p className="mt-0 mb-0 text-[14px] leading-[1.7] text-rn-text">
-            送信いただいた内容を確認のうえ、お支払い方法などをメールでご連絡します。
+            カード決済をご利用にならない場合は、こちらのフォームからご連絡ください。振込先をメールでお送りします。
           </p>
           <SponsorApplyForm />
           <dl className={lpAuthorMeta}>
