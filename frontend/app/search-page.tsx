@@ -459,14 +459,6 @@ export default function SearchPage({
     emitFilterEvents("clear_filters", "all");
   };
 
-  const rankCellClassName = (row: Result): string => {
-    if (row.final_group !== "Final A") return "";
-    if (row.rank === 1) return "bg-[#fde68a] text-[#78350f]";
-    if (row.rank === 2) return "bg-[#e5e7eb] text-[#374151]";
-    if (row.rank === 3) return "bg-[#f5d0a9] text-[#7c2d12]";
-    return "";
-  };
-
   // テーブルの順位バッジ用(デザインパスにより金のみ #ffd76e)
   const rankBadgeMedalClassName = (row: Result) => {
     if (row.rank === 1) return "font-bold bg-[#ffd76e] text-[#78350f]";
@@ -1269,7 +1261,7 @@ export default function SearchPage({
                 <header className={sx.resultCardHead}>
                   <span className={sx.resultCardTag}>{row.year}</span>
                   <span className={sx.resultCardTag}>{row.final_group}</span>
-                  <span className={rankCellClassName(row) ? `${sx.resultCardRankMedal} ${rankCellClassName(row)}` : sx.resultCardRank}>{row.rank}位</span>
+                  <span className={`ml-auto ${sx.rankBadge} ${rankBadgeMedalClassName(row) || sx.rankBadgePlain}`}>{row.rank}</span>
                 </header>
                 <p className={sx.resultCardEvent}>{row.event_name}</p>
                 <p className={sx.resultCardCompetition} title={row.competition_name}>

@@ -31,8 +31,6 @@ const pagBtnBase =
 const chipBase =
   "rounded-[999px] border border-[#d8e6fa] bg-rn-primary-soft px-2.5 py-[5px] text-[12px] font-medium text-rn-link ";
 
-const resultCardRankBase = "ml-auto min-w-[44px] px-2 py-0.5 text-center text-[14px] ";
-
 export const sx = {
   // ヒーロー内の実績チップ
   heroStats:
@@ -186,8 +184,6 @@ export const sx = {
   resultCard: "rounded-xl bg-white p-2.5 shadow-rn-soft",
   resultCardHead: "mb-1.5 flex items-center gap-2",
   resultCardTag: "rounded-[999px] border border-rn-border px-2 py-0.5 text-[11px] font-medium text-[#2e4f77]",
-  resultCardRank: resultCardRankBase + "rounded-lg font-extrabold",
-  resultCardRankMedal: resultCardRankBase + "rounded-md font-bold",
   resultCardEvent: "m-0 font-extrabold text-[#1d3557]",
   resultCardCompetition: "mb-2 mt-1 line-clamp-2 text-[12px] leading-[1.45] text-[#4a6791]",
   resultCardMeta: "m-0 grid gap-1.5",
