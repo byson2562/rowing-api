@@ -73,7 +73,7 @@ export function SponsorApplyForm() {
       openMailFallback(subject, [
         `お名前: ${name.trim()}`,
         `メール: ${email.trim()}`,
-        `口数: ${units}口(月${Number(units) * 500}円)`,
+        `口数: ${units}口(年${Number(units) * 5000}円)`,
         `お名前の掲載: ${listing}`,
         "",
         "メッセージ:",
@@ -89,7 +89,7 @@ export function SponsorApplyForm() {
         type: "sponsor_apply",
         name: name.trim(),
         email: email.trim(),
-        units: `${units}口(月${Number(units) * 500}円)`,
+        units: `${units}口(年${Number(units) * 5000}円)`,
         listing,
         message: message.trim()
       });
@@ -121,11 +121,11 @@ export function SponsorApplyForm() {
       </div>
       <div className={lpContactGrid}>
         <label className={lpContactLabel}>
-          口数（一口 月500円）
+          口数（一口 年5,000円）
           <select className={lpContactInput} name="units" value={units} onChange={(event) => setUnits(event.target.value)}>
             {Array.from({ length: 10 }, (_, i) => `${i + 1}`).map((n) => (
               <option key={n} value={n}>
-                {n}口（月{new Intl.NumberFormat("ja-JP").format(Number(n) * 500)}円）
+                {n}口（年{new Intl.NumberFormat("ja-JP").format(Number(n) * 5000)}円）
               </option>
             ))}
           </select>
