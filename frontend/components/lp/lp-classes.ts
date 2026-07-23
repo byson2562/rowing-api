@@ -88,7 +88,7 @@ export const lpContactGrid = "grid grid-cols-2 gap-2.5 max-[900px]:grid-cols-1";
 export const lpContactLabel = "grid gap-[5px] text-[12px] font-bold text-[#365778]";
 export const lpContactInput =
   "w-full rounded-[10px] border border-rn-border bg-white px-2.5 py-2 text-[14px] text-[#1d3557] " +
-  "focus:border-rn-primary focus:outline-2 focus:outline-[rgba(29,110,224,0.25)]";
+  "focus-visible:border-rn-primary focus-visible:outline-2 focus-visible:outline-[rgba(29,110,224,0.25)]";
 export const lpContactTextarea = `${lpContactInput} resize-y`;
 export const lpContactActions = "flex justify-start";
 

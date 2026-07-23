@@ -23,12 +23,12 @@ UIを新規作成・変更するときは必ずこのルールに従う(適用�
 | 本文サイズ | 16px、長文行間1.7前後(デジタル庁) | 16px / 記事1.95・UI 1.6-1.7 | ✅ 準拠 |
 | 最小文字 | 12px未満は原則使わない(デジタル庁) | 11pxが数箇所(メトリクスラベル等) | ⚠️ 11pxは「英大文字ラベル/タグ内」限定で許容 |
 | コントラスト | 文字4.5:1以上(デジタル庁/WCAG AA) | muted `#5d7398`≒4.6:1 ほか主要色は準拠 | ✅ 準拠(新色追加時は必ず検証) |
-| 入力欄の高さ | 36-40px(shadcn) | 検索フィルタ44px / LPフォーム40px / 小型34px | ⚠️ 是正候補: 40pxへ統一 |
-| フォーカス | `focus-visible` でリング表示(shadcn/Radix) | `focus:` と `focus-visible:` が混在 | ⚠️ 是正候補: focus-visibleへ統一 |
+| 入力欄の高さ | 36-40px(shadcn) | 標準40px(小型コントロール34px) | ✅ 準拠(2026-07-23統一) |
+| フォーカス | `focus-visible` でリング表示(shadcn/Radix) | `focus-visible:` に統一 | ✅ 準拠(2026-07-23統一) |
 | テーブル | 13-14px・罫線は水平のみ・ヘッダ薄地(Geist) | 13px・水平罫線・#f2f8ffヘッダ | ✅ 準拠 |
 | チャート | カテゴリ色は少数に限定+グレー基調グリッド(Uber Base) | 青/金の2色+`#e4eefb`グリッド | ✅ 準拠 |
 
-⚠️の2点(入力44→40統一、focus-visible統一)は今後のUI変更時に順次是正する。
+全項目準拠(2026-07-23時点)。新規UIで⚠️を作らないこと。
 
 ---
 
@@ -90,7 +90,7 @@ UIを新規作成・変更するときは必ずこのルールに従う(適用�
 
 規定値:
 - **ボタン**: 高さ約40px(`py-2.5`)、radius 10px、primary=ソリッド`--primary`白文字 / secondary=白地+`rn-link`文字+ヘアライン。disabledは `opacity-55〜65 + cursor-not-allowed`。
-- **入力・select**: 1px `border-rn-border`、白地、radius 10px、フォーカスで `outline-2 outline-[rgba(29,110,224,0.25)] + border-rn-primary`(新規は `focus-visible:` を使う)。
+- **入力・select**: 1px `border-rn-border`、白地、radius 10px、`focus-visible:outline-2 focus-visible:outline-[rgba(29,110,224,0.25)] focus-visible:border-rn-primary`。
 - **テーブル**: 水平罫線のみ、ヘッダ `#f2f8ff` 地+600、数値列は右寄せ+tabular-nums、行ホバー `#f3f8ff`。モバイル(≤640/768)は data-label 付きカード積みに切替。
 - **チップ/タグ**: pill、`--primary-soft` 地、12px/500。
 - **順位バッジ**: pill 30px、非メダル=`--primary-soft`、金`#ffd76e`/銀`#e5e7eb`/銅`#f5d0a9`(色と太さは基底と排他で合成する)。

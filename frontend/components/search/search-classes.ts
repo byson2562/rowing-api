@@ -10,8 +10,9 @@
 // 注: 旧CSSでは select の矢印画像は Clubhouse パスの background ショートハンドで
 // 上書きされて消えていたため、矢印なしが現行の見た目。
 const control =
-  "h-11 w-full rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[14px] " +
-  "text-[#1d3557] focus:border-rn-primary focus:outline-2 focus:outline-[rgba(29,110,224,0.25)]";
+  "h-10 w-full rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[14px] " +
+  "text-[#1d3557] focus-visible:border-rn-primary focus-visible:outline-2 " +
+  "focus-visible:outline-[rgba(29,110,224,0.25)]";
 
 const genderTabBase =
   "cursor-pointer rounded-[999px] border px-[18px] py-[9px] font-semibold transition-all duration-[180ms] " +
@@ -210,5 +211,5 @@ export const sx = {
   pagJumpLabel: "text-[12px] font-bold text-rn-muted",
   pagJumpInput:
     "h-[34px] w-[68px] rounded-[9px] border border-rn-border px-2 py-1 text-[13px] " +
-    "focus:border-rn-primary focus:outline-2 focus:outline-[rgba(29,110,224,0.25)]"
+    "focus-visible:border-rn-primary focus-visible:outline-2 focus-visible:outline-[rgba(29,110,224,0.25)]"
 };
