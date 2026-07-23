@@ -12,10 +12,7 @@ import {
   lpAuthorMetaDd,
   lpAuthorMetaDt,
   lpAuthorMetaRow,
-  lpDetail,
   lpDetailCard,
-  lpDetailList,
-  lpDetailTitle,
   lpFaqAnswer,
   lpFaqItem,
   lpFaqList,
@@ -27,8 +24,6 @@ import {
   lpHeroMetrics,
   lpHeroMetricValue,
   lpHeroStrip,
-  lpHeroTag,
-  lpHeroTags,
   lpSummaryDd,
   lpSummaryDdList,
   lpSummaryDt,
@@ -48,7 +43,7 @@ import {
 export const metadata: Metadata = {
   title: "レガッタナビとは（データ範囲・使い方）",
   description:
-    "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるレガッタナビの案内ページ。全日本ローイング選手権を含む主要大会結果を横断して確認できます。",
+    "レガッタナビは、全日本選手権・全日本大学選手権など日本の主要ローイング（ボート）大会の結果と記録のデータベースです。最新結果・条件検索・歴代記録・データ分析記事を提供しています。",
   keywords: [
     "ローイング 大会 結果",
     "ローイング 大会結果",
@@ -61,12 +56,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: "レガッタナビとは（データ範囲・使い方）",
     description:
-      "ローイング（ボート）記録とローイング大会結果を大会・年度・種目・団体で検索できるレガッタナビの案内ページ。全日本ローイング選手権を含む主要大会結果に対応。",
+      "レガッタナビは、日本の主要ローイング（ボート）大会の結果と記録のデータベースです。最新結果・条件検索・歴代記録・データ分析記事を提供しています。",
     url: "/about"
   }
 };
 
-export default async function RowingResultsPage() {
+// カード末尾の誘導リンク
+const cardLink =
+  "mt-2.5 inline-block text-[14px] font-bold text-rn-link no-underline hover:text-rn-primary hover:underline";
+
+export default async function AboutPage() {
   const summary = getDatasetSummary();
   const totalCountLabel = new Intl.NumberFormat("ja-JP").format(summary.totalCount);
   const periodLabel =
@@ -92,11 +91,12 @@ export default async function RowingResultsPage() {
     {
       question: "ローイング（ボート）の大会結果はどこで見られますか？",
       answer:
-        "レガッタナビの検索ページで、全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は大会結果一覧ページからもたどれます。",
+        "レガッタナビのホームで最新大会の結果を、検索ページで全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は大会結果一覧ページからもたどれます。",
       answerNode: (
         <>
-          レガッタナビの<Link href="/search">検索ページ</Link>
-          で、全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は
+          <Link href="/">ホーム</Link>で最新大会の結果を、
+          <Link href="/search">検索ページ</Link>
+          で全日本ローイング選手権・全日本大学選手権・全日本新人選手権・全日本軽量級選手権の結果を年度・大会・種目・団体で横断検索できます。年度別の一覧は
           <Link href="/results">大会結果一覧ページ</Link>からもたどれます。
         </>
       )
@@ -108,12 +108,13 @@ export default async function RowingResultsPage() {
     {
       question: "過去の優勝タイムの推移は確認できますか？",
       answer:
-        "検索ページで種目を選択すると、その種目のFinal A優勝タイムの年別推移をグラフで確認できます。年度・団体などの条件と組み合わせた絞り込みも可能です。",
+        "検索ページで種目を選択すると、その種目のFinal A優勝タイムの年別推移をグラフで確認できます。種目ごとの歴代最速記録は歴代記録ページにまとめています。",
       answerNode: (
         <>
           <Link href="/search">検索ページ</Link>
           で種目を選択すると、その種目のFinal
-          A優勝タイムの年別推移をグラフで確認できます。年度・団体などの条件と組み合わせた絞り込みも可能です。
+          A優勝タイムの年別推移をグラフで確認できます。種目ごとの歴代最速記録は
+          <Link href="/records">歴代記録ページ</Link>にまとめています。
         </>
       )
     },
@@ -144,15 +145,18 @@ export default async function RowingResultsPage() {
         <div className="lp-hero-inner">
           <div className="lp-hero-top">
             <h1>
-              <span className={lpH1Line}>ローイング記録・</span>
-              <span className={lpH1Line}>大会結果を、</span>
-              <span className={lpH1Line}>ひとつの画面で。</span>
+              <span className={lpH1Line}>ローイングの</span>
+              <span className={lpH1Line}>大会結果と記録の</span>
+              <span className={lpH1Line}>データベース。</span>
             </h1>
             <p className="lp-lead">
-              年度・大会名・種目・団体を横断して検索し、メダル傾向までまとめて確認。日本の主要大会記録を比較しやすい形で素早くたどれます。
+              全日本級4大会・{coverageLabel}のレース結果を収録。最新の大会結果から、条件検索、歴代記録、データ分析記事まで、日本のローイングを数字でたどれます。
             </p>
             <div className="lp-hero-actions">
-              <ButtonLink href="/search">今すぐ検索を始める</ButtonLink>
+              <ButtonLink href="/">最新の大会結果を見る</ButtonLink>
+              <ButtonLink href="/search" variant="secondary">
+                記録を検索する
+              </ButtonLink>
             </div>
           </div>
         </div>
@@ -167,13 +171,8 @@ export default async function RowingResultsPage() {
         </Link>
       </section>
 
-      <section className={lpHeroStrip} aria-label="サービス要点">
-        <ul className={lpHeroTags} aria-label="機能タグ">
-          <li className={lpHeroTag}>横断検索</li>
-          <li className={lpHeroTag}>メダル可視化</li>
-          <li className={lpHeroTag}>時系列比較</li>
-        </ul>
-        <ul className={lpHeroMetrics} aria-label="サービス概要">
+      <section className={lpHeroStrip} aria-label="収録データの概要">
+        <ul className={lpHeroMetrics}>
           <li className={lpHeroMetric}>
             <span className={lpHeroMetricLabel}>収録レース</span>
             <strong className={lpHeroMetricValue}>{totalCountLabel}</strong>
@@ -189,46 +188,38 @@ export default async function RowingResultsPage() {
         </ul>
       </section>
 
-      <section aria-labelledby="lp-features-heading">
-        <h2 id="lp-features-heading" className="lp-section-title">主な特徴</h2>
+      <section aria-labelledby="about-services-heading">
+        <h2 id="about-services-heading" className="lp-section-title">できること</h2>
         <div className={lpValueGrid}>
           <article className={lpValueCard}>
-            <h3><img className={lpHeadingIcon} src="/icons/search.svg" alt="" width={18} height={18} />横断検索</h3>
-            <p className={lpValueCardBody}>大会・年・種目・団体の条件を組み合わせて、目的のレース結果を素早く絞り込み。</p>
+            <h3><img className={lpHeadingIcon} src="/icons/chart.svg" alt="" width={18} height={18} />大会結果を見る</h3>
+            <p className={lpValueCardBody}>最新大会の優勝クルーをホームに掲載。過去の結果も年度・大会別のページで確認できます。</p>
+            <Link href="/results" className={cardLink}>大会結果一覧 →</Link>
           </article>
           <article className={lpValueCard}>
-            <h3><img className={lpHeadingIcon} src="/icons/chart.svg" alt="" width={18} height={18} />可視化</h3>
-            <p className={lpValueCardBody}>団体別の金メダル数・メダル数をグラフで確認し、勢力図の変化を把握。</p>
+            <h3><img className={lpHeadingIcon} src="/icons/search.svg" alt="" width={18} height={18} />記録を検索する</h3>
+            <p className={lpValueCardBody}>年・大会・種目・団体を組み合わせて検索。メダル数や優勝タイム推移のグラフも表示します。</p>
+            <Link href="/search" className={cardLink}>検索ページ →</Link>
           </article>
           <article className={lpValueCard}>
-            <h3><img className={lpHeadingIcon} src="/icons/trend.svg" alt="" width={18} height={18} />時系列比較</h3>
-            <p className={lpValueCardBody}>種目ごとの優勝タイム推移を追い、記録トレンドを直感的に分析。</p>
+            <h3><img className={lpHeadingIcon} src="/icons/trend.svg" alt="" width={18} height={18} />記録とデータを読む</h3>
+            <p className={lpValueCardBody}>種目別の歴代最速記録、団体別・選手別の成績、収録データをもとにした分析記事を掲載しています。</p>
+            <Link href="/records" className={cardLink}>歴代記録 →</Link>
           </article>
         </div>
       </section>
 
-      <section className={lpDetail} aria-labelledby="lp-detail-heading">
-        <h2 id="lp-detail-heading" className={`lp-section-title ${lpDetailTitle}`}>機能とデータ概要</h2>
+      <section aria-labelledby="about-data-heading">
+        <h2 id="about-data-heading" className="lp-section-title">データについて</h2>
         <div className={lpDetailCard}>
-          <h3>レガッタナビでできること</h3>
-          <ul className={lpDetailList}>
-            <li>ローイング記録の検索（年・大会・種目・団体）</li>
-            <li>Final A基準での団体別メダル傾向の可視化</li>
-            <li>種目別の優勝タイム推移の確認</li>
-            <li>ページングで大量データを段階的に閲覧</li>
-          </ul>
-        </div>
-        <aside className={lpDetailCard}>
-          <h3>データ概要</h3>
           <dl className={lpSummaryList}>
             <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>収録データ</dt>
-              <dd className={lpSummaryDd}>現在は{coverageLabel}の大会記録を掲載しています（Final B以上が対象）。</dd>
+              <dt className={lpSummaryDt}>収録範囲</dt>
+              <dd className={lpSummaryDd}>{coverageLabel}の大会記録（Final B以上）を掲載しています。</dd>
             </div>
             <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>集計対象大会</dt>
+              <dt className={lpSummaryDt}>対象大会</dt>
               <dd className={lpSummaryDd}>
-                集計対象は全日本級の大会です。
                 <ul className={lpSummaryDdList}>
                   <li>全日本ローイング選手権（全日本選手権）</li>
                   <li>全日本大学ローイング選手権（全日本大学選手権）</li>
@@ -238,15 +229,11 @@ export default async function RowingResultsPage() {
               </dd>
             </div>
             <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>North Star KPI</dt>
-              <dd className={lpSummaryDd}>週次検索実行数（検索を実行したセッション数）を最重要指標として運用しています。</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>データ更新方針</dt>
-              <dd className={lpSummaryDd}>大会期間中は月次更新を目安にデータ反映します（大会公開状況により遅延する場合があります）。</dd>
+              <dt className={lpSummaryDt}>更新方針</dt>
+              <dd className={lpSummaryDd}>大会期間中は月次更新を目安に反映します（結果の公開状況により遅れる場合があります）。</dd>
             </div>
           </dl>
-        </aside>
+        </div>
       </section>
 
       <section aria-labelledby="lp-archive-heading">
@@ -291,7 +278,7 @@ export default async function RowingResultsPage() {
         </div>
       </section>
 
-      <section className="lp-author-section" aria-labelledby="lp-author-heading">
+      <section aria-labelledby="lp-author-heading">
         <h2 id="lp-author-heading" className="lp-section-title">開発者について</h2>
         <div className={lpAuthor}>
           <h3>プロフィール</h3>
@@ -319,7 +306,6 @@ export default async function RowingResultsPage() {
           </div>
         </div>
       </section>
-
     </main>
   );
 }
