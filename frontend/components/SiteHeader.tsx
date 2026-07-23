@@ -11,7 +11,8 @@ const NAV_LINKS = [
   { href: "/organizations", label: "団体別" },
   { href: "/athletes", label: "選手別" },
   { href: "/articles", label: "記事" },
-  { href: "/about", label: "レガッタナビとは" }
+  { href: "/about", label: "レガッタナビとは" },
+  { href: "/sponsor", label: "応援する" }
 ];
 
 const linkColorClass = "text-rn-link no-underline hover:underline hover:text-rn-primary";

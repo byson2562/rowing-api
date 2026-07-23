@@ -185,7 +185,8 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
   };
 
   return (
-    <main className="site-container grid gap-8">
+    // 列をminmax(0,1fr)で固定: 内包テーブルのmin-widthでmainがmin-content幅に膨らむのを防ぐ
+    <main className="site-container grid grid-cols-[minmax(0,1fr)] gap-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {featured && (
