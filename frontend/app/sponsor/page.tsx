@@ -10,7 +10,6 @@ import {
   lpAuthorMetaLink,
   lpAuthorMetaRow,
   lpDetailCard,
-  lpFactBody,
   lpKicker,
   lpSummaryDd,
   lpSummaryDt,
@@ -55,7 +54,7 @@ export default function SponsorPage() {
       <section aria-labelledby="sponsor-plans-heading">
         <h2 id="sponsor-plans-heading" className="lp-section-title">スポンサープラン</h2>
         <div className={lpDetailCard}>
-          <p className={`mt-0 ${lpFactBody}`}>
+          <p className="mt-0 mb-0 text-[14px] leading-[1.7] text-rn-text">
             個人の方の応援を想定したプランです。Silver以上は、全ページ共通のフッター協賛枠にお名前を掲載します(掲載は希望制)。
           </p>
           <dl className={lpSummaryList}>
@@ -72,7 +71,7 @@ export default function SponsorPage() {
               <dd className={lpSummaryDd}>月額 3,000円: お名前を先頭に、金色の強調表示で掲載します</dd>
             </div>
           </dl>
-          <p className={`mb-0 mt-3 ${lpFactBody}`}>
+          <p className="mt-3 mb-0 text-[14px] leading-[1.7] text-rn-text">
             企業・団体でのご協賛は、内容・金額とも個別にご相談ください。
           </p>
         </div>
@@ -81,7 +80,7 @@ export default function SponsorPage() {
       <section aria-labelledby="sponsor-contact-heading">
         <h2 id="sponsor-contact-heading" className="lp-section-title">お問い合わせ</h2>
         <div className={lpAuthor}>
-          <p className={`mt-0 ${lpFactBody}`}>
+          <p className="mt-0 mb-0 text-[14px] leading-[1.7] text-rn-text">
             協賛のご相談・その他のお問い合わせは、フォームまたはメールでお気軽にどうぞ。
           </p>
           <h3 className={lpTechHeading}>フォームから問い合わせる</h3>
