@@ -8,6 +8,10 @@ import {
   organizationSlug
 } from "../../lib/results-data";
 import { siteUrl } from "../../lib/site-url";
+import {
+  OrganizationsIndex,
+  type OrganizationGroup
+} from "../../components/organizations-index";
 
 export const metadata: Metadata = {
   title: "団体別ローイング成績一覧",
@@ -44,8 +48,29 @@ export default async function OrganizationsIndexPage() {
     }
   });
 
-  const students = organizations.filter((name) => isStudentOrganization(name));
-  const socials = organizations.filter((name) => !isStudentOrganization(name));
+  // 高校(高校・高等学校を含む名称) / 大学(その他の学生団体・高専・混成含む) / 社会人・クラブ に分ける
+  const isHighSchool = (name: string) => /高校|高等学校/.test(name);
+  const highSchools = organizations.filter((name) => isHighSchool(name));
+  const universities = organizations.filter(
+    (name) => !isHighSchool(name) && isStudentOrganization(name)
+  );
+  const socials = organizations.filter(
+    (name) => !isHighSchool(name) && !isStudentOrganization(name)
+  );
+
+  const toEntries = (names: string[]) =>
+    names.map((name) => ({
+      name,
+      slug: organizationSlug(name),
+      count: recordCount.get(name) ?? 0,
+      gold: goldCount.get(name) ?? 0
+    }));
+
+  const groups: OrganizationGroup[] = [
+    { title: "大学", items: toEntries(universities) },
+    { title: "高校", items: toEntries(highSchools) },
+    { title: "社会人・クラブ", items: toEntries(socials) }
+  ].filter((group) => group.items.length > 0);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -70,26 +95,6 @@ export default async function OrganizationsIndexPage() {
     ]
   };
 
-  const renderGroup = (title: string, names: string[]) => (
-    <section className="static-section">
-      <h2>
-        {title}
-        <span className="static-count">{names.length}団体</span>
-      </h2>
-      <ul className="static-links org-links">
-        {names.map((name) => (
-          <li key={name}>
-            <Link href={`/organizations/${encodeURIComponent(organizationSlug(name))}`}>{name}</Link>
-            <span className="static-count">
-              {(recordCount.get(name) ?? 0).toLocaleString()}件
-              {goldCount.get(name) ? ` ・ 優勝${goldCount.get(name)}回` : ""}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-
   return (
     <main className="site-container static-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -107,8 +112,7 @@ export default async function OrganizationsIndexPage() {
         </div>
       </header>
 
-      {renderGroup("大学・学校", students)}
-      {renderGroup("社会人・クラブ", socials)}
+      <OrganizationsIndex groups={groups} />
 
       <p className="static-cta">
         条件を組み合わせて探す場合は<Link href="/search">記録検索ページ</Link>をご利用ください。
