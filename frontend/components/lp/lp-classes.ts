@@ -56,6 +56,8 @@ export const lpAuthorMetaRow = "flex items-baseline gap-2.5";
 export const lpAuthorMetaDt =
   "m-0 flex-[0_0_64px] text-[12px] font-bold leading-[18px] text-[#4d6788]";
 export const lpAuthorMetaDd = "m-0 flex-auto leading-[18px] text-[#1f3d64]";
+// 複数行になる dd 用(経歴など)。1行用の leading-[18px] だと行間が詰まる
+export const lpAuthorMetaDdMultiline = "m-0 flex-auto leading-[1.7] text-[#1f3d64]";
 export const lpAuthorMetaLink =
   "leading-[18px] text-rn-primary no-underline hover:underline";
 

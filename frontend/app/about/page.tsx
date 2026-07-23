@@ -9,7 +9,7 @@ import {
   lpAuthor,
   lpAuthorBody,
   lpAuthorMeta,
-  lpAuthorMetaDd,
+  lpAuthorMetaDdMultiline,
   lpAuthorMetaDt,
   lpAuthorMetaRow,
   lpDetailCard,
@@ -289,7 +289,7 @@ export default async function AboutPage() {
           <dl className={lpAuthorMeta}>
             <div className={lpAuthorMetaRow}>
               <dt className={lpAuthorMetaDt}>経歴</dt>
-              <dd className={lpAuthorMetaDd}>
+              <dd className={lpAuthorMetaDdMultiline}>
                 早稲田大学漕艇部OB（2015年卒）
                 <br />
                 関東学連OB（2014 - 2015年 水路部長）
