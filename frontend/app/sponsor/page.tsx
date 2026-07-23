@@ -60,12 +60,18 @@ export default function SponsorPage() {
           </p>
           <dl className={lpSummaryList}>
             <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>ライト</dt>
-              <dd className={lpSummaryDd}>月額 5,000円: 協賛名を掲載</dd>
+              <dt className={lpSummaryDt}>Bronze</dt>
+              <dd className={lpSummaryDd}>月額 3,000円: 協賛名を掲載</dd>
             </div>
             <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>スタンダード</dt>
-              <dd className={lpSummaryDd}>月額 10,000円: 協賛名+リンクを掲載</dd>
+              <dt className={lpSummaryDt}>Silver</dt>
+              <dd className={lpSummaryDd}>月額 5,000円: 協賛名+リンクを掲載</dd>
+            </div>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>Gold</dt>
+              <dd className={lpSummaryDd}>
+                月額 10,000円: 協賛名+リンクを先頭に掲載。協賛開始時にX(@regattanavi)でご紹介します
+              </dd>
             </div>
           </dl>
         </div>
