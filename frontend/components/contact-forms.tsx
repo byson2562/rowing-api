@@ -131,7 +131,7 @@ export function SponsorApplyForm() {
           </select>
         </label>
         <label className={lpContactLabel}>
-          協賛枠へのお名前の掲載
+          お名前の掲載
           <select className={lpContactInput} name="listing" value={listing} onChange={(event) => setListing(event.target.value)}>
             <option value="希望する">希望する</option>
             <option value="希望しない">希望しない</option>
