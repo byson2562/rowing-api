@@ -10,36 +10,30 @@ import {
   lpAuthorMetaDt,
   lpAuthorMetaLink,
   lpAuthorMetaRow,
-  lpDetail,
   lpDetailCard,
-  lpDetailTitle,
   lpDonationLinks,
-  lpFactBlock,
   lpFactBody,
-  lpFactGrid,
-  lpFactLabel,
   lpKicker,
   lpSummaryDd,
   lpSummaryDt,
   lpSummaryItem,
   lpSummaryList,
   lpSupportNote,
-  lpSupportTemplate,
   lpTechHeading
 } from "../../components/lp/lp-classes";
 import { getDatasetSummary } from "../../lib/results-data";
 
 export const metadata: Metadata = {
-  title: "スポンサー募集・寄付",
+  title: "応援のお願い（寄付・スポンサー）",
   description:
-    "レガッタナビのスポンサー募集ページ。企業・団体協賛の掲載メニューと、個人寄付の受付を案内しています。日本のローイング大会結果データベースの運営を支援いただけます。",
+    "レガッタナビは個人が運営する無料のローイング大会結果データベースです。運営を続けるための寄付と、企業・団体の協賛を受け付けています。",
   alternates: {
     canonical: "/sponsor"
   },
   openGraph: {
-    title: "スポンサー募集・寄付 | レガッタナビ",
+    title: "応援のお願い（寄付・スポンサー） | レガッタナビ",
     description:
-      "レガッタナビのスポンサー募集ページ。企業・団体協賛の掲載メニューと、個人寄付の受付を案内しています。",
+      "レガッタナビは個人が運営する無料のローイング大会結果データベースです。運営を続けるための寄付と、企業・団体の協賛を受け付けています。",
     url: "/sponsor"
   }
 };
@@ -67,102 +61,20 @@ export default function SponsorPage() {
     <main className="site-container lp-page">
       <section className="lp-hero">
         <div className="lp-hero-top">
-          <p className={lpKicker}>Sponsor レガッタナビ</p>
-          <h1>スポンサー募集</h1>
+          <p className={lpKicker}>Support レガッタナビ</p>
+          <h1>レガッタナビを応援してください</h1>
           <p className="lp-lead">
             レガッタナビは、全日本級{summary.competitionCategoryCount}大会・{totalCountLabel}
-            レースを収録する、日本のローイング大会結果データベースです。競技に関わる人が記録を調べられる環境を続けるため、企業・団体の協賛と個人の寄付を募集しています。
+            レースを収録する無料のデータベースです。サーバー代とデータ整備を個人でまかなって運営しています。続けていくために、応援していただける方を探しています。
           </p>
-          <div className="lp-hero-actions">
-            <ButtonLink
-              href="#contact"
-              data-ga-event="sponsor_inquiry_click"
-              data-ga-label="sponsor_hero_cta"
-              data-ga-location="/sponsor"
-            >
-              協賛の相談をする
-            </ButtonLink>
-            <ButtonLink href="/" variant="secondary">
-              サービスを見る
-            </ButtonLink>
-          </div>
         </div>
       </section>
 
-      <section aria-labelledby="sponsor-audience-heading">
-        <h2 id="sponsor-audience-heading" className="lp-section-title">届く相手</h2>
-        <dl className={lpFactGrid}>
-          <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>競技者・大学部員</dt>
-            <dd className={`ml-0 ${lpFactBody}`}>
-              自分や対戦相手の記録を調べに来る現役層。大会期間中はインカレ・全日本級のレース直後にアクセスが集中します。
-            </dd>
-          </div>
-          <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>OB・OG、指導者、ご家族</dt>
-            <dd className={`ml-0 ${lpFactBody}`}>
-              母校や教え子の結果を追う応援層。ボート関係者がほぼ100%という、他媒体にはない濃さが特徴です。
-            </dd>
-          </div>
-          <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>体育会学生に届けたい企業に</dt>
-            <dd className={`ml-0 ${lpFactBody}`}>
-              閲覧者の中心は大学ボート部の現役とOB・OG。体育会採用や競技用品・ウェアの案内が、狙った相手にそのまま届きます。
-            </dd>
-          </div>
-          <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>データの実績</dt>
-            <dd className={`ml-0 ${lpFactBody}`}>
-              全日本級{summary.competitionCategoryCount}大会・{summary.minYear}〜{summary.maxYear}年の
-              {totalCountLabel}レースを収録し、毎日自動更新。国内で唯一の横断データベースです。
-            </dd>
-          </div>
-        </dl>
-      </section>
-
-      <section className={lpDetail} aria-labelledby="sponsor-menu-heading">
-        <h2 id="sponsor-menu-heading" className={`lp-section-title ${lpDetailTitle}`}>企業・団体協賛</h2>
-        <article className={lpDetailCard}>
-          <h3>掲載メニュー</h3>
-          <dl className={lpSummaryList}>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>ライトプラン</dt>
-              <dd className={lpSummaryDd}>月額 5,000円: 全ページ共通のフッター協賛枠に協賛名を掲載</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>スタンダードプラン</dt>
-              <dd className={lpSummaryDd}>月額 10,000円: 協賛名にリンクを設定+記事末尾にも掲載</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>掲載開始まで</dt>
-              <dd className={lpSummaryDd}>お問い合わせ → 掲載内容の確認 → 掲載開始(最短3営業日)の3ステップです。</dd>
-            </div>
-          </dl>
-        </article>
-        <aside className={lpDetailCard}>
-          <h3>想定している協賛者</h3>
-          <dl className={lpSummaryList}>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>ボート関連</dt>
-              <dd className={lpSummaryDd}>艇・オール・ウェアなどの用品メーカー、販売店</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>大学・団体</dt>
-              <dd className={lpSummaryDd}>大学漕艇部OB・OG会、競技団体、レガッタ開催地の店舗・自治体</dd>
-            </div>
-            <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>採用・進路</dt>
-              <dd className={lpSummaryDd}>体育会学生の採用に取り組む企業・人材サービス</dd>
-            </div>
-          </dl>
-        </aside>
-      </section>
-
       <section aria-labelledby="sponsor-donation-heading">
-        <h2 id="sponsor-donation-heading" className="lp-section-title">個人の寄付</h2>
+        <h2 id="sponsor-donation-heading" className="lp-section-title">寄付で応援する</h2>
         <div className={lpDetailCard}>
           <p className={`mt-0 ${lpFactBody}`}>
-            ご支援は、レガッタナビの運用継続・データ更新・機能改善に充てます。金額にかかわらず、続ける力になります。
+            金額にかかわらず、続ける力になります。いただいた支援は運用費・データ更新・機能改善に充てます。
           </p>
           <div className={lpDonationLinks} aria-label="寄付リンク">
             {stripeLinks.length > 0 ? (
@@ -194,21 +106,31 @@ export default function SponsorPage() {
         </div>
       </section>
 
-      <section id="contact" aria-labelledby="sponsor-contact-heading" className="scroll-mt-16">
+      <section aria-labelledby="sponsor-corporate-heading">
+        <h2 id="sponsor-corporate-heading" className="lp-section-title">企業・団体の方へ</h2>
+        <div className={lpDetailCard}>
+          <p className={`mt-0 ${lpFactBody}`}>
+            協賛いただいた企業・団体は、全ページ共通のフッター協賛枠にお名前を掲載します。
+          </p>
+          <dl className={lpSummaryList}>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>ライト</dt>
+              <dd className={lpSummaryDd}>月額 5,000円: 協賛名を掲載</dd>
+            </div>
+            <div className={lpSummaryItem}>
+              <dt className={lpSummaryDt}>スタンダード</dt>
+              <dd className={lpSummaryDd}>月額 10,000円: 協賛名+リンクを掲載</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section aria-labelledby="sponsor-contact-heading">
         <h2 id="sponsor-contact-heading" className="lp-section-title">お問い合わせ</h2>
         <div className={lpAuthor}>
-          <h3>協賛問い合わせ文（コピー可）</h3>
-          <pre className={lpSupportTemplate}>
-{`件名: レガッタナビ 協賛のご相談
-
-レガッタナビ運営者様
-
-お世話になっております。<団体名> の <氏名> です。
-貴サービスの協賛について、掲載条件・開始時期をご相談したくご連絡しました。
-想定プランは <ライト/スタンダード> です。
-
-ご確認のほど、よろしくお願いいたします。`}
-          </pre>
+          <p className={`mt-0 ${lpFactBody}`}>
+            協賛のご相談・その他のお問い合わせは、フォームまたはメールでお気軽にどうぞ。
+          </p>
           <h3 className={lpTechHeading}>フォームから問い合わせる</h3>
           <SupportContactForm />
           <dl className={lpAuthorMeta}>
