@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
 
 import SiteHeader from "../components/SiteHeader";
+import { sponsors } from "../lib/sponsors";
 import { siteUrl } from "../lib/site-url";
 
 // 数字・欧文はInter（タイム表示の判読性・桁揃えが和文フォントの従属欧文より良い）、
@@ -114,6 +115,28 @@ export default function RootLayout({
         <SiteHeader />
         {children}
         <footer className="border-t border-rn-border bg-white/45">
+          {sponsors.length > 0 && (
+            <div className="mx-auto flex max-w-[1220px] flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-rn-border-soft px-3.5 py-2.5 md:px-6" aria-label="協賛">
+              <span className="text-[11px] font-medium text-rn-muted">協賛</span>
+              {sponsors.map((sponsor) =>
+                sponsor.url ? (
+                  <a
+                    key={sponsor.name}
+                    href={sponsor.url}
+                    target="_blank"
+                    rel="noopener sponsored"
+                    className="text-[12px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline"
+                  >
+                    {sponsor.name}
+                  </a>
+                ) : (
+                  <span key={sponsor.name} className="text-[12px] font-semibold text-[#33507a]">
+                    {sponsor.name}
+                  </span>
+                )
+              )}
+            </div>
+          )}
           <div className="mx-auto flex max-w-[1220px] flex-col items-start gap-2 px-3.5 py-2.5 md:flex-row md:items-center md:justify-between md:gap-3 md:px-6 md:py-3">
             <p className="m-0 text-[11px] text-[#4d6788] md:text-xs">
               © {new Date().getFullYear()} レガッタナビ
@@ -139,6 +162,9 @@ export default function RootLayout({
               </Link>
               <Link href="/articles" className={footerLinkClass}>
                 記事
+              </Link>
+              <Link href="/sponsor" className={footerLinkClass}>
+                スポンサー・寄付
               </Link>
               <a href="/feed.xml" className={footerLinkClass}>
                 RSS
@@ -182,7 +208,7 @@ export default function RootLayout({
                     }
 
                     function trackPageViews() {
-                      if (window.location.pathname === '/support') {
+                      if (window.location.pathname === '/sponsor') {
                         sendEvent('support_page_view', {
                           page_path: window.location.pathname,
                           page_title: document.title

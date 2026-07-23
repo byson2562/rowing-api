@@ -91,7 +91,7 @@ export default function PrivacyPage() {
         </h2>
         <div className={lpDetailCard}>
           <p>
-            <Link href="/support">サポートページ</Link>
+            <Link href="/sponsor">スポンサー・寄付ページ</Link>
             経由の寄付にはStripeの決済ページを利用しています。クレジットカード情報は当サイトでは取得・保持せず、Stripe社のプライバシーポリシーに基づいて処理されます。
           </p>
         </div>

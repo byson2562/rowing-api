@@ -70,7 +70,7 @@ export function SupportContactForm() {
           disabled={!canSubmit}
           data-ga-event="sponsor_inquiry_click"
           data-ga-label="support_contact_form_submit"
-          data-ga-location="/support"
+          data-ga-location="/sponsor"
         >
           メールで問い合わせる
         </Button>

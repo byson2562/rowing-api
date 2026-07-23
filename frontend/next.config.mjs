@@ -9,6 +9,12 @@ const nextConfig = {
         destination: "/about",
         permanent: true
       },
+      {
+        // 旧サポートページはスポンサー募集ページへ統合(2026-07)
+        source: "/support",
+        destination: "/sponsor",
+        permanent: true
+      },
       // 2021年のJARA表記変更に合わせて種目名を名寄せした際の旧URL救済
       ...[
         "男子ペア",
