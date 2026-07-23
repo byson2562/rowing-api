@@ -14,7 +14,8 @@ import {
   lpFactGrid,
   lpFactLabel,
   lpFactList,
-  lpH1Line
+  lpH1Line,
+  lpHeadingIcon
 } from "../../components/lp/lp-classes";
 import { getDatasetSummary } from "../../lib/results-data";
 
@@ -84,13 +85,13 @@ export default async function AboutPage() {
         <h2 id="about-data-heading" className="lp-section-title">データについて</h2>
         <dl className={lpFactGrid}>
           <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>収録範囲</dt>
+            <dt className={lpFactLabel}><img className={lpHeadingIcon} src="/icons/database.svg" alt="" width={18} height={18} />収録範囲</dt>
             <dd className={`ml-0 ${lpFactBody}`}>
               {coverageLabel}の{totalCountLabel}レース（Final B以上）を掲載しています。
             </dd>
           </div>
           <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>対象大会</dt>
+            <dt className={lpFactLabel}><img className={lpHeadingIcon} src="/icons/trophy.svg" alt="" width={18} height={18} />対象大会</dt>
             <dd className="ml-0">
               <ul className={lpFactList}>
                 <li>全日本ローイング選手権（全日本選手権）</li>
@@ -101,13 +102,13 @@ export default async function AboutPage() {
             </dd>
           </div>
           <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>更新方針</dt>
+            <dt className={lpFactLabel}><img className={lpHeadingIcon} src="/icons/refresh.svg" alt="" width={18} height={18} />更新方針</dt>
             <dd className={`ml-0 ${lpFactBody}`}>
               大会期間中はできるだけリアルタイム（1週間以内）を目安に反映します（結果の公開状況により遅れる場合があります）。
             </dd>
           </div>
           <div className={lpFactBlock}>
-            <dt className={lpFactLabel}>探し方</dt>
+            <dt className={lpFactLabel}><img className={lpHeadingIcon} src="/icons/search.svg" alt="" width={18} height={18} />探し方</dt>
             <dd className={`ml-0 ${lpFactBody}`}>
               年度別の<Link href="/results">大会結果一覧</Link>のほか、
               <Link href="/search">検索</Link>・<Link href="/organizations">団体別</Link>・
