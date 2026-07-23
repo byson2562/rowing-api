@@ -107,9 +107,12 @@ export default async function AboutPage() {
               <dd className={lpSummaryDd}>大会期間中はできるだけリアルタイム（1週間以内）を目安に反映します（結果の公開状況により遅れる場合があります）。</dd>
             </div>
             <div className={lpSummaryItem}>
-              <dt className={lpSummaryDt}>結果ページ</dt>
+              <dt className={lpSummaryDt}>探し方</dt>
               <dd className={lpSummaryDd}>
-                <Link href="/results">大会結果一覧</Link>から年度別にたどれます。
+                年度別の<Link href="/results">大会結果一覧</Link>のほか、
+                <Link href="/search">検索</Link>・<Link href="/organizations">団体別</Link>・
+                <Link href="/athletes">選手別</Link>・<Link href="/records">歴代記録</Link>
+                の各ページからたどれます。
               </dd>
             </div>
           </dl>
