@@ -269,9 +269,14 @@ th {
   max-width: 60ch;
   color: #4c6687;
   line-height: 1.72;
-  /* 日本語を文節境界で折り返す(未対応ブラウザでは normal にフォールバック) */
-  word-break: auto-phrase;
   text-wrap: pretty;
+}
+
+/* 文節境界での折り返しは幅に余裕のある画面だけ(狭い幅では行長がばらつくため) */
+@media (min-width: 640px) {
+  .lp-lead {
+    word-break: auto-phrase;
+  }
 }
 
 .lp-hero-actions {
