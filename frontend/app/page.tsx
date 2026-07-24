@@ -27,6 +27,16 @@ export const metadata: Metadata = {
   }
 };
 
+// ホームで見せる主要種目。全種目は大会ページに任せ、ここは「大会の顔」だけ並べる
+const FEATURED_EVENTS = [
+  "男子エイト",
+  "女子エイト",
+  "男子舵手つきフォア",
+  "女子舵手つきフォア",
+  "男子シングルスカル",
+  "女子シングルスカル"
+];
+
 // 最新結果ブロックの種目並び(花形のエイトを先頭に)
 const FEATURED_EVENT_ORDER = [
   "男子エイト",
@@ -58,18 +68,23 @@ const featuredTable =
 const featuredThead =
   "max-[640px]:absolute max-[640px]:h-px max-[640px]:w-px max-[640px]:overflow-hidden max-[640px]:[clip:rect(0_0_0_0)]";
 const featuredTbody = "max-[640px]:block";
+// <=640px は1種目1行。種目名の下に「団体 ・ タイム」を小さく並べる
 const featuredTr =
-  "max-[640px]:mb-2.5 max-[640px]:block max-[640px]:rounded-xl max-[640px]:border max-[640px]:border-[#d7e3f4] max-[640px]:bg-white max-[640px]:px-3.5 max-[640px]:py-1";
+  "max-[640px]:block max-[640px]:border-b max-[640px]:border-rn-border max-[640px]:py-2 max-[640px]:last:border-b-0";
 const featuredTh =
   "whitespace-nowrap border-b border-rn-border bg-rn-primary-soft px-2.5 py-2 text-left text-[13px] leading-[1.5] text-[#33507a]";
-const featuredTd =
+const featuredTdBase =
   "border-b border-rn-border px-2.5 py-2 text-left leading-[1.5] " +
-  "max-[640px]:flex max-[640px]:min-w-0 max-[640px]:items-baseline max-[640px]:justify-between max-[640px]:gap-3.5 " +
-  "max-[640px]:border-[#eef3fb] max-[640px]:px-0 max-[640px]:py-2 max-[640px]:text-right " +
-  "max-[640px]:last:border-b-0 " +
-  "max-[640px]:before:shrink-0 max-[640px]:before:text-left max-[640px]:before:font-bold " +
-  "max-[640px]:before:text-rn-muted max-[640px]:before:content-[attr(data-label)]";
-const featuredTdEvent = "font-bold text-[#24496f]";
+  "max-[640px]:block max-[640px]:border-b-0 max-[640px]:px-0 max-[640px]:py-0";
+// 種目名(1行目)
+const featuredTdEvent = `${featuredTdBase} font-bold text-[#24496f] max-[640px]:text-[13px]`;
+// 優勝団体(2行目・左)とタイム(2行目・右)。モバイルだけ1行に並べる
+const featuredTdCrew =
+  `${featuredTdBase} max-[640px]:mt-0.5 max-[640px]:inline-block max-[640px]:text-[13px] max-[640px]:text-rn-muted`;
+const featuredTdTime =
+  `${featuredTdBase} [font-variant-numeric:tabular-nums] ` +
+  "max-[640px]:mt-0.5 max-[640px]:inline-block max-[640px]:text-[13px] max-[640px]:text-rn-muted " +
+  "max-[640px]:before:mx-1.5 max-[640px]:before:text-[#adbfd8] max-[640px]:before:content-['・']";
 const featuredActions = "mt-[18px] flex flex-wrap gap-2.5";
 
 // ---- ホームの各セクション ----
@@ -96,7 +111,11 @@ async function buildFeatured() {
 
   const winners = latestYearRows
     .filter(
-      (r) => r.competition_name === latestComp && r.final_group === "Final A" && r.rank === 1
+      (r) =>
+        r.competition_name === latestComp &&
+        r.final_group === "Final A" &&
+        r.rank === 1 &&
+        FEATURED_EVENTS.includes(r.event_name)
     )
     .sort((a, b) => {
       const ia = FEATURED_EVENT_ORDER.indexOf(a.event_name);
@@ -208,9 +227,9 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
               <tbody className={featuredTbody}>
                 {featured.winners.map((w) => (
                   <tr key={w.event_name} className={featuredTr}>
-                    <td data-label="種目" className={`${featuredTd} ${featuredTdEvent}`}>{w.event_name}</td>
-                    <td data-label="優勝" className={featuredTd}>{w.crew_name}</td>
-                    <td data-label="タイム" className={featuredTd}>{w.time_display}</td>
+                    <td className={featuredTdEvent}>{w.event_name}</td>
+                    <td className={featuredTdCrew}>{w.crew_name}</td>
+                    <td className={featuredTdTime}>{w.time_display}</td>
                   </tr>
                 ))}
               </tbody>
