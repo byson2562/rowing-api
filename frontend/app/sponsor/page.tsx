@@ -19,6 +19,8 @@ import {
 
 // Stripe の決済リンク(レガッタナビ スポンサー 一口 年5,000円・数量1〜10)
 const SPONSOR_CHECKOUT_URL = "https://buy.stripe.com/dRmcN51H8fY47wT7Ct8N200";
+// Stripe カスタマーポータル(登録メールでログインし、解約・カード変更ができる)
+const SPONSOR_PORTAL_URL = "https://billing.stripe.com/p/login/dRmcN51H8fY47wT7Ct8N200";
 
 export const metadata: Metadata = {
   title: "スポンサー募集",
@@ -78,6 +80,19 @@ export default function SponsorPage() {
           </p>
           <p className="mt-3 mb-0 text-[14px] leading-[1.7] text-rn-text">
             企業・団体でのご協賛は、内容・金額とも個別にご相談ください。
+          </p>
+          <p className="mt-2.5 mb-0 text-[13px] leading-[1.7] text-rn-muted">
+            すでにご協賛いただいている方は{" "}
+            <a
+              className={lpAuthorMetaLink}
+              href={SPONSOR_PORTAL_URL}
+              data-ga-event="sponsor_portal_click"
+              data-ga-label="sponsor_billing_portal"
+              data-ga-location="/sponsor"
+            >
+              お支払い情報の管理・解約
+            </a>{" "}
+            からお手続きいただけます。
           </p>
         </div>
       </section>
