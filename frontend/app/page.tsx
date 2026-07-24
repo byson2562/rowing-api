@@ -108,7 +108,7 @@ async function buildFeatured() {
   return { latestYear, latestComp, winners };
 }
 
-// 直近の大会リスト(featuredの大会は除き、新しい順に最大6件)
+// 直近の大会リスト(featuredの大会は除き、新しい順に最大3件)
 async function buildRecentCompetitions(excludeYear: number, excludeComp: string) {
   const years = availableYears().sort((a, b) => b - a).slice(0, 3);
   const items: { year: number; competition: string }[] = [];
@@ -117,7 +117,7 @@ async function buildRecentCompetitions(excludeYear: number, excludeComp: string)
     for (const competition of competitionsByRecency(rows)) {
       if (year === excludeYear && competition === excludeComp) continue;
       items.push({ year, competition });
-      if (items.length >= 6) return items;
+      if (items.length >= 3) return items;
     }
   }
   return items;
@@ -147,7 +147,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
     : [];
   const latestArticles = [...articles]
     .sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1))
-    .slice(0, 2);
+    .slice(0, 3);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -233,7 +233,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
             <h2 id="home-recent-heading" className={homeSectionTitle}>直近の大会</h2>
             <Link href="/results" className={homeMoreLink}>過去の大会一覧 →</Link>
           </div>
-          <ul className="m-0 grid auto-rows-fr list-none gap-2.5 p-0 md:grid-cols-2">
+          <ul className="m-0 grid auto-rows-fr list-none gap-2.5 p-0 md:grid-cols-3">
             {recent.map(({ year, competition }) => (
               <li key={`${year}-${competition}`}>
                 <Link
@@ -255,7 +255,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
             <h2 id="home-articles-heading" className={homeSectionTitle}>記事</h2>
             <Link href="/articles" className={homeMoreLink}>記事一覧を見る →</Link>
           </div>
-          <div className="grid auto-rows-fr gap-2.5 md:grid-cols-2">
+          <div className="grid auto-rows-fr gap-2.5 md:grid-cols-3">
             {latestArticles.map((a) => (
               <article key={a.slug} className={`${homeCard} h-full`}>
                 <h3 className="m-0 text-[15px] leading-[1.5]">
