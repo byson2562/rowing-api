@@ -55,25 +55,27 @@ export default function ArticlesPage() {
         </div>
       </section>
 
-      <section aria-label="記事一覧">
-        <div className="grid gap-4">
+      <section aria-labelledby="articles-list-heading">
+        <h2 id="articles-list-heading" className="lp-section-title">記事一覧</h2>
+        {/* ヒーロー(白+枠線)と区別するため、カードはサイト共通の枠線なし+ソフト影 */}
+        <div className="mt-3.5 grid gap-3">
           {sorted.map((a) => (
             <article
-              className="rounded-2xl border border-[#d7e3f4] bg-white px-[22px] py-5"
+              className="rounded-xl bg-white p-[18px] shadow-rn-soft transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(16,42,80,0.1)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
               key={a.slug}
             >
-              <h2 className="m-0 text-[1.2rem] leading-[1.5]">
+              <p className="m-0 text-[12px] font-bold text-rn-muted [font-variant-numeric:tabular-nums]">
+                <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
+              </p>
+              <h3 className="mb-0 mt-1.5 text-[1.05rem] leading-[1.5]">
                 <Link
                   href={`/articles/${a.slug}`}
                   className="text-rn-brand no-underline hover:text-rn-primary hover:underline"
                 >
                   {a.title}
                 </Link>
-              </h2>
-              <p className="mb-0 mt-2.5 text-[13px] leading-[1.75] text-[#4c6687]">
-                <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
-              </p>
-              <p className="mb-0 mt-2.5 leading-[1.75] text-[#4c6687]">{a.description}</p>
+              </h3>
+              <p className="mb-0 mt-2 text-[14px] leading-[1.75] text-[#4c6687]">{a.description}</p>
             </article>
           ))}
         </div>
