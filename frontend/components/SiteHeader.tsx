@@ -113,7 +113,7 @@ function NavDropdown({
     <div className="relative">
       <button
         type="button"
-        className={`inline-flex items-center gap-1 text-[13px] font-medium ${linkColorClass}`}
+        className={`inline-flex cursor-pointer appearance-none items-center gap-1 border-0 bg-transparent p-0 font-[inherit] text-[13px] font-medium ${linkColorClass}`}
         aria-expanded={isOpen}
         aria-haspopup="true"
         onClick={onToggle}
@@ -122,7 +122,7 @@ function NavDropdown({
         <Caret open={isOpen} />
       </button>
       {isOpen && (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-20 min-w-[180px] rounded-rn-card border border-rn-border bg-white p-1.5 shadow-rn-soft">
+        <div className="absolute left-[-10px] top-[calc(100%+10px)] z-20 min-w-[184px] rounded-rn-card border border-rn-border bg-white p-1.5 shadow-rn-soft">
           {items.map((child) => (
             <Link
               key={child.href}
