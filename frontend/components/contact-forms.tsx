@@ -56,7 +56,7 @@ export function SponsorApplyForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [units, setUnits] = useState("1");
-  const [listing, setListing] = useState("希望する");
+  const [optOut, setOptOut] = useState(false);
   const [message, setMessage] = useState("");
   const [state, setState] = useState<SubmitState>("idle");
 
@@ -74,7 +74,7 @@ export function SponsorApplyForm() {
         `お名前: ${name.trim()}`,
         `メール: ${email.trim()}`,
         `口数: ${units}口(年${Number(units) * 5000}円)`,
-        `お名前の掲載: ${listing}`,
+        `お名前の掲載: ${optOut ? "希望しない" : "希望する"}`,
         "",
         "メッセージ:",
         message.trim() || "なし"
@@ -90,7 +90,7 @@ export function SponsorApplyForm() {
         name: name.trim(),
         email: email.trim(),
         units: `${units}口(年${Number(units) * 5000}円)`,
-        listing,
+        listing: optOut ? "希望しない" : "希望する",
         message: message.trim()
       });
       setState("sent");
@@ -119,25 +119,26 @@ export function SponsorApplyForm() {
           <input className={lpContactInput} type="email" name="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
         </label>
       </div>
-      <div className={lpContactGrid}>
-        <label className={lpContactLabel}>
-          口数（一口 年5,000円）
-          <select className={lpContactInput} name="units" value={units} onChange={(event) => setUnits(event.target.value)}>
-            {Array.from({ length: 10 }, (_, i) => `${i + 1}`).map((n) => (
-              <option key={n} value={n}>
-                {n}口（年{new Intl.NumberFormat("ja-JP").format(Number(n) * 5000)}円）
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={lpContactLabel}>
-          お名前の掲載
-          <select className={lpContactInput} name="listing" value={listing} onChange={(event) => setListing(event.target.value)}>
-            <option value="希望する">希望する</option>
-            <option value="希望しない">希望しない</option>
-          </select>
-        </label>
-      </div>
+      <label className={lpContactLabel}>
+        口数（一口 年5,000円）
+        <select className={lpContactInput} name="units" value={units} onChange={(event) => setUnits(event.target.value)}>
+          {Array.from({ length: 10 }, (_, i) => `${i + 1}`).map((n) => (
+            <option key={n} value={n}>
+              {n}口（年{new Intl.NumberFormat("ja-JP").format(Number(n) * 5000)}円）
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex items-center gap-2 text-[13px] font-medium text-[#365778]">
+        <input
+          type="checkbox"
+          name="listingOptOut"
+          checked={optOut}
+          onChange={(event) => setOptOut(event.target.checked)}
+          className="h-4 w-4 shrink-0 accent-rn-primary"
+        />
+        サイトへのお名前の掲載を希望しない
+      </label>
       <label className={lpContactLabel}>
         メッセージ（任意）
         <textarea className={lpContactTextarea} name="message" value={message} onChange={(event) => setMessage(event.target.value)} rows={4} />
