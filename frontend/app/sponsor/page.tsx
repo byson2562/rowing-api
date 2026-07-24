@@ -70,7 +70,11 @@ export default function SponsorPage() {
             </ButtonLink>
           </div>
           <p className="mt-2.5 mb-0 text-[13px] leading-[1.7] text-rn-muted">
-            口数は決済画面で選べます。毎年自動で更新され、いつでも解約できます。
+            口数は決済画面で選べます。毎年自動で更新され、いつでも解約できます。お支払いの条件は{" "}
+            <Link className={lpAuthorMetaLink} href="/legal">
+              特定商取引法に基づく表記
+            </Link>{" "}
+            をご確認ください。
           </p>
           <p className="mt-3 mb-0 text-[14px] leading-[1.7] text-rn-text">
             企業・団体でのご協賛は、内容・金額とも個別にご相談ください。

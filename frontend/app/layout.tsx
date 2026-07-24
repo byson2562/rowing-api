@@ -178,6 +178,9 @@ export default function RootLayout({
               <Link href="/privacy" className={footerLinkClass}>
                 プライバシーポリシー
               </Link>
+              <Link href="/legal" className={footerLinkClass}>
+                特定商取引法に基づく表記
+              </Link>
             </nav>
           </div>
         </footer>
