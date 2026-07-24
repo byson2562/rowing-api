@@ -1,17 +1,10 @@
 <svg width="64" height="64" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="r-bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0B2A57"/>
-      <stop offset="1" stop-color="#0F5EC7"/>
-    </linearGradient>
-  </defs>
-
-  <rect x="52" y="52" width="408" height="408" rx="96" fill="url(#r-bg)"/>
+  <rect x="52" y="52" width="408" height="408" rx="96" fill="#1D6EE0"/>
 
   <!-- 交差オール。ブレードはハチェット型(上辺は直線、下側の根元のみえぐれ)で左右ミラー配置 -->
   <g transform="translate(196 194) scale(-1 1) rotate(-52)">
-    <line x1="-268" y1="0" x2="2" y2="0" stroke="#8FC3FF" stroke-width="30" stroke-linecap="round"/>
-    <path d="M4 -18 L124 -36 L124 62 L38 49 Q28 20 4 16 Z" fill="#8FC3FF" stroke="#8FC3FF" stroke-width="12" stroke-linejoin="round"/>
+    <line x1="-268" y1="0" x2="2" y2="0" stroke="#BCD9FF" stroke-width="30" stroke-linecap="round"/>
+    <path d="M4 -18 L124 -36 L124 62 L38 49 Q28 20 4 16 Z" fill="#BCD9FF" stroke="#BCD9FF" stroke-width="12" stroke-linejoin="round"/>
   </g>
   <g transform="translate(316 194) rotate(-52)">
     <line x1="-268" y1="0" x2="2" y2="0" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round"/>

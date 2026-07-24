@@ -17,6 +17,42 @@ const NAV_LINKS = [
 
 const linkColorClass = "text-rn-link no-underline hover:underline hover:text-rn-primary";
 
+// ブランドマーク(交差オール)。public/favicon.svg と同一の図形をインライン化する
+function BrandMark() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="52 52 408 408"
+      className="shrink-0 rounded-[6px]"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect x="52" y="52" width="408" height="408" rx="96" fill="#1D6EE0" />
+      <g transform="translate(196 194) scale(-1 1) rotate(-52)">
+        <line x1="-268" y1="0" x2="2" y2="0" stroke="#BCD9FF" strokeWidth="30" strokeLinecap="round" />
+        <path
+          d="M4 -18 L124 -36 L124 62 L38 49 Q28 20 4 16 Z"
+          fill="#BCD9FF"
+          stroke="#BCD9FF"
+          strokeWidth="12"
+          strokeLinejoin="round"
+        />
+      </g>
+      <g transform="translate(316 194) rotate(-52)">
+        <line x1="-268" y1="0" x2="2" y2="0" stroke="#FFFFFF" strokeWidth="30" strokeLinecap="round" />
+        <path
+          d="M4 -18 L124 -36 L124 62 L38 49 Q28 20 4 16 Z"
+          fill="#FFFFFF"
+          stroke="#FFFFFF"
+          strokeWidth="12"
+          strokeLinejoin="round"
+        />
+      </g>
+    </svg>
+  );
+}
+
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
 
@@ -25,9 +61,10 @@ export default function SiteHeader() {
       <div className="mx-auto flex max-w-[1220px] items-center justify-between gap-3 px-3.5 py-2 md:px-6 md:py-2.5">
         <Link
           href="/"
-          className="text-[15px] font-extrabold tracking-[0.02em] text-rn-brand no-underline md:text-base"
+          className="flex items-center gap-2 text-[15px] font-extrabold tracking-[0.02em] text-rn-brand no-underline md:text-base"
           onClick={() => setOpen(false)}
         >
+          <BrandMark />
           レガッタナビ
         </Link>
 
