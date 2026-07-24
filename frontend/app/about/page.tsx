@@ -142,6 +142,9 @@ export default async function AboutPage() {
             <ButtonLink href="/contact" variant="secondary">
               お問い合わせ
             </ButtonLink>
+            <ButtonLink href="/sponsor" variant="secondary">
+              スポンサー募集
+            </ButtonLink>
           </div>
         </div>
       </section>
