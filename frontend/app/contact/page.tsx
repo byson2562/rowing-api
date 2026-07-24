@@ -60,6 +60,16 @@ export default function ContactPage() {
               </dd>
             </div>
             <div className={lpAuthorMetaRow}>
+              <dt className={lpAuthorMetaDt}>協賛</dt>
+              <dd className={lpAuthorMetaDd}>
+                運営を支援いただける方は{" "}
+                <Link className={lpAuthorMetaLink} href="/sponsor">
+                  スポンサー募集
+                </Link>{" "}
+                をご覧ください。
+              </dd>
+            </div>
+            <div className={lpAuthorMetaRow}>
               <dt className={lpAuthorMetaDt}>運営者</dt>
               <dd className={lpAuthorMetaDd}>
                 <Link className={lpAuthorMetaLink} href="/about">
