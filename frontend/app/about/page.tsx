@@ -139,11 +139,8 @@ export default async function AboutPage() {
             </div>
           </dl>
           <div className="lp-hero-actions">
-            <ButtonLink
-              href="mailto:takumi.nakamura.by@gmail.com?subject=%E3%83%AC%E3%82%AC%E3%83%83%E3%82%BF%E3%83%8A%E3%83%93%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6"
-              variant="secondary"
-            >
-              メールで問い合わせる
+            <ButtonLink href="/contact" variant="secondary">
+              お問い合わせ
             </ButtonLink>
           </div>
         </div>
