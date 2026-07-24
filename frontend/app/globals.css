@@ -269,6 +269,9 @@ th {
   max-width: 60ch;
   color: #4c6687;
   line-height: 1.72;
+  /* 日本語を文節境界で折り返す(未対応ブラウザでは normal にフォールバック) */
+  word-break: auto-phrase;
+  text-wrap: pretty;
 }
 
 .lp-hero-actions {
@@ -302,9 +305,10 @@ th {
   box-shadow: 0 8px 20px rgba(18, 40, 70, 0.12);
 }
 
-/* 広い画面ではコピーとプレビューを左右2カラムに(右側の空洞化を防ぐ) */
+/* 広い画面ではコピーとプレビューを左右2カラムに(右側の空洞化を防ぐ)。
+   プレビューを持たないヒーロー(記事・スポンサー等)は1カラムのままにする */
 @media (min-width: 960px) {
-  .lp-hero {
+  .lp-hero:has(.lp-hero-preview-link) {
     display: grid;
     grid-template-columns: minmax(0, 10fr) minmax(0, 11fr);
     gap: 32px;
