@@ -511,6 +511,71 @@ th {
   background: #f2f8ff;
 }
 
+/* モバイルは横スクロールをやめ、1行=1カードに積む(各tdのdata-labelを見出しに使う) */
+@media (max-width: 640px) {
+  .static-table-wrap {
+    overflow-x: visible;
+  }
+
+  .static-table {
+    display: block;
+  }
+
+  /* table を block 化すると caption(table-caption)が縦潰れするので block に戻す */
+  .static-table-caption {
+    display: block;
+  }
+
+  .static-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .static-table tbody {
+    display: block;
+  }
+
+  .static-table tbody tr {
+    display: block;
+    margin-bottom: 10px;
+    padding: 4px 14px;
+    border: 1px solid #d7e3f4;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  .static-table tbody tr:hover {
+    background: #ffffff;
+  }
+
+  .static-table td {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    min-width: 0;
+    padding: 8px 0;
+    border-bottom: 1px solid #eef3fb;
+    text-align: right;
+    white-space: normal;
+  }
+
+  .static-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .static-table td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: left;
+  }
+}
+
 .static-more {
   margin: 12px 0 0;
   font-size: 14px;

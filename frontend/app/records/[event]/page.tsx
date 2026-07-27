@@ -145,22 +145,22 @@ export default async function EventRecordsPage({ params }: { params: Params }) {
             <tbody>
               {ranking.map((row, index) => (
                 <tr key={row.id}>
-                  <td>{index + 1}</td>
-                  <td>{row.time_display}</td>
-                  <td>
+                  <td data-label="歴代">{index + 1}</td>
+                  <td data-label="タイム">{row.time_display}</td>
+                  <td data-label="クルー">
                     {isAthleteRecord(row) ? (
                       <Link href={`/athletes/${encodeURIComponent(row.crew_name)}`}>{row.crew_name}</Link>
                     ) : (
                       row.crew_name
                     )}
                   </td>
-                  <td>
+                  <td data-label="団体">
                     <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>
                       {row.organization}
                     </Link>
                   </td>
-                  <td>{row.year}</td>
-                  <td>
+                  <td data-label="年">{row.year}</td>
+                  <td data-label="大会">
                     <Link href={`/results/${row.year}/${encodeURIComponent(row.competition_name)}`}>
                       {row.competition_name}
                     </Link>

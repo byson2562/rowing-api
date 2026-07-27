@@ -156,12 +156,12 @@ export default async function AthletePage({ params }: { params: Params }) {
             <tbody>
               {bestRows.map((row) => (
                 <tr key={row.event_name}>
-                  <td>
+                  <td data-label="種目">
                     <Link href={`/records/${encodeURIComponent(row.event_name)}`}>{row.event_name}</Link>
                   </td>
-                  <td>{row.time_display}</td>
-                  <td>{row.year}</td>
-                  <td>
+                  <td data-label="自己ベスト">{row.time_display}</td>
+                  <td data-label="年">{row.year}</td>
+                  <td data-label="大会">
                     <Link href={`/results/${row.year}/${encodeURIComponent(row.competition_name)}`}>
                       {row.competition_name}
                     </Link>
@@ -192,17 +192,17 @@ export default async function AthletePage({ params }: { params: Params }) {
             <tbody>
               {history.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.year}</td>
-                  <td>
+                  <td data-label="年">{row.year}</td>
+                  <td data-label="大会">
                     <Link href={`/results/${row.year}/${encodeURIComponent(row.competition_name)}`}>
                       {row.competition_name}
                     </Link>
                   </td>
-                  <td>{row.event_name}</td>
-                  <td>{row.final_group}</td>
-                  <td>{row.rank}</td>
-                  <td>{row.time_display}</td>
-                  <td>
+                  <td data-label="種目">{row.event_name}</td>
+                  <td data-label="組">{row.final_group}</td>
+                  <td data-label="順位">{row.rank}</td>
+                  <td data-label="タイム">{row.time_display}</td>
+                  <td data-label="所属">
                     <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>
                       {row.organization}
                     </Link>

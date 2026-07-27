@@ -173,20 +173,20 @@ export default async function CompetitionResultsPage({ params }: { params: Param
               <tbody>
                 {(rowsByEvent.get(eventName) ?? []).map((row) => (
                   <tr key={row.id}>
-                    <td>{row.rank}</td>
-                    <td>
+                    <td data-label="順位">{row.rank}</td>
+                    <td data-label="クルー">
                       {isAthleteRecord(row) ? (
                         <Link href={`/athletes/${encodeURIComponent(row.crew_name)}`}>{row.crew_name}</Link>
                       ) : (
                         row.crew_name
                       )}
                     </td>
-                    <td>
+                    <td data-label="団体">
                       <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>
                         {row.organization}
                       </Link>
                     </td>
-                    <td>{row.time_display}</td>
+                    <td data-label="タイム">{row.time_display}</td>
                   </tr>
                 ))}
               </tbody>

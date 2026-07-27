@@ -114,12 +114,12 @@ export default async function RecordsIndexPage() {
                   const best = bestByEvent.get(name);
                   return (
                     <tr key={name}>
-                      <td>
+                      <td data-label="種目">
                         <Link href={`/records/${encodeURIComponent(name)}`}>{name}</Link>
                       </td>
-                      <td>{best?.time_display ?? "-"}</td>
-                      <td>{best?.organization ?? "-"}</td>
-                      <td>{best?.year ?? "-"}</td>
+                      <td data-label="最速タイム">{best?.time_display ?? "-"}</td>
+                      <td data-label="団体">{best?.organization ?? "-"}</td>
+                      <td data-label="年">{best?.year ?? "-"}</td>
                     </tr>
                   );
                 })}

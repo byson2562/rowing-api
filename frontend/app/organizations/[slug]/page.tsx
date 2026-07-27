@@ -188,12 +188,12 @@ export default async function OrganizationPage({ params }: { params: Params }) {
             <tbody>
               {bestRows.map((row) => (
                 <tr key={row.event_name}>
-                  <td>
+                  <td data-label="種目">
                     <Link href={`/records/${encodeURIComponent(row.event_name)}`}>{row.event_name}</Link>
                   </td>
-                  <td>{row.time_display}</td>
-                  <td>{row.year}</td>
-                  <td>
+                  <td data-label="ベストタイム">{row.time_display}</td>
+                  <td data-label="年">{row.year}</td>
+                  <td data-label="大会">
                     <Link href={`/results/${row.year}/${encodeURIComponent(row.competition_name)}`}>
                       {row.competition_name}
                     </Link>
@@ -222,13 +222,13 @@ export default async function OrganizationPage({ params }: { params: Params }) {
             <tbody>
               {yearSummaries.map((summary) => (
                 <tr key={summary.year}>
-                  <td>
+                  <td data-label="年">
                     <Link href={`/results/${summary.year}`}>{summary.year}</Link>
                   </td>
-                  <td>{summary.count}</td>
-                  <td>{summary.gold}</td>
-                  <td>{summary.silver}</td>
-                  <td>{summary.bronze}</td>
+                  <td data-label="記録数">{summary.count}</td>
+                  <td data-label="優勝">{summary.gold}</td>
+                  <td data-label="2位">{summary.silver}</td>
+                  <td data-label="3位">{summary.bronze}</td>
                 </tr>
               ))}
             </tbody>

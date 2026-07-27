@@ -176,14 +176,14 @@ export default async function CompetitionEventPage({ params }: { params: Params 
                   .filter((row) => row.final_group === group)
                   .map((row) => (
                     <tr key={row.id}>
-                      <td>{row.rank}</td>
-                      <td>{crewCell(row)}</td>
-                      <td>
+                      <td data-label="順位">{row.rank}</td>
+                      <td data-label="クルー">{crewCell(row)}</td>
+                      <td data-label="団体">
                         <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>
                           {row.organization}
                         </Link>
                       </td>
-                      <td>{row.time_display}</td>
+                      <td data-label="タイム">{row.time_display}</td>
                     </tr>
                   ))}
               </tbody>

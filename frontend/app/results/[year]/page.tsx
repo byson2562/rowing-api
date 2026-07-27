@@ -132,10 +132,10 @@ export default async function YearResultsPage({ params }: { params: Params }) {
               <tbody>
                 {section.champions.map((row) => (
                   <tr key={row.id}>
-                    <td>{row.event_name}</td>
-                    <td>{row.crew_name}</td>
-                    <td>{row.organization}</td>
-                    <td>{row.time_display}</td>
+                    <td data-label="種目">{row.event_name}</td>
+                    <td data-label="優勝クルー">{row.crew_name}</td>
+                    <td data-label="団体">{row.organization}</td>
+                    <td data-label="タイム">{row.time_display}</td>
                   </tr>
                 ))}
               </tbody>
