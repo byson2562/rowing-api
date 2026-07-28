@@ -60,12 +60,12 @@ const FEATURED_EVENT_ORDER = [
 // ---- 最新の大会結果テーブル(旧 .home-featured-*)のTailwindクラス ----
 // 記事テーブル(article-classes.ts)と同じカード積みパターン。<=640pxで
 // thead を視覚的に隠し、行を data-label 付きカードに積む。
-const featuredCard = "rounded-rn-card bg-white px-6 pb-6 pt-[22px] shadow-rn-soft";
-const featuredKicker = "m-0 text-[12px] font-extrabold tracking-[0.06em] text-[#2f66b8]";
-const featuredHeading =
-  "mb-0 mt-1.5 text-[clamp(1.3rem,3vw,1.8rem)] leading-[1.3] text-rn-brand";
+// 見出しをカード外に出したので、他セクションのカードと同じ寸法に揃える
+const featuredCard = "rounded-xl bg-white p-[18px] shadow-rn-soft";
+// 大会名はセクション見出し(h1)の下に来るカード表題
+const featuredHeading = "mb-0 mt-0 text-[1.05rem] leading-[1.45] text-rn-brand";
 const featuredYear = "ml-2.5 text-[0.7em] font-bold text-[#4c6687]";
-const featuredTableWrap = "mt-4 overflow-x-auto max-[640px]:overflow-visible";
+const featuredTableWrap = "mt-3 overflow-x-auto max-[640px]:overflow-visible";
 const featuredTable =
   "mt-0 w-full text-[14px] max-[640px]:block max-[640px]:min-w-0";
 const featuredThead =
@@ -217,39 +217,47 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {featured && (
-        <section className={featuredCard} aria-labelledby="home-featured-heading">
-          <p className={featuredKicker}>最新の大会結果</p>
-          <h1 id="home-featured-heading" className={featuredHeading}>
-            {featured.latestComp}
-            <span className={featuredYear}>{featured.latestYear}年</span>
-          </h1>
-          <div className={featuredTableWrap}>
-            <table className={featuredTable}>
-              <thead className={featuredThead}>
-                <tr>
-                  <th scope="col" className={featuredTh}>種目</th>
-                  <th scope="col" className={featuredTh}>優勝</th>
-                  <th scope="col" className={featuredTh}>タイム</th>
-                </tr>
-              </thead>
-              <tbody className={featuredTbody}>
-                {featured.winners.map((w) => (
-                  <tr key={w.event_name} className={featuredTr}>
-                    <td className={featuredTdEvent}>{w.event_name}</td>
-                    <td className={featuredTdCrew}>{w.crew_name}</td>
-                    <td className={featuredTdTime}>{w.time_display}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <section aria-labelledby="home-featured-heading">
+          {/* 見出しは他セクション(直近の大会/記事)と同じ言語。カードの外に出す */}
+          <div className={homeSectionHead}>
+            <h1 id="home-featured-heading" className={homeSectionTitle}>
+              <img className={lpHeadingIcon} src="/icons/trophy.svg" alt="" width={18} height={18} />
+              最新のローイング大会結果
+            </h1>
           </div>
-          <div className={featuredActions}>
-            <ButtonLink href={`/results/${featured.latestYear}/${encodeURIComponent(featured.latestComp)}`}>
-              この大会の全結果
-            </ButtonLink>
-            <ButtonLink href="/search" variant="secondary">
-              記録を検索する
-            </ButtonLink>
+          <div className={featuredCard}>
+            <h2 className={featuredHeading}>
+              {featured.latestComp}
+              <span className={featuredYear}>{featured.latestYear}年</span>
+            </h2>
+            <div className={featuredTableWrap}>
+              <table className={featuredTable}>
+                <thead className={featuredThead}>
+                  <tr>
+                    <th scope="col" className={featuredTh}>種目</th>
+                    <th scope="col" className={featuredTh}>優勝</th>
+                    <th scope="col" className={featuredTh}>タイム</th>
+                  </tr>
+                </thead>
+                <tbody className={featuredTbody}>
+                  {featured.winners.map((w) => (
+                    <tr key={w.event_name} className={featuredTr}>
+                      <td className={featuredTdEvent}>{w.event_name}</td>
+                      <td className={featuredTdCrew}>{w.crew_name}</td>
+                      <td className={featuredTdTime}>{w.time_display}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className={featuredActions}>
+              <ButtonLink href={`/results/${featured.latestYear}/${encodeURIComponent(featured.latestComp)}`}>
+                この大会の全結果
+              </ButtonLink>
+              <ButtonLink href="/search" variant="secondary">
+                記録を検索する
+              </ButtonLink>
+            </div>
           </div>
         </section>
       )}
