@@ -221,7 +221,7 @@ export default async function AthletePage({ params }: { params: Params }) {
 
       <p className="static-cta">
         個別のレース結果は
-        <Link href={`/?${new URLSearchParams({ q: name }).toString()}`}>記録検索ページで{name}選手を検索する</Link>
+        <Link href={`/search?${new URLSearchParams({ q: name }).toString()}`}>記録検索ページで{name}選手を検索する</Link>
         と確認できます。
       </p>
     </main>

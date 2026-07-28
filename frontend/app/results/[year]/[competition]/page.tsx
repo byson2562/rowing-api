@@ -198,7 +198,7 @@ export default async function CompetitionResultsPage({ params }: { params: Param
 
       <p className="static-cta">
         予選・敗者復活戦を含む全結果は
-        <Link href={`/?${searchQuery}`}>記録検索ページでこの大会を開く</Link>
+        <Link href={`/search?${searchQuery}`}>記録検索ページでこの大会を開く</Link>
         と確認できます。
       </p>
     </main>

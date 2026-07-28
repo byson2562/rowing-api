@@ -174,7 +174,7 @@ export default async function EventRecordsPage({ params }: { params: Params }) {
 
       <p className="static-cta">
         {event}の全レース結果は
-        <Link href={`/?${new URLSearchParams({ event }).toString()}`}>記録検索ページでこの種目を開く</Link>
+        <Link href={`/search?${new URLSearchParams({ event }).toString()}`}>記録検索ページでこの種目を開く</Link>
         と確認できます。
       </p>
     </main>

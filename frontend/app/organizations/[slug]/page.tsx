@@ -238,7 +238,7 @@ export default async function OrganizationPage({ params }: { params: Params }) {
 
       <p className="static-cta">
         個別のレース結果は
-        <Link href={`/?${new URLSearchParams({ organization }).toString()}`}>
+        <Link href={`/search?${new URLSearchParams({ organization }).toString()}`}>
           記録検索ページで{organization}の記録を開く
         </Link>
         と確認できます。

@@ -107,7 +107,10 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
     title,
     description,
     alternates: canonical ? { canonical } : undefined,
-    robots: filters.q ? { index: false, follow: true } : undefined,
+    // 対応する静的ページがない絞り込み(canonical=null)は組み合わせが事実上無限に増える。
+    // canonicalもrobotsも出さないとGoogleに「重複・正規ページ未選択」と判定されるため、
+    // 明示的にnoindexにして意図的な除外として扱わせる(リンクはfollowさせる)
+    robots: canonical === null || filters.q ? { index: false, follow: true } : undefined,
     openGraph: {
       type: "website",
       locale: "ja_JP",

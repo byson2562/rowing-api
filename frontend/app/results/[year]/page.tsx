@@ -156,7 +156,7 @@ export default async function YearResultsPage({ params }: { params: Params }) {
 
       <p className="static-cta">
         種目・団体・順位などで絞り込む場合は
-        <Link href={`/?year=${year}`}>{year}年の記録を検索ページで開く</Link>
+        <Link href={`/search?year=${year}`}>{year}年の記録を検索ページで開く</Link>
         こともできます。
       </p>
     </main>
