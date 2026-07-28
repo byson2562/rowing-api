@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { lpDetail, lpDetailCard, lpDetailTitle } from "../../components/lp/lp-classes";
+import { ogImages } from "../../lib/og-image";
 
 export const metadata: Metadata = {
   title: "プライバシーポリシー",
@@ -14,7 +15,8 @@ export const metadata: Metadata = {
     title: "プライバシーポリシー | レガッタナビ",
     description:
       "レガッタナビのプライバシーポリシー。アクセス解析・広告・掲載データの取り扱いと、訂正・削除依頼の窓口を案内しています。",
-    url: "/privacy"
+    url: "/privacy",
+    images: ogImages("プライバシーポリシー", "レガッタナビ")
   }
 };
 
