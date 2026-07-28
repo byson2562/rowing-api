@@ -266,7 +266,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         <section aria-labelledby="home-recent-heading">
           <div className={homeSectionHead}>
             <h2 id="home-recent-heading" className={homeSectionTitle}>
-              <img className={lpHeadingIcon} src="/icons/trophy.svg" alt="" width={18} height={18} />
+              <img className={lpHeadingIcon} src="/icons/calendar.svg" alt="" width={18} height={18} />
               直近の大会
             </h2>
             <Link href="/results" className={homeMoreLink}>過去の大会一覧 →</Link>
