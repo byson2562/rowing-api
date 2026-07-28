@@ -19,6 +19,16 @@ export function ogImageUrl(title?: string, subtitle?: string): string {
 }
 
 /**
+ * 記事タイトル「主題 | 補足」を og画像のタイトル/サブタイトルへ割り当てる。
+ * 記事一覧のサムネイルと記事のOGPで同じ絵柄を使うためのヘルパー。
+ */
+export function articleOgImageUrl(articleTitle: string): string {
+  const [main, ...rest] = articleTitle.split("|");
+  const subtitle = rest.join("|").trim();
+  return ogImageUrl(main.trim(), subtitle || undefined);
+}
+
+/**
  * metadata.openGraph.images にそのまま渡せる形。
  * Next.jsのmetadataはopenGraphをオブジェクト単位で置換するため、
  * ページ側でopenGraphを定義する場合はimagesも必ず自分で指定する必要がある。

@@ -10,7 +10,8 @@ import {
   getFilteredResults
 } from "../lib/results-data";
 import { siteUrl } from "../lib/site-url";
-import { ogImages } from "../lib/og-image";
+import { articleOgImageUrl, ogImages } from "../lib/og-image";
+import { lpHeadingIcon } from "../components/lp/lp-classes";
 
 export const metadata: Metadata = {
   // ルートセグメントでは layout の title.template が適用されないため、接尾辞まで明示する
@@ -101,6 +102,11 @@ const homeMoreLink =
   "text-[13px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline";
 // カードはサイト共通のボーダーレス+ソフト影
 const homeCard = "rounded-xl bg-white p-[18px] shadow-rn-soft";
+// 記事カードのサムネイル(OGP画像を流用。カード内padding内に収める)
+const homeArticleThumbLink = "mb-3 block no-underline";
+// preflightが効かない環境なので height:auto を明示する(w-fullだけだと縦が潰れない)
+const homeArticleThumb =
+  "block h-auto w-full rounded-[8px] border border-rn-border-soft";
 
 // 着地時の主役として出す「最新の大会結果」。最新年の直近大会のFinal A優勝を並べる
 async function buildFeatured() {
@@ -251,7 +257,10 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
       {recent.length > 0 && (
         <section aria-labelledby="home-recent-heading">
           <div className={homeSectionHead}>
-            <h2 id="home-recent-heading" className={homeSectionTitle}>直近の大会</h2>
+            <h2 id="home-recent-heading" className={homeSectionTitle}>
+              <img className={lpHeadingIcon} src="/icons/trophy.svg" alt="" width={18} height={18} />
+              直近の大会
+            </h2>
             <Link href="/results" className={homeMoreLink}>過去の大会一覧 →</Link>
           </div>
           <ul className="m-0 grid auto-rows-fr list-none gap-2.5 p-0 md:grid-cols-3">
@@ -273,12 +282,32 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
       {latestArticles.length > 0 && (
         <section aria-labelledby="home-articles-heading">
           <div className={homeSectionHead}>
-            <h2 id="home-articles-heading" className={homeSectionTitle}>記事</h2>
+            <h2 id="home-articles-heading" className={homeSectionTitle}>
+              <img className={lpHeadingIcon} src="/icons/article.svg" alt="" width={18} height={18} />
+              記事
+            </h2>
             <Link href="/articles" className={homeMoreLink}>記事一覧を見る →</Link>
           </div>
           <div className="grid auto-rows-fr gap-2.5 md:grid-cols-3">
             {latestArticles.map((a) => (
               <article key={a.slug} className={`${homeCard} h-full`}>
+                {/* サムネイルはOGP画像(/og)の使い回し。見出しのリンクと重複するため
+                    スクリーンリーダー・タブ移動からは外し、視覚的なクリック領域だけ広げる */}
+                <Link
+                  href={`/articles/${a.slug}`}
+                  className={homeArticleThumbLink}
+                  aria-hidden="true"
+                  tabIndex={-1}
+                >
+                  <img
+                    src={articleOgImageUrl(a.title)}
+                    alt=""
+                    width={1200}
+                    height={630}
+                    loading="lazy"
+                    className={homeArticleThumb}
+                  />
+                </Link>
                 <h3 className="m-0 text-[15px] leading-[1.5]">
                   <Link
                     href={`/articles/${a.slug}`}
@@ -301,7 +330,10 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         aria-labelledby="home-search-heading"
         className="rounded-rn-card border border-rn-border-soft bg-rn-surface-soft p-6"
       >
-        <h2 id="home-search-heading" className={homeSectionTitle}>記録を検索する</h2>
+        <h2 id="home-search-heading" className={homeSectionTitle}>
+          <img className={lpHeadingIcon} src="/icons/search.svg" alt="" width={18} height={18} />
+          記録を検索する
+        </h2>
         <p className="mb-0 mt-3 leading-[1.7] text-rn-muted">
           年度・大会・種目・団体を組み合わせて、目的のレース結果を検索できます。種目ごとの優勝タイム推移や、団体別のメダル数も確認できます。
         </p>
