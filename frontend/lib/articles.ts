@@ -11,6 +11,13 @@ export type ArticleMeta = {
 
 export const articles: ArticleMeta[] = [
   {
+    slug: "rowing-glossary",
+    title: "ローイング用語集 | 種目・大会・練習でよく出る言葉",
+    description:
+      "ボート部に入ったばかりの人向けに、ローイングの専門用語をまとめました。スイープとスカルの違い、「4+」の読み方、Final AとB、エルゴやレートまで。種目ごとの最速タイムも収録データから載せています。",
+    publishedAt: "2026-07-29"
+  },
+  {
     slug: "university-championship-guide",
     title: "全日本大学ローイング選手権(インカレ)とは | 2026年の日程・種目・歴代優勝校",
     description:
