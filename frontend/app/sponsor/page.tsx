@@ -6,11 +6,7 @@ import ButtonLink from "../../components/ui/ButtonLink";
 import { ogImages } from "../../lib/og-image";
 import {
   lpAuthor,
-  lpAuthorMeta,
-  lpAuthorMetaDd,
-  lpAuthorMetaDt,
   lpAuthorMetaLink,
-  lpAuthorMetaRow,
   lpDetailCard,
   lpKicker,
   lpSummaryDd,
@@ -80,9 +76,6 @@ export default function SponsorPage() {
             </Link>{" "}
             をご確認ください。
           </p>
-          <p className="mt-3 mb-0 text-[14px] leading-[1.7] text-rn-text">
-            企業・団体でのご協賛は、内容・金額とも個別にご相談ください。
-          </p>
           <p className="mt-2.5 mb-0 text-[13px] leading-[1.7] text-rn-muted">
             すでにご協賛いただいている方は{" "}
             <a
@@ -106,18 +99,20 @@ export default function SponsorPage() {
             カード決済をご利用にならない場合は、こちらのフォームからご連絡ください。振込先をメールでお送りします。
           </p>
           <SponsorApplyForm />
-          <dl className={lpAuthorMeta}>
-            <div className={lpAuthorMetaRow}>
-              <dt className={lpAuthorMetaDt}>その他</dt>
-              <dd className={lpAuthorMetaDd}>
-                企業・団体でのご協賛のご相談や、スポンサー以外のご用件は{" "}
-                <Link className={lpAuthorMetaLink} href="/contact">
-                  お問い合わせ
-                </Link>{" "}
-                からお願いします。
-              </dd>
-            </div>
-          </dl>
+        </div>
+      </section>
+
+      <section aria-labelledby="sponsor-corporate-heading">
+        <h2 id="sponsor-corporate-heading" className="lp-section-title">企業・団体でのご協賛</h2>
+        <div className={lpAuthor}>
+          <p className="mt-0 mb-0 text-[14px] leading-[1.7] text-rn-text">
+            内容・金額とも個別にご相談ください。掲載の方法についても、ご要望をうかがったうえで検討します。スポンサー以外のご用件も同じ窓口で承ります。
+          </p>
+          <div className="lp-hero-actions">
+            <ButtonLink href="/contact" variant="secondary">
+              お問い合わせ
+            </ButtonLink>
+          </div>
         </div>
       </section>
     </main>
