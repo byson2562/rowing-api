@@ -4,7 +4,12 @@ import Link from "next/link";
 import { allResults } from "../../../lib/results-data";
 import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
+import { BoatPartsFigure, CrewLayoutFigure, ScullFigure, SweepFigure } from "../../../components/article/glossary-figures";
 import {
+  articleFigure,
+  articleFigureCaption,
+  articleFigureFrame,
+  articleFigureRow,
   articleMeta,
   articleNote,
   articleNoteList,
@@ -132,6 +137,18 @@ export default async function RowingGlossary() {
           エイト、フォア、ペアはスイープ。シングルスカル、ダブルスカル、クォドルプルはスカル。名前に「スカル」と付いていないのにスカル種目なのがクォドルプル(舵手つきクォドルプルも同じ)。ここは最初に戸惑うところです。
         </p>
 
+        <figure className={articleFigure}>
+          <div className={articleFigureFrame}>
+            <div className={articleFigureRow}>
+              <SweepFigure />
+              <ScullFigure />
+            </div>
+          </div>
+          <figcaption className={articleFigureCaption}>
+            どちらも2人乗り(ペアとダブルスカル)を真上から見た図。持つオールの本数だけが違います。
+          </figcaption>
+        </figure>
+
         <h2>種目の一覧</h2>
         <p>
           全日本級の大会で行われる主な13種目です。タイムは当サイトが収録している2009年以降・全日本級5大会の中での最速。国内の公式記録ではなく、あくまで収録範囲での数字です。種目名をクリックすると歴代の記録一覧に飛べます。
@@ -184,6 +201,15 @@ export default async function RowingGlossary() {
         </p>
         <p>整調がリズムを作り、ほかの漕手はその漕ぎに合わせます。</p>
 
+        <figure className={articleFigure}>
+          <div className={articleFigureFrame}>
+            <CrewLayoutFigure />
+          </div>
+          <figcaption className={articleFigureCaption}>
+            舵手つきフォアの標準的な組み方。整調がストロークサイドに入る形です(バウサイド整調ではオールの左右が入れ替わります)。エイトなら同じ並びで8番まで続きます。
+          </figcaption>
+        </figure>
+
         <h2>ストロークサイドとバウサイド</h2>
         <p>
           スイープでは1人が左右どちらか一方にオールを出します。この左右にも名前があり、進行方向に向かって
@@ -204,6 +230,15 @@ export default async function RowingGlossary() {
           <strong>シート</strong>は座席で、レールの上を前後に滑ります(スライド)。足を固定する台が
           <strong>ストレッチャー</strong>、オールの先端、水を掻く平たい部分が<strong>ブレード</strong>。
         </p>
+
+        <figure className={articleFigure}>
+          <div className={articleFigureFrame}>
+            <BoatPartsFigure />
+          </div>
+          <figcaption className={articleFigureCaption}>
+            漕手1人分の座席まわり。シートはレールの上を前後に滑ります。
+          </figcaption>
+        </figure>
 
         <h2>軽量級</h2>
         <p>

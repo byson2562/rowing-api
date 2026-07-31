@@ -18,6 +18,16 @@ export const articleBarFill =
   "block h-full rounded-[999px] bg-[linear-gradient(90deg,#2f66b8,#5b93e3)]";
 export const articleBarValue = "text-[13px] font-bold text-rn-brand";
 
+// ---- 図解(用語集のSVG) ----
+// preflight が効かない環境なので、figure のブラウザ既定 margin(左右40px)を明示的に打ち消す
+export const articleFigure = "mx-0 mt-[1.6em] mb-[1.8em]";
+export const articleFigureFrame =
+  "rounded-rn-card border border-rn-border bg-white px-3 py-4 md:px-4";
+export const articleFigureRow =
+  "flex flex-col items-stretch gap-4 md:flex-row md:items-start md:justify-center md:gap-6";
+export const articleFigureCaption =
+  "mt-2.5 mb-0 text-[13px] leading-[1.7] text-rn-muted";
+
 // ---- 年代別グリッド ----
 export const articleEraGrid =
   "mt-[1.4em] grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5";
