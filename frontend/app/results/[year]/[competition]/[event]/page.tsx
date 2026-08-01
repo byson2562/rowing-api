@@ -40,7 +40,8 @@ export async function generateStaticParams(): Promise<Params[]> {
   return params;
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await props.params;
   const competition = decodeSegment(params.competition);
   const event = decodeSegment(params.event);
   const rows = await getFilteredResults({ year: params.year, competition, event });
@@ -84,7 +85,8 @@ function crewCell(row: ResultRecord) {
   return row.crew_name;
 }
 
-export default async function CompetitionEventPage({ params }: { params: Params }) {
+export default async function CompetitionEventPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const competition = decodeSegment(params.competition);
   const event = decodeSegment(params.event);
   const yearNumber = Number(params.year);

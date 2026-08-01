@@ -30,7 +30,8 @@ export async function generateStaticParams(): Promise<Params[]> {
   return events.map((event) => ({ event }));
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await props.params;
   const event = decodeEvent(params.event);
   const events = await listRecordEventNames();
   if (!events.includes(event)) return {};
@@ -64,7 +65,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-export default async function EventRecordsPage({ params }: { params: Params }) {
+export default async function EventRecordsPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const event = decodeEvent(params.event);
   const events = await listRecordEventNames();
   if (!events.includes(event)) notFound();

@@ -23,7 +23,8 @@ function isValidYear(value: string): boolean {
   return Number.isInteger(year) && availableYears().includes(year);
 }
 
-export function generateMetadata({ params }: { params: Params }): Metadata {
+export async function generateMetadata(props: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await props.params;
   const year = params.year;
   const title = `${year}年のローイング大会結果`;
   const description = `${year}年に開催されたローイング（ボート）大会の結果一覧。全日本選手権などの種目別優勝クルー・タイムを掲載しています。`;
@@ -51,7 +52,8 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   };
 }
 
-export default async function YearResultsPage({ params }: { params: Params }) {
+export default async function YearResultsPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   if (!isValidYear(params.year)) notFound();
   const year = Number(params.year);
 
