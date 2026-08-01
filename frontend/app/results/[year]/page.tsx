@@ -12,7 +12,10 @@ import { siteUrl } from "../../../lib/site-url";
 
 type Params = { year: string };
 
-export const dynamicParams = false;
+// OpenNext(Cloudflare)は dynamicParams=false のプリレンダリング済みルートを解決できず
+// 全件404になるため true にする。収録外の年は下の isValidYear で notFound() を返すので、
+// 外から見た挙動は変わらない。
+export const dynamicParams = true;
 
 export function generateStaticParams(): Params[] {
   return availableYears().map((year) => ({ year: String(year) }));
@@ -23,7 +26,8 @@ function isValidYear(value: string): boolean {
   return Number.isInteger(year) && availableYears().includes(year);
 }
 
-export function generateMetadata({ params }: { params: Params }): Metadata {
+export async function generateMetadata(props: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await props.params;
   const year = params.year;
   const title = `${year}年のローイング大会結果`;
   const description = `${year}年に開催されたローイング（ボート）大会の結果一覧。全日本選手権などの種目別優勝クルー・タイムを掲載しています。`;
@@ -51,7 +55,8 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   };
 }
 
-export default async function YearResultsPage({ params }: { params: Params }) {
+export default async function YearResultsPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   if (!isValidYear(params.year)) notFound();
   const year = Number(params.year);
 

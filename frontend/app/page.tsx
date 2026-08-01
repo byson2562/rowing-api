@@ -157,7 +157,8 @@ function formatDate(iso: string): string {
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-export default async function HomePage({ searchParams }: { searchParams: SearchParams }) {
+export default async function HomePage(props: { searchParams: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   // 旧ホーム(検索)のフィルタ付きURLは /search へ恒久リダイレクトして互換を保つ
   const params = new URLSearchParams();
   Object.entries(searchParams).forEach(([key, value]) => {

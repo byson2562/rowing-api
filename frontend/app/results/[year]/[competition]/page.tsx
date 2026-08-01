@@ -40,7 +40,8 @@ export async function generateStaticParams(): Promise<Params[]> {
   return params;
 }
 
-export function generateMetadata({ params }: { params: Params }): Metadata {
+export async function generateMetadata(props: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await props.params;
   const year = params.year;
   const competition = decodeCompetition(params.competition);
   const path = `/results/${year}/${encodeURIComponent(competition)}`;
@@ -73,7 +74,8 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   };
 }
 
-export default async function CompetitionResultsPage({ params }: { params: Params }) {
+export default async function CompetitionResultsPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const competition = decodeCompetition(params.competition);
   const yearNumber = Number(params.year);
   if (!Number.isInteger(yearNumber) || !availableYears().includes(yearNumber)) notFound();

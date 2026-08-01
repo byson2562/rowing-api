@@ -40,7 +40,8 @@ function medalCounts(rows: ResultRecord[]): MedalCounts {
   };
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await props.params;
   const organization = await findOrganizationBySlug(decodeSlug(params.slug));
   if (!organization) return {};
 
@@ -73,7 +74,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-export default async function OrganizationPage({ params }: { params: Params }) {
+export default async function OrganizationPage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const organization = await findOrganizationBySlug(decodeSlug(params.slug));
   if (!organization) notFound();
 

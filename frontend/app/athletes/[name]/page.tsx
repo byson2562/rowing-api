@@ -32,7 +32,8 @@ function bestOf(rows: ResultRecord[]): ResultRecord {
   return [...rows].sort((a, b) => a.time_seconds - b.time_seconds)[0];
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<Params> }): Promise<Metadata> {
+  const params = await props.params;
   const name = decodeName(params.name);
   const rows = await getAthleteResults(name);
   if (rows.length === 0) return {};
@@ -66,7 +67,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-export default async function AthletePage({ params }: { params: Params }) {
+export default async function AthletePage(props: { params: Promise<Params> }) {
+  const params = await props.params;
   const name = decodeName(params.name);
   const rows = await getAthleteResults(name);
   if (rows.length === 0) notFound();

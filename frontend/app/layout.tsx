@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Inter, Noto_Sans_JP } from "next/font/google";
 import Script from "next/script";
 import Link from "next/link";
-import { Analytics } from "@vercel/analytics/next";
 
 import SiteHeader from "../components/SiteHeader";
 import { sponsors } from "../lib/sponsors";
@@ -296,7 +295,6 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         ) : null}
-        <Analytics />
       </body>
     </html>
   );

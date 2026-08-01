@@ -79,7 +79,8 @@ async function canonicalFor(params: URLSearchParams, filters: QueryFilters): Pro
   return null;
 }
 
-export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+export async function generateMetadata(props: { searchParams: Promise<SearchParams> }): Promise<Metadata> {
+  const searchParams = await props.searchParams;
   const params = toURLSearchParams(searchParams);
   const filters = parseQueryFilters(params);
   const parts = describeFilters(filters);
@@ -129,7 +130,8 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   };
 }
 
-export default async function Page({ searchParams }: { searchParams: SearchParams }) {
+export default async function Page(props: { searchParams: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
   const params = toURLSearchParams(searchParams);
   const filters = parseQueryFilters(params);
 

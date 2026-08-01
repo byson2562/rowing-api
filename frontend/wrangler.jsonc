@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "regattanavi",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-23",
+  // nodejs_compat: Next.js のサーバーコードが Node API を使うため必須
+  // global_fetch_strictly_public: 自サイトへの fetch を公開URL経由にする(OpenNext 推奨)
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "routes": [
+    { "pattern": "regattanavi.jp", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
