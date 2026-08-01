@@ -25,3 +25,8 @@ pnpm-debug.log*
 tsconfig.tsbuildinfo
 .vercel
 .env*
+# 公開値(NEXT_PUBLIC_*)のみを置く本番設定は追跡する。秘密情報は入れないこと。
+!.env.production
+# Cloudflare(OpenNext)のビルド成果物とローカル実行状態
+.open-next/
+.wrangler/

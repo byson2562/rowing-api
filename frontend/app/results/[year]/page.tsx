@@ -12,7 +12,10 @@ import { siteUrl } from "../../../lib/site-url";
 
 type Params = { year: string };
 
-export const dynamicParams = false;
+// OpenNext(Cloudflare)は dynamicParams=false のプリレンダリング済みルートを解決できず
+// 全件404になるため true にする。収録外の年は下の isValidYear で notFound() を返すので、
+// 外から見た挙動は変わらない。
+export const dynamicParams = true;
 
 export function generateStaticParams(): Params[] {
   return availableYears().map((year) => ({ year: String(year) }));

@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// OpenNext(Cloudflare Workers)は edge runtime 宣言に非対応。既定のランタイムで動かす
 
 // 交差オールのブランドマーク(public/favicon.svgと同一・ソリッド配色)。satoriは外部SVG URLを解決できないためdata URIで埋め込む
 const markDataUri =
