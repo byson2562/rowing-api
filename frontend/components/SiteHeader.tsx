@@ -198,7 +198,7 @@ export default function SiteHeader() {
         {/* モバイル: ハンバーガーボタン */}
         <button
           type="button"
-          className="inline-flex items-center justify-center rounded-md p-2 text-rn-brand md:hidden"
+          className="inline-flex cursor-pointer appearance-none items-center justify-center rounded-md border-0 bg-transparent p-2 font-[inherit] text-rn-brand md:hidden"
           aria-label={open ? "メニューを閉じる" : "メニューを開く"}
           aria-expanded={open}
           aria-controls="mobile-nav"
