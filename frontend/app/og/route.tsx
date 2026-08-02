@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 // OpenNext(Cloudflare Workers)は edge runtime 宣言に非対応。既定のランタイムで動かす
 
@@ -13,7 +14,44 @@ function truncate(value: string, maxChars: number): string {
   return `${chars.slice(0, maxChars).join("")}…`;
 }
 
+/**
+ * 生成した画像をエッジにキャッシュして返す。
+ *
+ * satori での画像生成は CPU を大きく使い、Workers の無料枠では短時間に複数回走ると
+ * リソース上限に達して Worker 全体が停止する(Error 1102)。Workers のレスポンスは
+ * 明示しないとエッジにキャッシュされないため、ここで caches.default に入れる。
+ * ページ内のサムネイルは public/og-thumb/ の静的PNGを使っており、この経路は
+ * OGPメタタグ経由(SNS・クローラー)のアクセスが中心。
+ */
 export async function GET(request: Request) {
+  // next dev など Workers 以外では caches.default が無いので、その場合は素通しする
+  const edgeCache = (globalThis as { caches?: { default?: Cache } }).caches?.default;
+
+  // Next.js が渡す Request をそのまま Cache API に渡すと Invalid URL になるため、
+  // URL から素の Request を作ってキャッシュキーにする
+  const cacheKey = new Request(new URL(request.url).toString(), { method: "GET" });
+
+  if (edgeCache) {
+    const hit = await edgeCache.match(cacheKey);
+    if (hit) return hit;
+  }
+
+  const image = renderOgImage(request);
+  if (!edgeCache) return image;
+
+  // ImageResponse の body は一度しか読めないため、実体を取り出して2つ作る
+  const body = await image.arrayBuffer();
+  const headers = new Headers(image.headers);
+  try {
+    const { ctx } = getCloudflareContext();
+    ctx.waitUntil(edgeCache.put(cacheKey, new Response(body, { headers })));
+  } catch {
+    // コンテキストが取れない環境ではキャッシュを諦めて画像だけ返す
+  }
+  return new Response(body, { headers });
+}
+
+function renderOgImage(request: Request): ImageResponse {
   const { searchParams } = new URL(request.url);
   const rawTitle = (searchParams.get("title") ?? "").trim();
   const rawSubtitle = (searchParams.get("subtitle") ?? "").trim();
