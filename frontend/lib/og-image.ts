@@ -43,3 +43,16 @@ export function ogImages(title?: string, subtitle?: string): OgImage[] {
     }
   ];
 }
+
+/**
+ * 記事一覧・ホームのサムネイル用。ビルド前に生成して public/og-thumb/ に置いた
+ * 静的PNGを指す。
+ *
+ * ページを開くたびに /og を叩くと satori の画像生成が走り、Workers の CPU 制限を
+ * 超えて Worker 全体が 503 になる(Error 1102)。絵柄は /og と同一のものを
+ * scripts/generate-og-thumbs.mjs で書き出しているため、見た目は変わらない。
+ * OGPメタタグ側は従来どおり /og を使う(SNSシェア時のみ生成されるため頻度が低い)。
+ */
+export function articleThumbUrl(slug: string): string {
+  return `/og-thumb/${slug}.png`;
+}

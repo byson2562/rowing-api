@@ -10,7 +10,7 @@ import {
   getFilteredResults
 } from "../lib/results-data";
 import { siteUrl } from "../lib/site-url";
-import { articleOgImageUrl, ogImages } from "../lib/og-image";
+import { articleThumbUrl, ogImages } from "../lib/og-image";
 import { lpHeadingIcon } from "../components/lp/lp-classes";
 
 export const metadata: Metadata = {
@@ -309,7 +309,7 @@ export default async function HomePage(props: { searchParams: Promise<SearchPara
                   tabIndex={-1}
                 >
                   <img
-                    src={articleOgImageUrl(a.title)}
+                    src={articleThumbUrl(a.slug)}
                     alt=""
                     width={1200}
                     height={630}

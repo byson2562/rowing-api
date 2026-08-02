@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { articles } from "../../lib/articles";
 import { siteUrl } from "../../lib/site-url";
-import { articleOgImageUrl, ogImages } from "../../lib/og-image";
+import { articleThumbUrl, ogImages } from "../../lib/og-image";
 
 export const metadata: Metadata = {
   title: "記事・データ分析",
@@ -75,7 +75,7 @@ export default function ArticlesPage() {
                 tabIndex={-1}
               >
                 <img
-                  src={articleOgImageUrl(a.title)}
+                  src={articleThumbUrl(a.slug)}
                   alt=""
                   width={1200}
                   height={630}
