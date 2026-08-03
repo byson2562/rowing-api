@@ -22,3 +22,6 @@ infra/github/terraform.tfvars
 # Claude Code local/personal (共有しない)
 .claude/settings.local.json
 .claude/worktrees/
+
+# Cloudflare Worker のローカル実行用一時設定
+workers/**/wrangler.local.jsonc
