@@ -1,0 +1,12 @@
+{
+  "$schema": "../../frontend/node_modules/wrangler/config-schema.json",
+  "name": "rowing-api-redirect",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-09-23",
+  "routes": [
+    { "pattern": "rowing-api.com", "custom_domain": true }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
