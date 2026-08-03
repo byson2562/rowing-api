@@ -102,11 +102,15 @@ const homeMoreLink =
   "text-[13px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline";
 // カードはサイト共通のボーダーレス+ソフト影
 const homeCard = "rounded-xl bg-white p-[18px] shadow-rn-soft";
-// 記事カードのサムネイル(OGP画像を流用。カード内padding内に収める)
-const homeArticleThumbLink = "mb-3 block no-underline";
+// 記事カード。ブロック全体をリンクにする(ホバー値は「直近の大会」カードと同一)
+const homeArticleCard =
+  "group block h-full rounded-xl bg-white p-[18px] no-underline shadow-rn-soft " +
+  "transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 " +
+  "hover:shadow-[0_8px_18px_rgba(16,42,80,0.1)] " +
+  "motion-reduce:transition-none motion-reduce:hover:translate-y-0";
 // preflightが効かない環境なので height:auto を明示する(w-fullだけだと縦が潰れない)
 const homeArticleThumb =
-  "block h-auto w-full rounded-[8px] border border-rn-border-soft";
+  "mb-3 block h-auto w-full rounded-[8px] border border-rn-border-soft";
 
 // 着地時の主役として出す「最新の大会結果」。最新年の直近大会のFinal A優勝を並べる
 async function buildFeatured() {
@@ -299,15 +303,10 @@ export default async function HomePage(props: { searchParams: Promise<SearchPara
           </div>
           <div className="grid auto-rows-fr gap-2.5 md:grid-cols-3">
             {latestArticles.map((a) => (
-              <article key={a.slug} className={`${homeCard} h-full`}>
-                {/* サムネイルはOGP画像(/og)の使い回し。見出しのリンクと重複するため
-                    スクリーンリーダー・タブ移動からは外し、視覚的なクリック領域だけ広げる */}
-                <Link
-                  href={`/articles/${a.slug}`}
-                  className={homeArticleThumbLink}
-                  aria-hidden="true"
-                  tabIndex={-1}
-                >
+              <article key={a.slug} className="h-full">
+                {/* カード全体を1つのリンクにする。入れ子のリンクは不正なので、
+                    サムネイル・見出しを個別にリンクにはしない */}
+                <Link href={`/articles/${a.slug}`} className={homeArticleCard}>
                   <img
                     src={articleThumbUrl(a.slug)}
                     alt=""
@@ -316,19 +315,14 @@ export default async function HomePage(props: { searchParams: Promise<SearchPara
                     loading="lazy"
                     className={homeArticleThumb}
                   />
-                </Link>
-                <h3 className="m-0 text-[15px] leading-[1.5]">
-                  <Link
-                    href={`/articles/${a.slug}`}
-                    className="text-rn-brand no-underline hover:text-rn-primary hover:underline"
-                  >
+                  <h3 className="m-0 text-[15px] leading-[1.5] text-rn-brand group-hover:text-rn-primary group-hover:underline">
                     {a.title}
-                  </Link>
-                </h3>
-                <p className="mb-0 mt-1.5 text-[13px] text-[#7189a8]">
-                  <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
-                </p>
-                <p className="mb-0 mt-1.5 text-[14px] leading-[1.7] text-[#4c6687]">{a.description}</p>
+                  </h3>
+                  <p className="mb-0 mt-1.5 text-[13px] text-[#7189a8]">
+                    <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
+                  </p>
+                  <p className="mb-0 mt-1.5 text-[14px] leading-[1.7] text-[#4c6687]">{a.description}</p>
+                </Link>
               </article>
             ))}
           </div>
