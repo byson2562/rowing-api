@@ -2,7 +2,9 @@ name: Update JARA Results
 
 on:
   schedule:
-    - cron: "0 12 * * *" # 21:00 JST
+    # 毎時実行するが、大会期間(.github/race-windows.json)の外では
+    # 12:00 UTC(21:00 JST)の回以外はすぐ終了する
+    - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
       year:
@@ -34,7 +36,29 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Decide whether to run
+        id: gate
+        run: |
+          set -euo pipefail
+          now_date="$(TZ=Asia/Tokyo date +%F)"
+          now_hour="$(date -u +%H)"
+          in_window="$(python3 .github/scripts/in_race_window.py "${now_date}")"
+          # 手動実行は常に走らせる。大会期間中は毎時、期間外は12:00 UTC(21:00 JST)の回だけ。
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            run="true"
+          elif [[ "${in_window}" == "true" ]]; then
+            run="true"
+          elif [[ "${now_hour}" == "12" ]]; then
+            run="true"
+          else
+            run="false"
+          fi
+          echo "in_window=${in_window}" >> "${GITHUB_OUTPUT}"
+          echo "run=${run}" >> "${GITHUB_OUTPUT}"
+          echo "JST ${now_date} / 大会期間中: ${in_window} / 実行: ${run}"
+
       - name: Determine competition year
+        if: steps.gate.outputs.run == 'true'
         id: year
         env:
           REQUESTED_YEAR: ${{ inputs.year }}
@@ -48,9 +72,11 @@ jobs:
           echo "value=${year}" >> "${GITHUB_OUTPUT}"
 
       - name: Build updater container
+        if: steps.gate.outputs.run == 'true'
         run: docker build --tag rowing-api-jara-updater scripts/jara
 
       - name: Test updater
+        if: steps.gate.outputs.run == 'true'
         run: |
           docker run --rm \
             --entrypoint bundle \
@@ -58,6 +84,7 @@ jobs:
             exec ruby /app/test/update_results_test.rb
 
       - name: Collect current JARA results
+        if: steps.gate.outputs.run == 'true'
         env:
           YEAR: ${{ steps.year.outputs.value }}
           ALLOW_DELETIONS: ${{ inputs.allow_deletions || false }}
@@ -74,6 +101,7 @@ jobs:
             "${args[@]}"
 
       - name: Validate complete dataset
+        if: steps.gate.outputs.run == 'true'
         run: |
           docker run --rm \
             --volume "${GITHUB_WORKSPACE}:/workspace" \
@@ -84,6 +112,7 @@ jobs:
 
       - name: Detect generated changes
         id: changes
+        if: steps.gate.outputs.run == 'true'
         env:
           YEAR: ${{ steps.year.outputs.value }}
         run: |
@@ -98,12 +127,62 @@ jobs:
           fi
 
       - name: Verify frontend
-        if: steps.changes.outputs.changed == 'true'
+        if: steps.gate.outputs.run == 'true' && steps.changes.outputs.changed == 'true'
         run: |
           docker compose run --rm frontend sh -lc "npm run lint && npm run build"
 
+      # 大会期間中は人手を介さず main へ直接コミットする。決勝の結果が数時間以内に
+      # 公開されないと、検索需要のピーク(大会当日〜翌日)を逃すため。
+      # 期間外は従来どおりPRを作り、内容を見てからマージする。
+      - name: Check record count change
+        id: delta
+        if: steps.gate.outputs.run == 'true' && steps.changes.outputs.changed == 'true'
+        env:
+          YEAR: ${{ steps.year.outputs.value }}
+        run: |
+          set -euo pipefail
+          before="$(git show HEAD:"frontend/data/results/${YEAR}.json" 2>/dev/null | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))' || echo 0)"
+          after="$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))))' "frontend/data/results/${YEAR}.json")"
+          echo "before=${before} after=${after}"
+          echo "before=${before}" >> "${GITHUB_OUTPUT}"
+          echo "after=${after}" >> "${GITHUB_OUTPUT}"
+          # 件数が減る変更は自動で入れない(公式ページの一時的な不整合やパース失敗を想定)
+          if (( after < before )); then
+            echo "decreased=true" >> "${GITHUB_OUTPUT}"
+            echo "::warning::レコードが ${before} から ${after} に減少。自動コミットせずPRにします。"
+          else
+            echo "decreased=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Commit to main during a race window
+        if: |
+          steps.gate.outputs.run == 'true' &&
+          steps.changes.outputs.changed == 'true' &&
+          steps.gate.outputs.in_window == 'true' &&
+          steps.delta.outputs.decreased == 'false'
+        env:
+          YEAR: ${{ steps.year.outputs.value }}
+          BEFORE: ${{ steps.delta.outputs.before }}
+          AFTER: ${{ steps.delta.outputs.after }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            "frontend/data/results/${YEAR}.json" \
+            frontend/data/results/index.json \
+            frontend/lib/results-data.ts
+          git commit -m "chore: update ${YEAR} JARA results (${BEFORE} -> ${AFTER})"
+          # 他のpushと競合したら取り込んでから送る
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo "main へ直接コミットしました。deploy-cloudflare が本番へ反映します。"
+
       - name: Create or update results pull request
-        if: steps.changes.outputs.changed == 'true'
+        if: |
+          steps.gate.outputs.run == 'true' &&
+          steps.changes.outputs.changed == 'true' &&
+          (steps.gate.outputs.in_window != 'true' || steps.delta.outputs.decreased == 'true')
         env:
           GH_TOKEN: ${{ github.token }}
           YEAR: ${{ steps.year.outputs.value }}
