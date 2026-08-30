@@ -303,6 +303,9 @@ class JaraResultsUpdater
       tempfile.write(content)
       tempfile.flush
       tempfile.fsync
+      # Tempfile は 0600 で作られる。rename でそのまま本ファイルになるため、
+      # コンテナ外(CI の runner ユーザー)から読めるよう通常のパーミッションに戻す
+      tempfile.chmod(0o644)
       File.rename(tempfile.path, path)
     end
     path

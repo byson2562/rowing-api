@@ -110,6 +110,14 @@ jobs:
             rowing-api-jara-updater \
             exec ruby /app/validate_results.rb
 
+      # コンテナは root で動くため、生成物の所有者が runner と異なる。
+      # 以降のステップ(読み取り・git add)が確実に通るよう揃えておく
+      - name: Normalize generated file ownership
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          set -euo pipefail
+          sudo chown -R "$(id -u):$(id -g)" frontend/data/results frontend/lib/results-data.ts
+
       - name: Detect generated changes
         id: changes
         if: steps.gate.outputs.run == 'true'
@@ -140,14 +148,19 @@ jobs:
         env:
           YEAR: ${{ steps.year.outputs.value }}
         run: |
-          set -euo pipefail
-          before="$(git show HEAD:"frontend/data/results/${YEAR}.json" 2>/dev/null | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))' || echo 0)"
-          after="$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))))' "frontend/data/results/${YEAR}.json")"
-          echo "before=${before} after=${after}"
-          echo "before=${before}" >> "${GITHUB_OUTPUT}"
-          echo "after=${after}" >> "${GITHUB_OUTPUT}"
+          set -uo pipefail
+          before="$(git show HEAD:"frontend/data/results/${YEAR}.json" 2>/dev/null | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))' 2>/dev/null || echo "")"
+          after="$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))))' "frontend/data/results/${YEAR}.json" 2>/dev/null || echo "")"
+          echo "before=${before:-?} after=${after:-?}"
+          echo "before=${before:-?}" >> "${GITHUB_OUTPUT}"
+          echo "after=${after:-?}" >> "${GITHUB_OUTPUT}"
+          # 件数を数えられなかった場合は自動コミットせずPRに回す。
+          # 取り込み自体は成功しているので、ここでジョブを落とさない。
+          if [[ -z "${before}" || -z "${after}" ]]; then
+            echo "decreased=true" >> "${GITHUB_OUTPUT}"
+            echo "::warning::レコード件数を数えられませんでした。自動コミットせずPRにします。"
           # 件数が減る変更は自動で入れない(公式ページの一時的な不整合やパース失敗を想定)
-          if (( after < before )); then
+          elif (( after < before )); then
             echo "decreased=true" >> "${GITHUB_OUTPUT}"
             echo "::warning::レコードが ${before} から ${after} に減少。自動コミットせずPRにします。"
           else
