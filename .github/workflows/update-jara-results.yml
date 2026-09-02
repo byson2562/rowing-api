@@ -212,20 +212,24 @@ jobs:
           git commit -m "chore: update ${YEAR} JARA results"
           git push --force origin "HEAD:refs/heads/${branch}"
 
+          body="JARA公式大会ページから${YEAR}年度の公開済み決勝結果を自動収集しました。データ検証、lint、本番buildはワークフロー内で完了しています。"
           pr_number="$(gh pr list \
             --base main \
             --head "${branch}" \
             --state open \
             --json number \
             --jq '.[0].number // empty')"
-          if [[ -z "${pr_number}" ]]; then
-            gh pr create \
-              --base main \
-              --head "${branch}" \
-              --title "chore: update ${YEAR} JARA results" \
-              --body "JARA公式大会ページから${YEAR}年度の公開済み決勝結果を自動収集しました。データ検証、lint、本番buildはワークフロー内で完了しています。"
-          else
-            gh pr edit "${pr_number}" \
-              --title "chore: update ${YEAR} JARA results" \
-              --body "JARA公式大会ページから${YEAR}年度の公開済み決勝結果を自動収集しました。データ検証、lint、本番buildはワークフロー内で完了しています。"
+          if [[ -n "${pr_number}" ]]; then
+            gh pr edit "${pr_number}" --title "chore: update ${YEAR} JARA results" --body "${body}"
+            exit 0
+          fi
+          # ブランチのpushは済んでいるので、PRを作れなくても収集結果は失われない。
+          # Settings > Actions > General の "Allow GitHub Actions to create and
+          # approve pull requests" が無効だとここで失敗するため、ジョブは落とさず案内する。
+          if ! gh pr create \
+            --base main \
+            --head "${branch}" \
+            --title "chore: update ${YEAR} JARA results" \
+            --body "${body}"; then
+            echo "::warning::PRを作成できませんでした。ブランチ ${branch} は push 済みです: ${{ github.server_url }}/${{ github.repository }}/compare/main...${branch}?expand=1"
           fi
