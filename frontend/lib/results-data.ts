@@ -390,17 +390,25 @@ function uniqueSorted(values: string[]): string[] {
 }
 
 // 大会名は辞書順だと「第100回…」が「第36回…」より前に来て探しにくいため、
-// 開催年の新しい順（同年内は名前順）で並べる
+// 開催年の新しい順で並べる。同年内は開催日のデータがないので、取り込み順(id)の
+// 新しい順にする。JARA更新スクリプトは新しい大会ほど大きいidを振るため、
+// シーズン中は「直近に結果が出た大会」が先頭に来る
 export function competitionsByRecency(rows: ResultRecord[]): string[] {
-  const latestYear = new Map<string, number>();
+  const latest = new Map<string, { year: number; id: number }>();
   rows.forEach((row) => {
-    const current = latestYear.get(row.competition_name);
-    if (current == null || row.year > current) {
-      latestYear.set(row.competition_name, row.year);
+    const current = latest.get(row.competition_name);
+    if (!current) {
+      latest.set(row.competition_name, { year: row.year, id: row.id });
+      return;
     }
+    if (row.year > current.year) current.year = row.year;
+    if (row.id > current.id) current.id = row.id;
   });
-  return Array.from(latestYear.entries())
-    .sort((a, b) => (a[1] !== b[1] ? b[1] - a[1] : a[0].localeCompare(b[0], "ja")))
+  return Array.from(latest.entries())
+    .sort(
+      (a, b) =>
+        b[1].year - a[1].year || b[1].id - a[1].id || a[0].localeCompare(b[0], "ja")
+    )
     .map(([name]) => name);
 }
 

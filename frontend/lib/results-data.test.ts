@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import type { ResultRecord } from "./results-data";
 import {
+  competitionsByRecency,
   formatTimeDisplay,
   normalizeEventName,
   organizationSlug,
@@ -59,5 +61,32 @@ describe("paginate", () => {
   it("不正値はクランプする(page>=1, per_page 1..200)", () => {
     expect(paginate(rows, "0", "500").pagination).toMatchObject({ page: 1, per_page: 200 });
     expect(paginate(rows, "abc", "0").pagination).toMatchObject({ page: 1, per_page: 50 });
+  });
+});
+
+describe("competitionsByRecency", () => {
+  const row = (id: number, year: number, competition_name: string) =>
+    ({ id, year, competition_name }) as ResultRecord;
+
+  it("puts the most recently imported competition first within a year", () => {
+    const rows = [
+      row(1, 2026, "第104回全日本ローイング選手権大会"),
+      row(2, 2026, "第76回全日本社会人ローイング選手権大会"),
+      row(3, 2026, "第53回全日本大学ローイング選手権大会"),
+      row(4, 2026, "第53回全日本大学ローイング選手権大会")
+    ];
+    expect(competitionsByRecency(rows)).toEqual([
+      "第53回全日本大学ローイング選手権大会",
+      "第76回全日本社会人ローイング選手権大会",
+      "第104回全日本ローイング選手権大会"
+    ]);
+  });
+
+  it("orders newer years before older ones regardless of id", () => {
+    const rows = [row(9, 2025, "第103回全日本ローイング選手権大会"), row(1, 2026, "第104回全日本ローイング選手権大会")];
+    expect(competitionsByRecency(rows)).toEqual([
+      "第104回全日本ローイング選手権大会",
+      "第103回全日本ローイング選手権大会"
+    ]);
   });
 });
