@@ -1,3 +1,30 @@
+# インカレ2026 結果記事の新設とガイドのハブ化 (2026-10-15)
+
+### 背景
+- Search Console 90日: `/articles/university-championship-guide` が表示14,328(全体の約60%)・順位7.5なのにCTR 1.4%。文面が開催予告のままで、大会後の「結果」需要と合っていない
+- 2026年インカレの結果146件は `frontend/data/results/2026.json` に取込済み
+
+### Spec / Plan
+- [x] 1. 結果記事 `/articles/university-championship-2026-results` を新設する。13種目(JO除く)のFinal A優勝校・タイム・2位との差、男女エイトのFinal A全着順、学校別の金メダル数、前年からの優勝校の入れ替わりをビルド時に `2026.json` から集計する
+- [x] 2. 記事タイトルは「インカレ ボート 2026」「インカレ ローイング 2026」「ボート インカレ 2026」を狙う。description は結果訴求にする
+- [x] 3. 既存ガイドは title/description から「2026」を外し、開催予告の文言を通年の説明に直す。優勝校テーブルと見出しは収録データの最新年を自動で拾う。「見どころ」節を「年別の結果記事」節に置き換え、`university-championship-<年>-results` の記事を自動で並べる
+- [x] 4. 結果記事 → ガイド・勢力図記事・`/results/2026/<大会>`・優勝選手の選手ページ、ガイド → 結果記事 の内部リンクを張る
+- [x] 5. article-review スキル(yomiyasu推敲 → article-proofreader校正)を回す
+- [x] 6. article-thumbnails で新記事とガイドのサムネイルを再生成し、lint/build を通す
+- [x] 7. 自分の変更だけをコミットする(作業中の `first-regatta` 記事と `articles.ts` のそのエントリは含めない)。push はユーザー指示待ち
+
+### 判断
+- 既存ガイドを書き換えず別記事にする理由: 大会前(日程・種目)と大会後(結果)で検索意図が違う。年別記事を毎年足し、ガイドは年を外したハブとして順位資産を残す
+- カニバリ対策: ガイドの title から年を外し、冒頭から結果記事へリンクする
+
+### Review
+- `/articles/university-championship-2026-results` を新設。13種目の優勝校・タイム・2位との差・前年優勝校、男女エイトのFinal A全着順、学校別金メダル数、シングルスカルの優勝者を `2026.json` からビルド時に集計する
+- ガイドは title/description から年を外し、最新年の優勝校テーブル・男子エイト歴代優勝・女子エイトの文を収録データから自動で拾う。`university-championship-<年>-results` の記事は registry から正規表現で拾って「年別の結果記事」に並べる
+- article-review: yomiyasu(lint 100/98、stance=説明)→ article-proofreader の順で実施。校正で見つかった事実誤り(立命館 女子舵手つきフォアは2018年から9大会連続、2021年合併開催の日大の順位、ガイドの「大学のクルーだけ」の矛盾など)はデータで検証して修正した
+- サムネイル2枚を再生成(1200×630)。`npm run lint` は既存の `no-img-element` 警告のみ、`npm run build` は exit 0(静的1984ページ)。localhost:5175 で両記事の表示と内部リンク(全200)を確認
+- `first-regatta` 記事と `articles.ts` のそのエントリはコミットに含めていない。push は未実施(ユーザー指示待ち)
+- 校正者の推奨項目(「私」vs「筆者」、Final A の説明追加、時刻表記 6:01.26 の統一、2027年の注目点の段落など)は未適用。ユーザー判断待ち
+
 # Next.js一本化 (DBレス化) タスク
 
 ## GitHub Actions PR作成権限 Terraform化 (2026-07-17)
