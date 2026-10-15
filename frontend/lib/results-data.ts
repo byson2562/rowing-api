@@ -613,3 +613,42 @@ export async function buildStats(groupBy: string, filters: QueryFilters): Promis
 
   return cacheSet(statsCache, cacheKey, []);
 }
+
+/**
+ * 大会名の系列キー。「第53回全日本大学ローイング選手権大会／第66回オックスフォード盾レガッタ」のような
+ * 同時開催名の連結と「第N回」を落とし、年をまたいで同じ大会を突き合わせるために使う。
+ */
+export function competitionSeriesKey(name: string): string {
+  const head = name.split("／")[0] ?? name;
+  return head.replace(/第\s*\d+\s*回/g, "").replace(/\s+/g, "").trim();
+}
+
+/** 大会名の先頭セグメント(h1向けの短い名前)と、同時開催の後続名 */
+export function splitCompetitionName(name: string): { main: string; coHosted: string[] } {
+  const [main, ...rest] = name.split("／");
+  return { main: main ?? name, coHosted: rest.filter((part) => part.length > 0) };
+}
+
+/**
+ * 前年に同じ系列の大会があれば、その Final A 優勝団体を種目名ごとに返す。
+ * 無ければ null(改称などで系列が追えない大会は前年比較を出さない)。
+ */
+export async function previousYearWinners(
+  year: number,
+  competition: string
+): Promise<Map<string, ResultRecord> | null> {
+  const prevYear = year - 1;
+  if (!AVAILABLE_YEARS.includes(prevYear)) return null;
+  const key = competitionSeriesKey(competition);
+  const rows = (await allResults({ year: String(prevYear) })).filter(
+    (row) => competitionSeriesKey(row.competition_name) === key
+  );
+  if (rows.length === 0) return null;
+  const winners = new Map<string, ResultRecord>();
+  rows.forEach((row) => {
+    if (row.final_group === "Final A" && row.rank === 1 && !winners.has(row.event_name)) {
+      winners.set(row.event_name, row);
+    }
+  });
+  return winners;
+}
