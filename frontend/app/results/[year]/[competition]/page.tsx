@@ -191,7 +191,7 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
       <header className="hero bg-none pb-0">
         <div>
           <p className={rc.titleEyebrow}>{params.year}年 · 収録{rows.length.toLocaleString()}件(Final A・B)</p>
-          <h1>{shortName}</h1>
+          <h1 className={rc.pageTitle}>{shortName}</h1>
           <p className={rc.titleSub}>
             {coHosted.length > 0 ? `${coHosted.join("、")}と同時開催。` : ""}
             種目別のFinal A結果(順位・クルー・タイム)を掲載しています。
@@ -243,8 +243,8 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
         </div>
       </nav>
 
-      <section id="champions" className="static-section">
-        <h2>優勝クルー一覧</h2>
+      <section id="champions" className={rc.section}>
+        <h2 className={rc.sectionHeading}>優勝クルー一覧</h2>
         <p className={rc.sectionCaption}>
           Final A 1位。
           {closeFinishes > 0 ? `2位との差が1秒未満だった種目は${closeFinishes}つ。` : ""}
@@ -290,8 +290,8 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
         </div>
       </section>
 
-      <section id="events" className="static-section">
-        <h2>種目別の結果</h2>
+      <section id="events" className={rc.section}>
+        <h2 className={rc.sectionHeading}>種目別の結果</h2>
         <p className={rc.sectionCaption}>各種目のFinal A。差は1位とのタイム差(秒)。</p>
         <div className={rc.eventGrid}>
           {eventNames.map((eventName) => {

@@ -53,3 +53,8 @@ export function rankBadgeClass(rank: number): string {
   if (rank === 3) return `${badgeBase} bg-[#f5d0a9] text-[#7c2d12]`;
   return `${badgeBase} bg-rn-primary-soft text-rn-brand`;
 }
+
+// モック(A案)に合わせたページ専用の上書き。サイト共通の .hero h1 / .static-section h2 を utilities 層で打ち消す
+export const pageTitle = "text-[30px] leading-[1.3] tracking-normal";
+export const section = "static-section mt-10";
+export const sectionHeading = "mb-0 text-[19px] font-bold leading-[1.4] text-rn-brand after:hidden";
