@@ -187,8 +187,7 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
         <span aria-hidden="true">›</span>
         <span>{shortName}</span>
       </nav>
-      {/* 波線の装飾は大会ページでは使わない(見出しと入口帯だけで構成する) */}
-      <header className="hero bg-none pb-0">
+      <header className="hero">
         <div>
           <p className={rc.titleEyebrow}>{params.year}年 · 収録{rows.length.toLocaleString()}件(Final A・B)</p>
           <h1 className={rc.pageTitle}>{shortName}</h1>
