@@ -690,15 +690,6 @@ th {
   gap: 8px;
 }
 
-/* --- 2. ヒーロー: 実績チップ + 波モチーフ --- */
-.hero {
-  padding-bottom: 26px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='20' viewBox='0 0 1200 20' preserveAspectRatio='none'%3E%3Cpath d='M0 12 Q 75 2 150 12 T 300 12 T 450 12 T 600 12 T 750 12 T 900 12 T 1050 12 T 1200 12' fill='none' stroke='%230f5ec7' stroke-opacity='0.28' stroke-width='2.5'/%3E%3Cpath d='M0 17 Q 75 8 150 17 T 300 17 T 450 17 T 600 17 T 750 17 T 900 17 T 1050 17 T 1200 17' fill='none' stroke='%230f5ec7' stroke-opacity='0.14' stroke-width='2'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: left bottom;
-  background-size: min(560px, 90%) 20px;
-}
-
 /* ===== 記事(articles) ===== */
 /* 記事の各コンポーネント(.article-list/.article-card*/.article-card-meta/.article-chart/
    .article-bar-*/.article-era-grid*/.article-table*/.article-note*)は
