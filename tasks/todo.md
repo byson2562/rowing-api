@@ -11,10 +11,10 @@
 - [x] Phase 3a: 選手ページ(統計dl + 順位の推移の図)
 - [x] Phase 3b: 大会ページ(760px一段組 + 2位との差の横棒図、rankBadgeClass を青・灰へ)
 - [x] Phase 3c: ホーム(記事3列+小さな図、2列リスト)
-- [ ] Phase 3d: 検索ページ(箱・影の撤去、Recharts配色、墨ボタン)
-- [ ] Phase 3e: 記事(一覧の行化、本文h2の左ボーダー撤去、棒グラフ単色)
-- [ ] Phase 3f: 団体・歴代・年一覧・種目ページ(.static-*/.org-*、🥇→バッジ)
-- [ ] Phase 3g: LP系(lp-classes の箱撤去、フォーム)
+- [x] Phase 3d: 検索ページ(箱・影の撤去、Recharts配色、墨ボタン)
+- [x] Phase 3e: 記事(一覧の行化、本文h2の左ボーダー撤去、棒グラフ単色)
+- [x] Phase 3f: 団体・歴代・年一覧・種目ページ(.static-*/.org-*、🥇→バッジ)
+- [x] Phase 3g: LP系(lp-classes の箱撤去、フォーム)
 - [ ] Phase 4: OG画像を白地・墨見出しへ、サムネイル再生成
 - [ ] Phase 5: design-rules §1 対応表更新、lint/build、Review 追記。push はユーザー指示待ち
 
