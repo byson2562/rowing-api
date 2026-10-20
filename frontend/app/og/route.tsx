@@ -3,10 +3,11 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 // OpenNext(Cloudflare Workers)は edge runtime 宣言に非対応。既定のランタイムで動かす
 
-// 交差オールのブランドマーク(public/favicon.svgと同一・ソリッド配色)。satoriは外部SVG URLを解決できないためdata URIで埋め込む
+// 交差オールのブランドマーク(public/favicon.svg と同じ図形。OG では角丸なし・青 #1d5fbf / 灰青 #b9c7dc)。
+// satori は外部SVG URLを解決できないため data URI で埋め込む
 const markDataUri =
   "data:image/svg+xml;base64," +
-  "PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyZWN0IHg9IjUyIiB5PSI1MiIgd2lkdGg9IjQwOCIgaGVpZ2h0PSI0MDgiIHJ4PSI5NiIgZmlsbD0iIzFENkVFMCIvPgoKICA8IS0tIOS6pOW3ruOCquODvOODq+OAguODluODrOODvOODieOBr+ODj+ODgeOCp+ODg+ODiOWeiyjkuIrovrrjga/nm7Tnt5rjgIHkuIvlgbTjga7moLnlhYPjga7jgb/jgYjjgZDjgowp44Gn5bem5Y+z44Of44Op44O86YWN572uIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE5NiAxOTQpIHNjYWxlKC0xIDEpIHJvdGF0ZSgtNTIpIj4KICAgIDxsaW5lIHgxPSItMjY4IiB5MT0iMCIgeDI9IjIiIHkyPSIwIiBzdHJva2U9IiNCQ0Q5RkYiIHN0cm9rZS13aWR0aD0iMzAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTQgLTE4IEwxMjQgLTM2IEwxMjQgNjIgTDM4IDQ5IFEyOCAyMCA0IDE2IFoiIGZpbGw9IiNCQ0Q5RkYiIHN0cm9rZT0iI0JDRDlGRiIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDwvZz4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMTYgMTk0KSByb3RhdGUoLTUyKSI+CiAgICA8bGluZSB4MT0iLTI2OCIgeTE9IjAiIHgyPSIyIiB5Mj0iMCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjMwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik00IC0xOCBMMTI0IC0zNiBMMTI0IDYyIEwzOCA0OSBRMjggMjAgNCAxNiBaIiBmaWxsPSIjRkZGRkZGIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMTIiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8L2c+Cjwvc3ZnPgo=";
+  "PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxyZWN0IHg9IjUyIiB5PSI1MiIgd2lkdGg9IjQwOCIgaGVpZ2h0PSI0MDgiIHJ4PSIwIiBmaWxsPSIjMWQ1ZmJmIi8+CgogIDwhLS0g5Lqk5beu44Kq44O844Or44CC44OW44Os44O844OJ44Gv44OP44OB44Kn44OD44OI5Z6LKOS4iui+uuOBr+ebtOe3muOAgeS4i+WBtOOBruagueWFg+OBruOBv+OBiOOBkOOCjCnjgaflt6blj7Pjg5/jg6njg7zphY3nva4gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTk2IDE5NCkgc2NhbGUoLTEgMSkgcm90YXRlKC01MikiPgogICAgPGxpbmUgeDE9Ii0yNjgiIHkxPSIwIiB4Mj0iMiIgeTI9IjAiIHN0cm9rZT0iI2I5YzdkYyIgc3Ryb2tlLXdpZHRoPSIzMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNCAtMTggTDEyNCAtMzYgTDEyNCA2MiBMMzggNDkgUTI4IDIwIDQgMTYgWiIgZmlsbD0iI2I5YzdkYyIgc3Ryb2tlPSIjYjljN2RjIiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPC9nPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMxNiAxOTQpIHJvdGF0ZSgtNTIpIj4KICAgIDxsaW5lIHgxPSItMjY4IiB5MT0iMCIgeDI9IjIiIHkyPSIwIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMzAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTQgLTE4IEwxMjQgLTM2IEwxMjQgNjIgTDM4IDQ5IFEyOCAyMCA0IDE2IFoiIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDwvZz4KPC9zdmc+Cg==";
 
 function truncate(value: string, maxChars: number): string {
   const chars = Array.from(value);
@@ -58,83 +59,66 @@ function renderOgImage(request: Request): ImageResponse {
   const title = truncate(rawTitle, 40);
   const subtitle = truncate(rawSubtitle, 50);
 
+  // 日経ビジュアルデータ寄り(docs/design-rules.md §2): 白地に墨の見出し、左揃え、
+  // 青はワードマークの下の短い罫線1本だけ。グラデーション・影・角丸は使わない
+  const ink = "#1f1f1f";
+  const body = "#3d3d3d";
+  const meta = "#6f6f6f";
+  const blue = "#1d5fbf";
+  const hairline = "#dcdcdc";
+
   return new ImageResponse(
     (
       <div
         style={{
-          alignItems: "center",
-          background: "radial-gradient(circle at 18% 22%, #1f2a44 0%, #0b1020 55%, #070b16 100%)",
-          color: "#ffffff",
+          background: "#ffffff",
+          color: ink,
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          justifyContent: "center",
-          padding: "64px",
+          justifyContent: "space-between",
+          padding: "64px 72px 60px",
           width: "100%"
         }}
       >
+        <div style={{ alignItems: "center", display: "flex", gap: "16px" }}>
+          <img src={markDataUri} alt="" width={40} height={40} />
+          <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: "0.04em" }}>レガッタナビ</div>
+          <div style={{ color: meta, fontSize: 26, fontWeight: 400, marginLeft: "8px" }}>データで見るボート</div>
+        </div>
+
         {title ? (
-          <div
-            style={{
-              alignItems: "center",
-              display: "flex",
-              flexDirection: "column",
-              gap: "32px",
-              textAlign: "center"
-            }}
-          >
-            <div style={{ alignItems: "center", display: "flex", gap: "18px" }}>
-              <img
-                src={markDataUri}
-                alt="レガッタナビ"
-                width={64}
-                height={64}
-                style={{ borderRadius: "16px" }}
-              />
-              <div style={{ fontSize: 40, fontWeight: 700, letterSpacing: "0.02em" }}>レガッタナビ</div>
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "22px", maxWidth: "1056px" }}>
             <div
               style={{
-                fontSize: Array.from(title).length > 18 ? 56 : 72,
-                fontWeight: 800,
-                letterSpacing: "0.02em",
-                lineHeight: 1.25,
-                maxWidth: "1040px"
+                fontSize: Array.from(title).length > 18 ? 56 : 68,
+                fontWeight: 700,
+                letterSpacing: "0",
+                lineHeight: 1.3
               }}
             >
               {title}
             </div>
             {subtitle ? (
-              <div style={{ color: "#b9c6e2", fontSize: 34, fontWeight: 600 }}>{subtitle}</div>
+              <div style={{ color: body, fontSize: 30, fontWeight: 400, lineHeight: 1.5 }}>{subtitle}</div>
             ) : null}
           </div>
         ) : (
-          <div
-            style={{
-              alignItems: "center",
-              display: "flex",
-              gap: "28px"
-            }}
-          >
-            <img
-              src={markDataUri}
-              alt="レガッタナビ"
-              width={128}
-              height={128}
-              style={{ borderRadius: "28px" }}
-            />
-            <div
-              style={{
-                fontSize: 98,
-                fontWeight: 800,
-                letterSpacing: "0.02em",
-                lineHeight: 1
-              }}
-            >
-              レガッタナビ
+          <div style={{ display: "flex", flexDirection: "column", gap: "22px", maxWidth: "1056px" }}>
+            <div style={{ fontSize: 68, fontWeight: 700, letterSpacing: "0", lineHeight: 1.3 }}>
+              ローイングの大会結果と記録のデータベース
+            </div>
+            <div style={{ color: body, fontSize: 30, fontWeight: 400, lineHeight: 1.5 }}>
+              全日本級大会の結果を年度・大会・種目・団体で検索、歴代記録、データ分析記事
             </div>
           </div>
         )}
+
+        <div style={{ alignItems: "center", display: "flex", gap: "20px", width: "100%" }}>
+          <div style={{ background: blue, height: "6px", width: "120px" }} />
+          <div style={{ background: hairline, flexGrow: 1, height: "1px" }} />
+          <div style={{ color: meta, fontSize: 24, fontWeight: 400 }}>regattanavi.jp</div>
+        </div>
       </div>
     ),
     {
