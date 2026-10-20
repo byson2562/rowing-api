@@ -1,173 +1,73 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 type NavLink = { href: string; label: string };
-type NavItem = NavLink | { label: string; children: NavLink[] };
 
-// トップレベルは5項目まで。ホームは左のロゴが担うのでナビには置かない。
-const NAV_ITEMS: NavItem[] = [
+// ナビは1段(ドロップダウンなし)。スポンサー・お問い合わせはフッターと「レガッタナビとは」から辿る
+const NAV_ITEMS: NavLink[] = [
   { href: "/search", label: "検索" },
-  {
-    label: "大会結果",
-    children: [
-      { href: "/results", label: "大会結果一覧" },
-      { href: "/records", label: "歴代記録" }
-    ]
-  },
-  {
-    label: "選手・団体",
-    children: [
-      { href: "/organizations", label: "団体別" },
-      { href: "/athletes", label: "選手別" }
-    ]
-  },
+  { href: "/results", label: "大会結果" },
+  { href: "/records", label: "歴代記録" },
+  { href: "/organizations", label: "団体別" },
+  { href: "/athletes", label: "選手別" },
   { href: "/articles", label: "記事" },
-  {
-    label: "サイトについて",
-    children: [
-      { href: "/about", label: "レガッタナビとは" },
-      { href: "/sponsor", label: "スポンサー" },
-      { href: "/contact", label: "お問い合わせ" }
-    ]
-  }
+  { href: "/about", label: "レガッタナビとは" }
 ];
 
-function hasChildren(item: NavItem): item is { label: string; children: NavLink[] } {
-  return "children" in item;
-}
-
-// ナビは 13px のメタ色。hover で墨色+下線(青は使わない)
-const linkColorClass = "text-rn-meta no-underline hover:text-rn-text hover:underline";
-
-// サイトの一言。日経ビジュアルデータの「見出しで語る」流儀に合わせ、ロゴの横ではなく中央に置く
+// サイトの一言。ワードマークの横に小さな灰文字で添える
 const TAGLINE = "データで見るボート";
 
-function Caret({ open }: { open: boolean }) {
-  return (
-    <svg
-      width="10"
-      height="10"
-      viewBox="0 0 12 12"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`transition-transform duration-150 motion-reduce:transition-none ${open ? "rotate-180" : ""}`}
-      aria-hidden="true"
-    >
-      <path d="M2.5 4.5 L6 8 L9.5 4.5" />
-    </svg>
-  );
+function isCurrent(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-// クリックで開くドロップダウン(ホバー開閉はタッチ端末で誤爆するため使わない)
-function NavDropdown({
-  label,
-  items,
-  isOpen,
-  onToggle,
-  onClose
-}: {
-  label: string;
-  items: NavLink[];
-  isOpen: boolean;
-  onToggle: () => void;
-  onClose: () => void;
-}) {
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        className={`inline-flex cursor-pointer appearance-none items-center gap-1 border-0 bg-transparent p-0 font-[inherit] text-[13px] font-medium ${linkColorClass}`}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        onClick={onToggle}
-      >
-        {label}
-        <Caret open={isOpen} />
-      </button>
-      {isOpen && (
-        <div className="absolute left-[-12px] top-[calc(100%+14px)] z-20 min-w-[196px] border border-rn-border bg-white py-1.5">
-          {items.map((child) => (
-            <Link
-              key={child.href}
-              href={child.href}
-              className="block px-3.5 py-2 text-[13px] font-medium text-rn-text no-underline hover:bg-rn-surface-soft hover:no-underline"
-              onClick={onClose}
-            >
-              {child.label}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+// 14px の墨。現在地は下線(2px、文字から少し離す)で示す
+const navLinkBase =
+  "inline-flex min-h-10 items-center border-b-2 text-[14px] font-medium leading-[1.4] text-rn-text no-underline " +
+  "hover:border-rn-border-strong hover:no-underline";
+const navLinkIdle = `${navLinkBase} border-transparent`;
+const navLinkCurrent = `${navLinkBase} border-rn-border-strong`;
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const navRef = useRef<HTMLElement>(null);
-
-  // 外側クリックと Esc でドロップダウンを閉じる
-  useEffect(() => {
-    if (!openMenu) return;
-
-    const onPointerDown = (event: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(event.target as Node)) setOpenMenu(null);
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpenMenu(null);
-    };
-
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [openMenu]);
+  const pathname = usePathname() ?? "";
 
   return (
     <header className="border-b border-rn-border">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-[1fr_auto] items-center gap-4 px-5 py-3 md:grid-cols-[1fr_auto_1fr] md:px-10 md:py-4">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-6 px-5 py-3 md:px-10 md:py-0">
         <Link
           href="/"
-          className="justify-self-start text-[15px] font-bold leading-[1.4] tracking-[0.04em] text-rn-text no-underline hover:no-underline"
+          className="flex items-baseline gap-3 text-[18px] font-bold leading-[1.4] tracking-[0.04em] text-rn-text no-underline hover:no-underline md:py-4"
           onClick={() => setOpen(false)}
         >
           レガッタナビ
+          <span className="hidden text-[12px] font-normal leading-[1.4] tracking-normal text-rn-meta sm:inline">{TAGLINE}</span>
         </Link>
 
-        <span className="hidden text-[15px] font-medium leading-[1.4] text-rn-text md:block">{TAGLINE}</span>
-
-        {/* デスクトップ: 横並びナビ(グループはクリックで開くドロップダウン) */}
-        <nav ref={navRef} className="hidden items-center justify-self-end gap-5 md:inline-flex" aria-label="グローバルナビゲーション">
-          {NAV_ITEMS.map((item) =>
-            hasChildren(item) ? (
-              <NavDropdown
-                key={item.label}
-                label={item.label}
-                items={item.children}
-                isOpen={openMenu === item.label}
-                onToggle={() => setOpenMenu((prev) => (prev === item.label ? null : item.label))}
-                onClose={() => setOpenMenu(null)}
-              />
-            ) : (
-              <Link key={item.href} href={item.href} className={`text-[13px] font-medium ${linkColorClass}`}>
+        {/* デスクトップ: 1段の横並びナビ。現在地に下線 */}
+        <nav className="hidden items-stretch gap-6 self-stretch md:flex" aria-label="グローバルナビゲーション">
+          {NAV_ITEMS.map((item) => {
+            const current = isCurrent(pathname, item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={current ? navLinkCurrent : navLinkIdle}
+                aria-current={current ? "page" : undefined}
+              >
                 {item.label}
               </Link>
-            )
-          )}
+            );
+          })}
         </nav>
 
         {/* モバイル: ハンバーガーボタン */}
         <button
           type="button"
-          className="inline-flex cursor-pointer appearance-none items-center justify-center justify-self-end rounded-rn-control border-0 bg-transparent p-2 font-[inherit] text-rn-text md:hidden"
+          className="inline-flex cursor-pointer appearance-none items-center justify-center rounded-rn-control border-0 bg-transparent p-2 font-[inherit] text-rn-text md:hidden"
           aria-label={open ? "メニューを閉じる" : "メニューを開く"}
           aria-expanded={open}
           aria-controls="mobile-nav"
@@ -190,41 +90,23 @@ export default function SiteHeader() {
         </button>
       </div>
 
-      {/* モバイル: 展開メニュー(折りたたまず、見出し+インデントで階層を示す) */}
+      {/* モバイル: 展開メニュー(1段のリスト。現在地は太字) */}
       {open && (
-        <nav
-          id="mobile-nav"
-          className="flex flex-col border-t border-rn-border px-5 py-1 md:hidden"
-          aria-label="モバイルナビゲーション"
-        >
-          {NAV_ITEMS.map((item) =>
-            hasChildren(item) ? (
-              <div key={item.label} className="border-t border-rn-border-soft first:border-t-0">
-                <p className="mt-2.5 mb-0 text-[12px] font-medium leading-[1.6] text-rn-meta">
-                  {item.label}
-                </p>
-                {item.children.map((child) => (
-                  <Link
-                    key={child.href}
-                    href={child.href}
-                    className="block py-2.5 pl-2.5 text-[15px] font-medium leading-[1.5] text-rn-text no-underline hover:underline"
-                    onClick={() => setOpen(false)}
-                  >
-                    {child.label}
-                  </Link>
-                ))}
-              </div>
-            ) : (
+        <nav id="mobile-nav" className="flex flex-col border-t border-rn-border px-5 py-2 md:hidden" aria-label="モバイルナビゲーション">
+          {NAV_ITEMS.map((item) => {
+            const current = isCurrent(pathname, item.href);
+            return (
               <Link
                 key={item.href}
                 href={item.href}
-                className="py-2.5 text-[15px] font-medium leading-[1.5] text-rn-text no-underline hover:underline"
+                className={`border-b border-rn-border-soft py-3 text-[15px] leading-[1.5] text-rn-text no-underline last:border-b-0 hover:underline ${current ? "font-bold" : "font-medium"}`}
+                aria-current={current ? "page" : undefined}
                 onClick={() => setOpen(false)}
               >
                 {item.label}
               </Link>
-            )
-          )}
+            );
+          })}
         </nav>
       )}
     </header>
