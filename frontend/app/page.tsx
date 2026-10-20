@@ -36,13 +36,14 @@ export const metadata: Metadata = {
 // ---- ホームのクラス(docs/design-rules.md §6: ホームの値はこのファイル冒頭に置く) ----
 // 日経ビジュアルデータ寄り: 箱を作らず、記事は3列の「見出し+本文+小さな図+日付」、区切りは下罫線。
 const topRow = "flex flex-wrap items-end justify-between gap-x-6 gap-y-4";
-const pageTitle = "m-0 text-[15px] font-medium leading-[1.6] text-rn-text";
-const datasetMeta = "mt-1 mb-0 text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
-const articleGrid = "mt-12 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-12";
+const pageTitle = "m-0 text-[24px] font-bold leading-[1.4] text-rn-text [text-wrap:balance] max-[640px]:text-[22px]";
+const datasetMeta = "mt-2 mb-0 text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
+const articleGrid =
+  "mt-8 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-12 border-t border-rn-border-strong pt-10";
 const articleCard = "flex min-w-0 flex-col gap-4 border-b border-rn-border pb-5";
 const articleTitle = "m-0 text-[24px] font-bold leading-[1.45] text-rn-text [text-wrap:balance]";
 const articleTitleLink = "text-rn-text no-underline hover:underline";
-const articleDesc = "m-0 text-[14px] leading-[1.85] text-rn-muted";
+const articleDesc = "m-0 line-clamp-3 text-[14px] leading-[1.85] text-rn-muted";
 const articleDate = "mt-auto self-end text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
 const twoCol = "mt-16 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-10";
 const listHeading = "m-0 mb-1 text-[18px] font-bold leading-[1.5] text-rn-text";
@@ -77,21 +78,21 @@ async function articleFigure(article: ArticleMeta) {
   if (resultsYear > 0) {
     const gaps = await championGaps(resultsYear);
     if (gaps.length === 0) return null;
-    const rows: MiniBarRow[] = gaps.map((g) => ({
+    // 接戦だった順に 8 種目まで。全種目は記事と大会ページにある
+    const shown = [...gaps].sort((a, b) => a.gap - b.gap).slice(0, 8);
+    const rows: MiniBarRow[] = shown.map((g) => ({
       label: g.event,
       value: g.gap,
       display: g.gap.toFixed(2),
       hot: g.gap < 1
     }));
     const close = rows.filter((r) => r.hot).length;
-    const min = rows.reduce((a, b) => (a.value < b.value ? a : b));
-    const max = rows.reduce((a, b) => (a.value > b.value ? a : b));
     return (
       <MiniBars
         rows={rows}
         scale={barScale(rows.map((r) => r.value))}
-        caption={`2位との差(秒)。${close > 0 ? "青は1秒未満" : "いずれも1秒以上の差"}`}
-        summary={`${resultsYear}年インカレ${rows.length}種目の2位との差。${min.label}${min.display}秒が最小、${max.label}${max.display}秒が最大`}
+        caption={`2位との差(秒)。接戦だった${rows.length}種目${close > 0 ? "、青は1秒未満" : ""}`}
+        summary={`${resultsYear}年インカレで2位との差が小さかった${rows.length}種目。${rows.map((r) => `${r.label}${r.display}秒`).join("、")}`}
       />
     );
   }

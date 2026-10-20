@@ -9,8 +9,8 @@ export function MiniBars({
   scale,
   caption,
   summary,
-  labelWidth = 96,
-  barHeight = 9
+  labelWidth = 104,
+  barHeight = 10
 }: {
   rows: MiniBarRow[];
   scale: number;
@@ -20,11 +20,11 @@ export function MiniBars({
   barHeight?: number;
 }) {
   return (
-    <figure className="m-0 flex flex-col gap-[5px] pt-4 pb-1" role="img" aria-label={summary}>
+    <figure className="m-0 flex flex-col gap-1.5 pt-4 pb-1" role="img" aria-label={summary}>
       {rows.map((row) => (
         <div
           key={row.label}
-          className="grid items-center gap-2 text-[11px] leading-[1.4] text-rn-muted"
+          className="grid items-center gap-2 text-[12px] leading-[1.4] text-rn-muted"
           style={{ gridTemplateColumns: `${labelWidth}px minmax(0,1fr) 40px` }}
         >
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">{row.label}</span>
