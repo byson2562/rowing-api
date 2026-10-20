@@ -38,43 +38,11 @@ function hasChildren(item: NavItem): item is { label: string; children: NavLink[
   return "children" in item;
 }
 
-const linkColorClass = "text-rn-link no-underline hover:underline hover:text-rn-primary";
+// ナビは 13px のメタ色。hover で墨色+下線(青は使わない)
+const linkColorClass = "text-rn-meta no-underline hover:text-rn-text hover:underline";
 
-// ブランドマーク(交差オール)。public/favicon.svg と同一の図形をインライン化する
-function BrandMark() {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="52 52 408 408"
-      className="shrink-0 rounded-[6px]"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <rect x="52" y="52" width="408" height="408" rx="96" fill="#1D6EE0" />
-      <g transform="translate(196 194) scale(-1 1) rotate(-52)">
-        <line x1="-268" y1="0" x2="2" y2="0" stroke="#BCD9FF" strokeWidth="30" strokeLinecap="round" />
-        <path
-          d="M4 -18 L124 -36 L124 62 L38 49 Q28 20 4 16 Z"
-          fill="#BCD9FF"
-          stroke="#BCD9FF"
-          strokeWidth="12"
-          strokeLinejoin="round"
-        />
-      </g>
-      <g transform="translate(316 194) rotate(-52)">
-        <line x1="-268" y1="0" x2="2" y2="0" stroke="#FFFFFF" strokeWidth="30" strokeLinecap="round" />
-        <path
-          d="M4 -18 L124 -36 L124 62 L38 49 Q28 20 4 16 Z"
-          fill="#FFFFFF"
-          stroke="#FFFFFF"
-          strokeWidth="12"
-          strokeLinejoin="round"
-        />
-      </g>
-    </svg>
-  );
-}
+// サイトの一言。日経ビジュアルデータの「見出しで語る」流儀に合わせ、ロゴの横ではなく中央に置く
+const TAGLINE = "データで見るボート";
 
 function Caret({ open }: { open: boolean }) {
   return (
@@ -122,12 +90,12 @@ function NavDropdown({
         <Caret open={isOpen} />
       </button>
       {isOpen && (
-        <div className="absolute left-[-10px] top-[calc(100%+10px)] z-20 min-w-[184px] rounded-rn-card border border-rn-border bg-white p-1.5 shadow-rn-soft">
+        <div className="absolute left-[-12px] top-[calc(100%+14px)] z-20 min-w-[196px] border border-rn-border bg-white py-1.5">
           {items.map((child) => (
             <Link
               key={child.href}
               href={child.href}
-              className="block rounded-[8px] px-2.5 py-2 text-[13px] font-medium text-rn-link no-underline hover:bg-[#f2f7fe] hover:text-rn-primary"
+              className="block px-3.5 py-2 text-[13px] font-medium text-rn-text no-underline hover:bg-rn-surface-soft hover:no-underline"
               onClick={onClose}
             >
               {child.label}
@@ -165,18 +133,19 @@ export default function SiteHeader() {
 
   return (
     <header className="border-b border-rn-border">
-      <div className="mx-auto flex max-w-[1220px] items-center justify-between gap-3 px-3.5 py-2 md:px-6 md:py-2.5">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-[1fr_auto] items-center gap-4 px-5 py-3 md:grid-cols-[1fr_auto_1fr] md:px-10 md:py-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-[15px] font-extrabold tracking-[0.02em] text-rn-brand no-underline md:text-base"
+          className="justify-self-start text-[15px] font-bold leading-[1.4] tracking-[0.04em] text-rn-text no-underline hover:no-underline"
           onClick={() => setOpen(false)}
         >
-          <BrandMark />
           レガッタナビ
         </Link>
 
+        <span className="hidden text-[15px] font-medium leading-[1.4] text-rn-text md:block">{TAGLINE}</span>
+
         {/* デスクトップ: 横並びナビ(グループはクリックで開くドロップダウン) */}
-        <nav ref={navRef} className="hidden items-center gap-[18px] md:inline-flex" aria-label="グローバルナビゲーション">
+        <nav ref={navRef} className="hidden items-center justify-self-end gap-5 md:inline-flex" aria-label="グローバルナビゲーション">
           {NAV_ITEMS.map((item) =>
             hasChildren(item) ? (
               <NavDropdown
@@ -198,7 +167,7 @@ export default function SiteHeader() {
         {/* モバイル: ハンバーガーボタン */}
         <button
           type="button"
-          className="inline-flex cursor-pointer appearance-none items-center justify-center rounded-md border-0 bg-transparent p-2 font-[inherit] text-rn-brand md:hidden"
+          className="inline-flex cursor-pointer appearance-none items-center justify-center justify-self-end rounded-rn-control border-0 bg-transparent p-2 font-[inherit] text-rn-text md:hidden"
           aria-label={open ? "メニューを閉じる" : "メニューを開く"}
           aria-expanded={open}
           aria-controls="mobile-nav"
@@ -225,20 +194,20 @@ export default function SiteHeader() {
       {open && (
         <nav
           id="mobile-nav"
-          className="flex flex-col border-t border-rn-border px-3.5 py-1 md:hidden"
+          className="flex flex-col border-t border-rn-border px-5 py-1 md:hidden"
           aria-label="モバイルナビゲーション"
         >
           {NAV_ITEMS.map((item) =>
             hasChildren(item) ? (
               <div key={item.label} className="border-t border-rn-border-soft first:border-t-0">
-                <p className="mt-2.5 mb-0 text-[11px] font-bold uppercase tracking-[0.08em] text-rn-muted">
+                <p className="mt-2.5 mb-0 text-[12px] font-medium leading-[1.6] text-rn-meta">
                   {item.label}
                 </p>
                 {item.children.map((child) => (
                   <Link
                     key={child.href}
                     href={child.href}
-                    className={`block py-2.5 pl-2.5 text-sm font-medium ${linkColorClass}`}
+                    className="block py-2.5 pl-2.5 text-[15px] font-medium leading-[1.5] text-rn-text no-underline hover:underline"
                     onClick={() => setOpen(false)}
                   >
                     {child.label}
@@ -249,7 +218,7 @@ export default function SiteHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`py-2.5 text-sm font-medium ${linkColorClass}`}
+                className="py-2.5 text-[15px] font-medium leading-[1.5] text-rn-text no-underline hover:underline"
                 onClick={() => setOpen(false)}
               >
                 {item.label}

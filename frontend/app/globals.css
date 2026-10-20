@@ -106,9 +106,9 @@ body {
 /* サイト共通のコンテナ幅。Tailwind の container ユーティリティと同名衝突を避けるため
    .site-container に改名している。 */
 .site-container {
-  max-width: 1220px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 28px 24px 36px;
+  padding: 40px 40px 72px;
 }
 
 .hero {
@@ -121,28 +121,20 @@ body {
 
 .hero h1 {
   margin: 0;
-  letter-spacing: 0.02em;
-  /* 移行済みページ(lp-hero)と同じ見出しスケールに揃える */
-  font-size: clamp(1.75rem, 3.5vw, 2.3rem);
-  line-height: 1.22;
+  letter-spacing: 0;
+  /* h1 は 38px/1.4/700(docs/design-rules.md §4)。lp-hero と同じ */
+  font-size: clamp(1.75rem, 3.4vw, 2.375rem);
+  line-height: 1.4;
+  font-weight: 700;
+  text-wrap: balance;
 }
 
 .subtitle {
-  color: var(--muted);
-  margin: 8px 0 0;
-  max-width: 62ch;
-}
-
-.hero-badge {
-  border: 1px solid #dbe7fa;
-  background: rgba(255, 255, 255, 0.9);
-  color: #24496f;
-  padding: 7px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  color: var(--text-body);
+  margin: 16px 0 0;
+  max-width: 60ch;
+  font-size: 17px;
+  line-height: 1.95;
 }
 
 table {
@@ -174,7 +166,7 @@ thead th {
 
 @media (max-width: 768px) {
   .site-container {
-    padding: 20px 14px 28px;
+    padding: 28px 20px 48px;
   }
 
   .hero {
@@ -238,11 +230,13 @@ thead th {
   line-height: 1.5;
 }
 
+/* ヒーローは箱にしない。余白と下罫線で本文と区切る */
 .lp-hero {
   background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 28px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 0 0 32px;
   overflow: hidden;
   position: relative;
 }
@@ -263,14 +257,17 @@ thead th {
 .lp-hero h1 {
   margin: 8px 0 0;
   /* 折り返しはlp-h1-lineの文節境界でのみ発生させる(「を、」等の孤立行を防ぐ) */
-  font-size: clamp(1.75rem, 3.5vw, 2.3rem);
-  line-height: 1.22;
+  font-size: clamp(1.75rem, 3.4vw, 2.375rem);
+  line-height: 1.4;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 .lp-lead {
-  margin: 12px 0 0;
+  margin: 16px 0 0;
   max-width: 60ch;
   color: var(--text-body);
+  font-size: 17px;
   line-height: 1.95;
   text-wrap: pretty;
 }
@@ -294,17 +291,16 @@ thead th {
   margin-top: 16px;
   position: relative;
   z-index: 2;
-  border-radius: 18px;
 }
 
 .lp-hero-preview {
   width: 100%;
   height: auto;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: none;
   display: block;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition: border-color 0.15s ease;
 }
 
 .lp-hero-preview-link:hover .lp-hero-preview,
@@ -339,11 +335,12 @@ thead th {
   }
 
   .lp-hero {
-    padding: 22px;
+    padding: 0 0 24px;
   }
 
   .lp-lead {
-    line-height: 1.64;
+    font-size: 16px;
+    line-height: 1.85;
   }
 
 }
