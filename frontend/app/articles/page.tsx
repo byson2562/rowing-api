@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { articles } from "../../lib/articles";
 import { siteUrl } from "../../lib/site-url";
-import { articleThumbUrl, ogImages } from "../../lib/og-image";
+import { ogImages } from "../../lib/og-image";
 
 export const metadata: Metadata = {
   title: "記事・データ分析",
@@ -20,6 +20,14 @@ export const metadata: Metadata = {
     images: ogImages("記事・データ分析", "ローイング大会結果データベース")
   }
 };
+
+// 一覧は箱にせず、下罫線の行で並べる(ホームの記事列と同じ言語)
+const list = "m-0 mt-2 list-none p-0";
+const row = "flex flex-col gap-3 border-b border-rn-border py-7 first:pt-2";
+const rowDate = "m-0 text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
+const rowTitle = "m-0 text-[24px] font-bold leading-[1.45] text-rn-text [text-wrap:balance]";
+const rowTitleLink = "text-rn-text no-underline hover:underline";
+const rowDesc = "m-0 max-w-[60ch] text-[15px] leading-[1.9] text-rn-muted";
 
 function formatDate(iso: string): string {
   const [y, m, d] = iso.split("-").map(Number);
@@ -39,7 +47,7 @@ export default function ArticlesPage() {
   };
 
   return (
-    <main className="site-container lp-page">
+    <main className="site-container lp-page article-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <nav className="breadcrumbs" aria-label="パンくずリスト">
         <Link href="/">ホーム</Link>
@@ -57,49 +65,28 @@ export default function ArticlesPage() {
         </div>
       </section>
 
-      <section aria-labelledby="articles-list-heading">
-        <h2 id="articles-list-heading" className="lp-section-title">記事一覧</h2>
-        {/* ヒーロー(白+枠線)と区別するため、カードはサイト共通の枠線なし+ソフト影 */}
-        <div className="mt-3.5 grid gap-3">
+      <section aria-label="記事一覧">
+        <ul className={list}>
           {sorted.map((a) => (
-            <article
-              className="flex gap-4 rounded-xl bg-white p-[18px] shadow-rn-soft transition-[box-shadow,transform] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(16,42,80,0.1)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 max-[640px]:flex-col"
-              key={a.slug}
-            >
-              {/* サムネイルはOGP画像(/og)の使い回し。見出しのリンクと重複するため
-                  スクリーンリーダー・タブ移動からは外す */}
-              <Link
-                href={`/articles/${a.slug}`}
-                className="block shrink-0 no-underline max-[640px]:w-full md:w-[240px]"
-                aria-hidden="true"
-                tabIndex={-1}
-              >
-                <img
-                  src={articleThumbUrl(a.slug)}
-                  alt=""
-                  width={1200}
-                  height={630}
-                  loading="lazy"
-                  className="block h-auto w-full rounded-[8px] border border-rn-border-soft"
-                />
-              </Link>
-              <div className="min-w-0">
-                <p className="m-0 text-[12px] font-bold text-rn-muted [font-variant-numeric:tabular-nums]">
-                  <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
-                </p>
-                <h3 className="mb-0 mt-1.5 text-[1.05rem] leading-[1.5]">
-                  <Link
-                    href={`/articles/${a.slug}`}
-                    className="text-rn-brand no-underline hover:text-rn-primary hover:underline"
-                  >
-                    {a.title}
-                  </Link>
-                </h3>
-                <p className="mb-0 mt-2 text-[14px] leading-[1.75] text-[#4c6687]">{a.description}</p>
-              </div>
-            </article>
+            <li key={a.slug} className={row}>
+              <p className={rowDate}>
+                <time dateTime={a.publishedAt}>{formatDate(a.publishedAt)}</time>
+                {a.updatedAt ? (
+                  <>
+                    {" "}
+                    · <time dateTime={a.updatedAt}>{formatDate(a.updatedAt)}</time> 更新
+                  </>
+                ) : null}
+              </p>
+              <h2 className={rowTitle}>
+                <Link href={`/articles/${a.slug}`} className={rowTitleLink}>
+                  {a.title}
+                </Link>
+              </h2>
+              <p className={rowDesc}>{a.description}</p>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </main>
   );

@@ -49,7 +49,7 @@ export const sx = {
   secondaryWrap: "mt-1 grid gap-1.5",
   advHeader: "flex items-center",
   advToggle:
-    "inline-flex w-full cursor-pointer items-center gap-2 border-y border-rn-border bg-white px-0 py-3 " +
+    "inline-flex w-full cursor-pointer items-center gap-2 border-x-0 border-y border-rn-border bg-white px-0 py-3 " +
     "text-[14px] font-medium leading-[1.5] text-rn-text hover:underline",
   advMeta: "ml-auto text-[12px] font-normal text-rn-meta",
   advCaret: "text-[11px] text-rn-meta",
@@ -98,7 +98,7 @@ export const sx = {
   // グラフ(モバイルは折りたたみ)
   chartsToggleWrap: "hidden max-[768px]:mt-4 max-[768px]:block",
   chartsToggle:
-    "w-full cursor-pointer border-y border-rn-border bg-white px-0 py-3 text-left text-[14px] font-medium " +
+    "w-full cursor-pointer border-x-0 border-y border-rn-border bg-white px-0 py-3 text-left text-[14px] font-medium " +
     "leading-[1.5] text-rn-text hover:underline",
   cards:
     "relative z-[1] mt-10 grid grid-cols-[repeat(12,minmax(0,1fr))] items-start gap-x-10 gap-y-10 " +

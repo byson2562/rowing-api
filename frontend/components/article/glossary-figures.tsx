@@ -1,14 +1,14 @@
 // ローイング用語集の図解。写真素材を持たないため、デザイントークンに沿った
 // インラインSVGで描く(拡大しても劣化せず、ラベルはテキストとして選択できる)。
 //
-// 色は既存の記事チャートの2色(#2f66b8 / #5b93e3)を踏襲する。新色は足さない。
-const STROKE_SIDE = "#2f66b8"; // ストロークサイドのオール(濃)
-const BOW_SIDE = "#5b93e3"; // バウサイドのオール(淡)
-const HULL_LINE = "#245a97"; // 艇の輪郭(public/icons と同じ線色)
-const HULL_FILL = "#f8fbff"; // 艇の地(--surface-soft)
-const SEAT = "#dbe7fa"; // 漕手・座席(--border)
-const LABEL = "#33507a"; // 図中ラベル
-const MUTED = "#5d7398"; // 補足ラベル(--muted)
+// 色は docs/design-rules.md §2 のトークン値だけを使う(青は図の主色、灰青は副色、線と文字は墨)。新色は足さない。
+const STROKE_SIDE = "#1d5fbf"; // ストロークサイドのオール(青 --primary)
+const BOW_SIDE = "#b9c7dc"; // バウサイドのオール(灰青 --primary-soft)
+const HULL_LINE = "#1f1f1f"; // 艇の輪郭(墨 --text)
+const HULL_FILL = "#eef1f5"; // 艇の地(--surface-soft)
+const SEAT = "#dcdcdc"; // 漕手・座席(--border)
+const LABEL = "#1f1f1f"; // 図中ラベル(--text)
+const MUTED = "#6f6f6f"; // 補足ラベル(--meta)
 
 /** 横向きの艇(バウが左)。図1で使う */
 function HullSide() {
