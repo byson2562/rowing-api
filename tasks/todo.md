@@ -1,3 +1,27 @@
+# デザインシステム刷新: 日経ビジュアルデータ寄りへ (2026-10-20)
+
+### 背景
+- 7月のフラット化は業務UI寄り。ユーザーは「業務っぽくないメディア寄り」を希望し、3方向モック(日経ビジュアルデータ / 北欧暮らしの道具店 / note)から日経寄りを選択
+- 決定: 順位バッジは青・灰(金銀銅廃止) / 主ボタンは墨色ソリッド / Noto Sans JP に一本化(Inter廃止)
+- 計画の詳細は ~/.claude/plans/sequential-hugging-spark.md(承認済み)。単一ソースは docs/design-rules.md
+
+### Spec / Plan
+- [ ] Phase 1: globals.css の :root / @theme・表・見出し既定、layout.tsx のフォント、button-classes、design-rules §1〜§6 とスキル要約を新仕様へ(1コミット)
+- [ ] Phase 2: SiteHeader(3列・中央に「データで見るボート」)、フッター、.site-container 1200px、.hero h1 38px(1コミット)
+- [ ] Phase 3a: 選手ページ(統計dl + 順位の推移の図)
+- [ ] Phase 3b: 大会ページ(760px一段組 + 2位との差の横棒図、rankBadgeClass を青・灰へ)
+- [ ] Phase 3c: ホーム(記事3列+小さな図、2列リスト)
+- [ ] Phase 3d: 検索ページ(箱・影の撤去、Recharts配色、墨ボタン)
+- [ ] Phase 3e: 記事(一覧の行化、本文h2の左ボーダー撤去、棒グラフ単色)
+- [ ] Phase 3f: 団体・歴代・年一覧・種目ページ(.static-*/.org-*、🥇→バッジ)
+- [ ] Phase 3g: LP系(lp-classes の箱撤去、フォーム)
+- [ ] Phase 4: OG画像を白地・墨見出しへ、サムネイル再生成
+- [ ] Phase 5: design-rules §1 対応表更新、lint/build、Review 追記。push はユーザー指示待ち
+
+### 判断
+- 大会ページの結論型見出し(「早稲田が連覇…」)は人が書くもの。69大会ぶんは生成できないので h1 は正式名のまま
+- `first-regatta` 記事(作業中・未コミット)には触れない
+
 # 大会結果ページのA案実装(入口帯+優勝一覧) (2026-10-15)
 
 ### 背景

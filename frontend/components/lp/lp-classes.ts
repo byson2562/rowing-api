@@ -79,8 +79,7 @@ export const lpSupportNote = "mt-3 mb-0 text-[13px] leading-[1.6] text-[#4f6f93]
 export const lpDonationLinks = "mt-3 flex flex-wrap gap-2";
 export const lpSupportTemplate =
   "mt-2.5 mb-0 whitespace-pre-wrap rounded-[10px] border border-rn-border-soft bg-[#f8fbff] p-3 " +
-  "text-[13px] leading-[1.7] text-[#1e3d66] " +
-  "[font-family:var(--font-inter),var(--font-noto-sans-jp),'Hiragino_Kaku_Gothic_ProN','BIZ_UDPGothic',sans-serif]";
+  "text-[13px] leading-[1.7] text-rn-text-body";
 // .lp-page .lp-tech-heading 相当(見出しの上余白)
 export const lpTechHeading = "mt-[26px] mb-0";
 

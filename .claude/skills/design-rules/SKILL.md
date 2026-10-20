@@ -13,21 +13,25 @@ description: レガッタナビのUIデザインルールを適用する。フ�
    - 検索UI: `frontend/components/search/search-classes.ts`
    - 静的LP: `frontend/components/lp/lp-classes.ts`
    - 記事: `frontend/components/article/article-classes.ts`
+   - 結果・順位バッジ: `frontend/components/results/results-classes.ts`
    - ホーム: `frontend/app/page.tsx` 冒頭の定数
-3. 色・radius・影は `rn-*` トークン(`frontend/app/globals.css` の `:root`)を最優先で使う。
+3. 色・radius は `rn-*` トークン(`frontend/app/globals.css` の `:root`)を最優先で使う。影は使わない。
 4. 変更後は内蔵ブラウザで desktop(1280px)と mobile(375px)のスクリーンショットを撮り、`docs/design-rules.md` の「9. AIっぽさのアンチパターン」の一覧と番号順に突き合わせる。該当箇所を直して再確認してから提示し、「点検した番号 / 直した番号」を添える(手順の詳細は同節の「自己点検手順」)。
 
 ## ハードルール(違反したら直す)
 
+- 方向性は「日経ビジュアルデータ寄り」(2026-10-20): 白地・墨色の文字・細い罫線。角丸・影・箱は作らない
 - 背景は白。全面の色地・背景グラデーション禁止
-- 影は常時付けない(`shadow-rn-soft`=ヘアライン+接地1pxのみ)。浮くのはホバー時だけ+`motion-reduce:`併記
-- グラデーション禁止(ボタン・下線含む)。ソリッドカラーのみ
-- radius: カード12px / 入力・ボタン10px。**pill(999px)はタグ系のみ**(チップ・セグメントタブ・順位バッジ)
-- 文字: 本文16 / UI14 / 表13 / ラベル12(11はタグ内・英大文字ラベルのみ)。named `text-sm` 系は使わず `text-[Npx]`+`leading-[…]`
-- ウェイト: 本文400 / ラベル500 / 操作600 / 見出し・数値700
-- 数値(タイム・順位・件数)には `[font-variant-numeric:tabular-nums]`
+- 影は使わない。浮かせる hover(`translate`/`scale`)も禁止。hover は下線か背景 `--surface-soft` の僅差だけ+`motion-reduce:` 併記
+- グラデーション禁止(ボタン・下線・棒グラフ含む)。見出しにアクセント棒・左ボーダーを付けない
+- radius: 入力・ボタン 4px(`rounded-rn-control`)、順位バッジは円。それ以外は 0。**pill(999px)は使わない**
+- 文字: Noto Sans JP のみ。h1 38 / h2 24 / 本文16 / UI14 / 表14 / メタ13 / 表ヘッダ12 / 図ラベル11。named `text-sm` 系は使わず `text-[Npx]`+`leading-[…]`
+- ウェイト: 400 / 500 / 700 の3段だけ(600・800 禁止)
+- 数値(タイム・順位・件数・日付)には `[font-variant-numeric:tabular-nums]`
+- 色: 文字・リンク・ボタンは墨 `rn-text`、説明 `rn-muted`、メタ `rn-meta`。**青 `rn-primary` は図・1位・選択状態・フォーカスだけ**。オレンジ・金銀銅・見出し紺は廃止
 - 新色の場当たり追加禁止。追加するならトークン化+コントラストAA検証+`docs/design-rules.md`更新
-- アクセント(オレンジ)は1画面1箇所まで
+- primary ボタン(墨地白文字)は1画面1つ。他は secondary(白地墨枠)かテキストリンク
+- 順位バッジは `components/results/results-classes.ts` の `rankBadgeClass`(1位=青 / 2〜3位=灰青 / 4位以下=薄灰)を使う。絵文字は使わない
 - 同一プロパティのユーティリティを同一要素に重ねない(後勝ちできない)。状態違いは排他的なクラス文字列で合成する
 - 生成UIの定型(ヒーロー+3カード+CTA、全要素の角丸と影、絵文字アイコン、中央揃えの連発、コピー調の見出し等)を出さない。一覧と代替は `docs/design-rules.md` §9
 

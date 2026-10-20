@@ -32,14 +32,17 @@
   --color-rn-border: var(--border);
   --color-rn-border-soft: var(--border-soft);
   --color-rn-text: var(--text);
+  --color-rn-text-body: var(--text-body);
   --color-rn-muted: var(--muted);
+  --color-rn-meta: var(--meta);
+  --color-rn-border-strong: var(--border-strong);
   --color-rn-primary: var(--primary);
   --color-rn-primary-dark: var(--primary-dark);
   --color-rn-primary-soft: var(--primary-soft);
   --color-rn-accent: var(--accent);
   --color-rn-accent-ink: var(--accent-ink);
-  --color-rn-link: #3f60a0;
-  --color-rn-brand: #17345a;
+  --color-rn-link: var(--text);
+  --color-rn-brand: var(--text);
   --radius-rn-card: var(--radius-card);
   --radius-rn-control: var(--radius-control);
   --radius-rn-pill: var(--radius-pill);
@@ -49,29 +52,36 @@
 
 @layer legacy {
 :root {
-  /* Clubhouse デザイントークン: 明るく柔らかいブルー基調 + オレンジCTA */
+  /* デザイントークン(日経ビジュアルデータ寄り、2026-10-20):
+     白地に墨色の文字と細い罫線だけ。角丸・影・地色の箱は作らない。
+     青は「データの色」(図・1位・選択状態)に専属させる。docs/design-rules.md §2 */
   --bg: #ffffff;
   --bg-accent: #ffffff;
   --surface: #ffffff;
   --surface-solid: #ffffff;
-  --surface-soft: #f8fbff;
-  --border: #dbe7fa;
-  --border-soft: #e3edfb;
-  --text: #20304d;
-  --muted: #5d7398;
-  --primary: #1d6ee0;
-  --primary-dark: #1557b8;
-  --primary-soft: #eef5ff;
-  --accent: #ff8a3d;
-  --accent-ink: #46240a;
-  --radius-card: 12px;
-  --radius-control: 10px;
+  --surface-soft: #eef1f5;
+  --border: #dcdcdc;
+  --border-soft: #ececec;
+  --border-strong: #1f1f1f;
+  --text: #1f1f1f;
+  --text-body: #3d3d3d;
+  --muted: #5a5a5a;
+  --meta: #6f6f6f;
+  --primary: #1d5fbf;
+  --primary-dark: #174c99;
+  --primary-soft: #b9c7dc;
+  /* オレンジのアクセントは廃止。旧 bg-rn-accent 等は青に落ちる */
+  --accent: var(--primary);
+  --accent-ink: #ffffff;
+  --radius-card: 0;
+  --radius-control: 4px;
   --radius-pill: 999px;
-  /* フラット基調: 影は「ヘアライン+ごく薄い接地影」。浮遊感はホバー時のみ */
-  --shadow: 0 0 0 1px #e3edfb, 0 1px 2px rgba(16, 42, 80, 0.04);
-  --shadow-soft: 0 0 0 1px #e8effb, 0 1px 2px rgba(16, 42, 80, 0.03);
+  /* 影は使わない。旧 shadow-rn(-soft) はヘアラインのリングだけ残す(箱自体は順次撤去) */
+  --shadow: 0 0 0 1px var(--border);
+  --shadow-soft: 0 0 0 1px var(--border);
   color: var(--text);
-  font-family: var(--font-inter), var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", sans-serif;
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", "Hiragino Sans", "BIZ UDPGothic", sans-serif;
+  font-feature-settings: "palt";
 }
 
 * {
@@ -81,7 +91,7 @@
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid rgba(29, 110, 224, 0.35);
+  outline: 2px solid var(--primary);
   outline-offset: 1px;
 }
 
@@ -145,19 +155,21 @@ table {
 th,
 td {
   text-align: left;
-  border-bottom: 1px solid #e8f0fb;
+  border-bottom: 1px solid var(--border);
   padding: 10px 8px;
-  font-size: 13px;
+  font-size: 14px;
   vertical-align: top;
 }
 
+/* 表はヘッダに地色を敷かず、上罫線(墨)とヘッダ文字の色・太さだけで区切る */
 th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: #f8fbff;
-  color: #3b567a;
-  box-shadow: inset 0 -1px 0 #dce7f4;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--meta);
+}
+
+thead th {
+  border-top: 1px solid var(--border-strong);
 }
 
 @media (max-width: 768px) {
@@ -200,7 +212,7 @@ th {
 
   th,
   td {
-    font-size: 12px;
+    font-size: 13px;
     padding: 8px 6px;
   }
 }
@@ -212,28 +224,18 @@ th {
 
 .lp-section-title {
   margin: 0 0 14px;
-  font-size: clamp(1.35rem, 1.7vw, 1.62rem);
-  font-weight: 800;
-  line-height: 1.22;
-  letter-spacing: 0.01em;
-  color: #0f2647;
-}
-
-.lp-section-title::after {
-  content: "";
-  display: block;
-  width: 44px;
-  height: 3px;
-  margin-top: 8px;
-  border-radius: 999px;
-  background: var(--primary);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--text);
 }
 
 .lp-page h3 {
   margin: 0;
-  font-size: 1.13rem;
-  font-weight: 750;
-  line-height: 1.35;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .lp-hero {
@@ -268,8 +270,8 @@ th {
 .lp-lead {
   margin: 12px 0 0;
   max-width: 60ch;
-  color: #4c6687;
-  line-height: 1.72;
+  color: var(--text-body);
+  line-height: 1.95;
   text-wrap: pretty;
 }
 
@@ -307,8 +309,7 @@ th {
 
 .lp-hero-preview-link:hover .lp-hero-preview,
 .lp-hero-preview-link:focus-visible .lp-hero-preview {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(18, 40, 70, 0.12);
+  border-color: var(--text);
 }
 
 /* 広い画面ではコピーとプレビューを左右2カラムに(右側の空洞化を防ぐ)。
@@ -387,13 +388,12 @@ th {
 }
 
 .breadcrumbs a {
-  color: #3f60a0;
-  font-weight: 700;
+  color: var(--text);
+  font-weight: 500;
   text-decoration: none;
 }
 
 .breadcrumbs a:hover {
-  color: var(--primary);
   text-decoration: underline;
 }
 
@@ -408,26 +408,14 @@ th {
 }
 
 .static-section h2 {
-  display: block;
+  display: flow-root;
   margin: 0 0 14px;
-  /* lp-section-title と同じ見出し言語 */
-  font-size: 1.2rem;
-  font-weight: 800;
-  line-height: 1.22;
-  letter-spacing: 0.01em;
-  color: #0f2647;
-}
-
-/* 短いアクセント下線。clear:both で右フロートのシェアボタンより下に落とす */
-.static-section h2::after {
-  content: "";
-  display: block;
-  clear: both;
-  width: 44px;
-  height: 3px;
-  margin-top: 8px;
-  border-radius: 999px;
-  background: var(--primary);
+  /* lp-section-title と同じ見出し言語。アクセント棒は置かず、サイズと太さだけで区切る */
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 0;
+  color: var(--text);
 }
 
 .static-section h2 a {
@@ -436,7 +424,6 @@ th {
 }
 
 .static-section h2 a:hover {
-  color: var(--primary);
   text-decoration: underline;
 }
 
@@ -457,14 +444,13 @@ th {
 }
 
 .static-links a {
-  color: #3f60a0;
-  font-weight: 600;
-  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 15px;
   text-decoration: none;
 }
 
 .static-links a:hover {
-  color: var(--primary);
   text-decoration: underline;
 }
 
@@ -485,7 +471,7 @@ th {
 }
 
 .static-table tbody tr:hover {
-  background: #f3f8ff;
+  background: transparent;
 }
 
 .static-table-caption {
@@ -505,10 +491,11 @@ th {
 }
 
 .static-table th {
-  font-size: 13px;
-  font-weight: 600;
-  color: #33507a;
-  background: #f2f8ff;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--meta);
+  background: transparent;
+  border-top: 1px solid var(--border-strong);
 }
 
 /* モバイルは横スクロールをやめ、1行=1カードに積む(各tdのdata-labelを見出しに使う) */
@@ -542,8 +529,8 @@ th {
     display: block;
     margin-bottom: 10px;
     padding: 4px 14px;
-    border: 1px solid #d7e3f4;
-    border-radius: 12px;
+    border: 1px solid var(--border);
+    border-radius: 0;
     background: #ffffff;
   }
 
@@ -558,7 +545,7 @@ th {
     gap: 14px;
     min-width: 0;
     padding: 8px 0;
-    border-bottom: 1px solid #eef3fb;
+    border-bottom: 1px solid var(--border-soft);
     text-align: right;
     white-space: normal;
   }
@@ -570,8 +557,8 @@ th {
   .static-table td::before {
     content: attr(data-label);
     flex-shrink: 0;
-    font-weight: 700;
-    color: var(--muted);
+    font-weight: 500;
+    color: var(--meta);
     text-align: left;
   }
 }
@@ -583,9 +570,9 @@ th {
 
 .static-more a,
 .static-cta a {
-  color: var(--primary);
-  font-weight: 700;
-  text-decoration: none;
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: underline;
 }
 
 .static-more a:hover,
@@ -602,13 +589,12 @@ th {
 }
 
 .static-year-nav a {
-  color: #3f60a0;
-  font-weight: 700;
+  color: var(--text);
+  font-weight: 500;
   text-decoration: none;
 }
 
 .static-year-nav a:hover {
-  color: var(--primary);
   text-decoration: underline;
 }
 
@@ -626,18 +612,17 @@ th {
   margin-top: 10px;
   padding: 6px 14px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: var(--surface);
   color: var(--text);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
 }
 
 .share-x-link:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--text);
 }
 
 .static-section h2 .share-x-link {
@@ -660,20 +645,21 @@ th {
   gap: 4px;
   padding: 14px 16px;
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--bg);
 }
 
 .org-medal-label {
   font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
+  font-weight: 500;
+  color: var(--meta);
 }
 
 .org-medal-value {
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 /* 選手ページ: 収録範囲の注記 */
@@ -710,22 +696,22 @@ th {
 
 .article-header h1 {
   margin: 10px 0 0;
-  font-size: clamp(1.6rem, 3.2vw, 2.15rem);
-  line-height: 1.35;
+  font-size: clamp(1.75rem, 3.4vw, 2.375rem);
+  line-height: 1.4;
+  font-weight: 700;
 }
 
 .article-body h2 {
   margin: 2.4em 0 0;
-  font-size: 1.35rem;
-  line-height: 1.45;
-  border-left: 4px solid #3f76c9;
-  padding-left: 12px;
+  font-size: 24px;
+  line-height: 1.5;
+  font-weight: 700;
 }
 
 .article-body > p {
   margin: 1.1em 0 0;
   line-height: 1.95;
-  color: #2c4364;
+  color: var(--text-body);
 }
 
 /* .home-featured* / .home-search-heading は app/page.tsx のTailwindクラスへ移行済み */

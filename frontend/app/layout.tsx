@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_JP } from "next/font/google";
+import { Noto_Sans_JP } from "next/font/google";
 import Script from "next/script";
 import Link from "next/link";
 
@@ -8,26 +8,19 @@ import SiteHeader from "../components/SiteHeader";
 import { sponsors } from "../lib/sponsors";
 import { siteUrl } from "../lib/site-url";
 
-// 数字・欧文はInter（タイム表示の判読性・桁揃えが和文フォントの従属欧文より良い）、
-// 和文はNoto Sans JPへフォールバックさせる。どちらも可変フォントを自己ホスト配信
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
+// 書体は Noto Sans JP に一本化(2026-10-20)。数字は tabular-nums で桁を揃える。
+// 和文サブセットは next/font が自動で unicode-range 分割するため、latin サブセットの指定で足りる
 const notoSansJp = Noto_Sans_JP({
   subsets: ["latin"],
+  weight: ["400", "500", "700"],
   variable: "--font-noto-sans-jp",
   display: "swap",
-  preload: false,
 });
 
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
-// フッターのリンク共通クラス(旧 .site-footer-link 相当。実効font-weightは500)
-const footerLinkClass =
-  "text-[11px] font-medium text-rn-link no-underline hover:underline hover:text-rn-primary md:text-xs";
+// フッターのリンク共通クラス: 13px の墨色、hover で下線だけ
+const footerLinkClass = "text-[13px] font-medium leading-[1.6] text-rn-text no-underline hover:underline";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -110,14 +103,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" className={`${inter.variable} ${notoSansJp.variable}`}>
+    <html lang="ja" className={notoSansJp.variable}>
       <body>
         <SiteHeader />
         {children}
-        <footer className="border-t border-rn-border bg-white/45">
+        <footer className="border-t border-rn-border bg-white">
           {sponsors.length > 0 && (
-            <div className="mx-auto flex max-w-[1220px] flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-rn-border-soft px-3.5 py-2.5 md:px-6" aria-label="協賛">
-              <span className="text-[11px] font-medium text-rn-muted">協賛</span>
+            <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-4 gap-y-1.5 border-b border-rn-border-soft px-5 py-3 md:px-10" aria-label="協賛">
+              <span className="text-[12px] font-medium text-rn-meta">協賛</span>
               {sponsors.map((sponsor) =>
                 sponsor.url ? (
                   <a
@@ -125,24 +118,24 @@ export default function RootLayout({
                     href={sponsor.url}
                     target="_blank"
                     rel="noopener sponsored"
-                    className="text-[12px] font-semibold text-rn-link no-underline hover:text-rn-primary hover:underline"
+                    className="text-[13px] font-medium text-rn-text no-underline hover:underline"
                   >
                     {sponsor.name}
                   </a>
                 ) : (
-                  <span key={sponsor.name} className="text-[12px] font-semibold text-[#33507a]">
+                  <span key={sponsor.name} className="text-[13px] font-medium text-rn-text">
                     {sponsor.name}
                   </span>
                 )
               )}
             </div>
           )}
-          <div className="mx-auto flex max-w-[1220px] flex-col items-start gap-2 px-3.5 py-2.5 md:flex-row md:items-center md:justify-between md:gap-3 md:px-6 md:py-3">
-            <p className="m-0 text-[11px] text-[#4d6788] md:text-xs">
+          <div className="mx-auto flex max-w-[1200px] flex-col items-start gap-3 px-5 py-5 md:flex-row md:items-center md:justify-between md:gap-6 md:px-10 md:py-6">
+            <p className="m-0 text-[13px] text-rn-meta [font-variant-numeric:tabular-nums]">
               © {new Date().getFullYear()} レガッタナビ
             </p>
             <nav
-              className="inline-flex flex-wrap items-center gap-3 md:gap-4"
+              className="inline-flex flex-wrap items-center gap-x-4 gap-y-1.5 md:gap-x-5"
               aria-label="フッターナビゲーション"
             >
               <Link href="/search" className={footerLinkClass}>
