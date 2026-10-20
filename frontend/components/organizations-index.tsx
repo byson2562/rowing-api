@@ -15,11 +15,10 @@ export type OrganizationGroup = {
   items: OrganizationEntry[];
 };
 
-// デザインルール準拠の検索入力(高さ40px / radius 10px / focus-visibleリング)
+// デザインルール準拠の検索入力(高さ40px / radius 4px / focus-visibleリング)
 const searchInputClass =
-  "h-10 w-full max-w-[360px] rounded-[10px] border border-rn-border bg-white px-[11px] py-2 text-[14px] " +
-  "text-[#1d3557] focus-visible:border-rn-primary focus-visible:outline-2 " +
-  "focus-visible:outline-[rgba(29,110,224,0.25)]";
+  "h-10 w-full max-w-[360px] rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[14px] " +
+  "text-rn-text focus-visible:border-rn-primary focus-visible:outline-2 focus-visible:outline-rn-primary";
 
 // ひらがな→カタカナ・全半角のゆらぎを吸収して部分一致させる
 function normalize(value: string): string {
@@ -48,7 +47,7 @@ export function OrganizationsIndex({ groups }: { groups: OrganizationGroup[] }) 
   return (
     <>
       <div className="mb-1 mt-4">
-        <label htmlFor="organization-filter" className="mb-1.5 block text-[12px] font-medium text-rn-muted">
+        <label htmlFor="organization-filter" className="mb-1.5 block text-[12px] font-medium text-rn-meta">
           団体名で絞り込む
         </label>
         <input
@@ -64,7 +63,7 @@ export function OrganizationsIndex({ groups }: { groups: OrganizationGroup[] }) 
           id="organization-filter-status"
           role="status"
           aria-live="polite"
-          className="mb-0 mt-1.5 text-[12px] text-rn-muted"
+          className="mb-0 mt-1.5 text-[12px] text-rn-meta"
         >
           {query.trim() ? `${totalMatches}団体が一致` : ""}
         </p>

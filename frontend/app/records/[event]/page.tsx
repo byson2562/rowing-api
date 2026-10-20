@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ShareXLink } from "../../components/share-x-link";
+import { rankBadgeClass } from "../../../components/results/results-classes";
 import {
   getFilteredResults,
   isAthleteRecord,
@@ -147,7 +148,9 @@ export default async function EventRecordsPage(props: { params: Promise<Params> 
             <tbody>
               {ranking.map((row, index) => (
                 <tr key={row.id}>
-                  <td data-label="歴代">{index + 1}</td>
+                  <td data-label="歴代">
+                    <span className={rankBadgeClass(index + 1)}>{index + 1}</span>
+                  </td>
                   <td data-label="タイム">{row.time_display}</td>
                   <td data-label="クルー">
                     {isAthleteRecord(row) ? (

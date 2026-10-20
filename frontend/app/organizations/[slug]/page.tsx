@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ShareXLink } from "../../components/share-x-link";
+import * as rc from "../../../components/results/results-classes";
 import {
   findOrganizationBySlug,
   getFilteredResults,
@@ -152,27 +153,36 @@ export default async function OrganizationPage(props: { params: Promise<Params> 
         </div>
       </header>
 
-      <section className="static-section">
-        <h2>通算成績サマリー</h2>
-        <div className="org-medal-grid">
-          <div className="org-medal-card">
-            <span className="org-medal-label">🥇 優勝</span>
-            <span className="org-medal-value">{medals.gold}</span>
-          </div>
-          <div className="org-medal-card">
-            <span className="org-medal-label">🥈 2位</span>
-            <span className="org-medal-value">{medals.silver}</span>
-          </div>
-          <div className="org-medal-card">
-            <span className="org-medal-label">🥉 3位</span>
-            <span className="org-medal-value">{medals.bronze}</span>
-          </div>
-          <div className="org-medal-card">
-            <span className="org-medal-label">収録記録数</span>
-            <span className="org-medal-value">{rows.length.toLocaleString()}</span>
-          </div>
+      <dl className={rc.statsDl4} aria-label="通算成績">
+        <div className={rc.statsItem4}>
+          <dt className={rc.statsKey}>優勝</dt>
+          <dd className={rc.statsValue}>
+            {medals.gold}
+            <span className={rc.statsUnit}>回</span>
+          </dd>
         </div>
-      </section>
+        <div className={rc.statsItem4}>
+          <dt className={rc.statsKey}>2位</dt>
+          <dd className={rc.statsValue}>
+            {medals.silver}
+            <span className={rc.statsUnit}>回</span>
+          </dd>
+        </div>
+        <div className={rc.statsItem4}>
+          <dt className={rc.statsKey}>3位</dt>
+          <dd className={rc.statsValue}>
+            {medals.bronze}
+            <span className={rc.statsUnit}>回</span>
+          </dd>
+        </div>
+        <div className={rc.statsItem4}>
+          <dt className={rc.statsKey}>収録記録数</dt>
+          <dd className={rc.statsValue}>
+            {rows.length.toLocaleString()}
+            <span className={rc.statsUnit}>件</span>
+          </dd>
+        </div>
+      </dl>
 
       <section className="static-section">
         <h2>種目別ベストタイム</h2>

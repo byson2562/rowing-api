@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ShareXLink } from "../../../../components/share-x-link";
+import { rankBadgeClass } from "../../../../../components/results/results-classes";
 import {
   availableYears,
   getFilteredResults,
@@ -178,7 +179,9 @@ export default async function CompetitionEventPage(props: { params: Promise<Para
                   .filter((row) => row.final_group === group)
                   .map((row) => (
                     <tr key={row.id}>
-                      <td data-label="順位">{row.rank}</td>
+                      <td data-label="順位">
+                        <span className={rankBadgeClass(row.rank)}>{row.rank}</span>
+                      </td>
                       <td data-label="クルー">{crewCell(row)}</td>
                       <td data-label="団体">
                         <Link href={`/organizations/${encodeURIComponent(organizationSlug(row.organization))}`}>

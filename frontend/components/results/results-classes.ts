@@ -43,6 +43,8 @@ export const lead = "mt-6 mb-0 text-[17px] leading-[1.95] text-rn-text-body";
 
 // 統計 dl(3列。上罫線は墨、下罫線は灰)
 export const statsDl = "mt-9 mb-0 grid grid-cols-3 border-t border-rn-border-strong border-b border-rn-border";
+export const statsDl4 = "mt-9 mb-0 grid grid-cols-4 border-t border-rn-border-strong border-b border-rn-border max-[640px]:grid-cols-2";
+export const statsItem4 = "py-4 [&:nth-child(n+2)]:border-l [&:nth-child(n+2)]:border-rn-border [&:nth-child(n+2)]:pl-5 max-[640px]:[&:nth-child(3)]:border-l-0 max-[640px]:[&:nth-child(3)]:pl-0 max-[640px]:[&:nth-child(n+3)]:border-t max-[640px]:[&:nth-child(n+3)]:border-rn-border";
 export const statsItem = "py-4 [&+&]:border-l [&+&]:border-rn-border [&+&]:pl-5";
 export const statsKey = "text-[12px] leading-[1.5] text-rn-meta";
 export const statsValue = "mt-1 mb-0 text-[32px] font-bold leading-[1.2] text-rn-text [font-variant-numeric:tabular-nums]";

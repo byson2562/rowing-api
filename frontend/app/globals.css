@@ -423,8 +423,9 @@ thead th {
 .static-count {
   margin-left: 8px;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
+  font-weight: 400;
+  color: var(--meta);
+  font-variant-numeric: tabular-nums;
 }
 
 .static-links {
@@ -623,36 +624,6 @@ thead th {
   float: right;
   font-size: 11px;
   padding: 4px 12px;
-}
-
-/* 団体ページ: 通算成績サマリー */
-.org-medal-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 12px;
-}
-
-.org-medal-card {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 0;
-  background: var(--bg);
-}
-
-.org-medal-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--meta);
-}
-
-.org-medal-value {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
 }
 
 /* 選手ページ: 収録範囲の注記 */
