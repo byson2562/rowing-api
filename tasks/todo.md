@@ -15,12 +15,26 @@
 - [x] Phase 3e: 記事(一覧の行化、本文h2の左ボーダー撤去、棒グラフ単色)
 - [x] Phase 3f: 団体・歴代・年一覧・種目ページ(.static-*/.org-*、🥇→バッジ)
 - [x] Phase 3g: LP系(lp-classes の箱撤去、フォーム)
-- [ ] Phase 4: OG画像を白地・墨見出しへ、サムネイル再生成
-- [ ] Phase 5: design-rules §1 対応表更新、lint/build、Review 追記。push はユーザー指示待ち
+- [x] Phase 4: OG画像を白地・墨見出しへ、サムネイル再生成
+- [x] Phase 5: design-rules §1 対応表更新、lint/build、Review 追記。push はユーザー指示待ち
 
 ### 判断
 - 大会ページの結論型見出し(「早稲田が連覇…」)は人が書くもの。69大会ぶんは生成できないので h1 は正式名のまま
 - `first-regatta` 記事(作業中・未コミット)には触れない
+
+### Review
+- Phase 1(4155de0): トークン差し替え。墨 #1f1f1f・罫線 #dcdcdc・データの青 #1d5fbf・灰青 #b9c7dc、`--text-body` / `--meta` / `--border-strong` 追加、radius 0/4px、影はリングのみ、Noto Sans JP 一本化(Inter 廃止)、表のヘッダ地と sticky を廃止、見出しのアクセント棒を廃止。design-rules §1〜§8 とスキル要約を書き換え
+- Phase 2(a77f61c): ヘッダーを3列(ワードマーク / データで見るボート / 13px ナビ)に、青いロゴをヘッダーから外した。コンテナ 1200px・h1 38px・ヒーローの箱を廃止
+- Phase 3a(3550970): 選手ページを 760px 一段組に。統計 dl、Final A の順位の推移(CSS グリッドの図 `rank-timeline.tsx`)、出場レース表。順位バッジを青/灰青/薄灰へ(`rankBadgeClass`)
+- Phase 3b(bb78227): 大会ページを 760px 一段組に。入口帯と優勝一覧表を「優勝クルーと2位との差」の横棒図(`gap-bars.tsx`、85パーセンタイルの物差し)に統合
+- Phase 3c(23c5cf6): ホームを記事3列+小さな図(`home-figures.tsx`、集計は `lib/univ-championship.ts`)+2列リストに。最新結果テーブル・検索ボックス・見出しアイコンを廃止
+- Phase 3d(ee5909a): 検索ページの箱・影・pill を撤去。Recharts を青/灰青/灰グリッドに、金色系列を廃止、主ボタンを墨に
+- Phase 3e(cce860c): 記事一覧を行に、本文 760px、棒グラフ単色、用語集 SVG をトークン色に、lpFadeUp 廃止
+- Phase 3f(5e7964a): 団体ページのメダルカード(🥇🥈🥉)を統計 dl に、歴代・種目ページの順位をバッジに。未使用の EmptyState / PageTitle を削除
+- Phase 3g(96be424): LP の箱・見出しアイコン・固有色を撤去、フォームを新規定に
+- Phase 4: OG 画像を白地・墨の見出し・左揃え・青の短い罫線に。記事サムネイル4枚を再生成(first-regatta は未コミット記事なので除外)。about のプレビュー画像を新デザインの検索画面で撮り直し(Playwright、1280×1060)
+- 検証: 各ページで desktop 1280 / mobile 375 のスクリーンショット、`scrollWidth === clientWidth`、computed style で Noto Sans JP・バッジ色を実測。`npm run lint` は既存の no-img-element 警告のみ、`npm run build` exit 0
+- 残件: `first-regatta` 記事と `articles.ts` のそのエントリは未コミットのまま。push はユーザー指示待ち
 
 # 大会結果ページのA案実装(入口帯+優勝一覧) (2026-10-15)
 
