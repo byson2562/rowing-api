@@ -1,158 +1,144 @@
-// 検索ページ(/search)UIのTailwindクラス(旧 globals.css の検索系クラスを移行)。
-// 方針は article-classes.ts / lp-classes.ts と同じ:
-//  - rn-* トークンが一致する箇所のみトークン、固有色は arbitrary 値で保持(視覚ゼロ変更)。
-//  - 値は「デザインパス」節の上書き適用後の実効値(例: ボタン類は font-weight 600、
-//    チップ・ラベル類は 500、results-jump はプライマリグラデーション)。
+// 検索ページ(/search)UIのTailwindクラス。
+// 日経ビジュアルデータ寄り(docs/design-rules.md、2026-10-20):
+//  - 箱・影・pill を作らない。区切りはヘアライン(rn-border)と余白。
+//  - 文字・ボタン・リンクは墨(rn-text)。青(rn-primary)は図・1位・選択状態だけ。
+//  - 主ボタン(該当N件の結果へ)は墨地白文字で1画面1つ。他はテキストリンクか白地墨枠。
 //  - モバイル(<=768px)の切替は max-[768px]: バリアント。
-//  - グローバルの table/th/td 規則(static ページと共有)は legacy に残し、差分だけ重ねる。
+//  - グローバルの table/th/td 規則(上罫線墨・ヘッダ12px灰・行罫線)は legacy に残し、差分だけ重ねる。
 //  - 状態変化(.open/.active/.is-refreshing 等)は条件分岐でクラス文字列を切り替える。
 
-// 注: 旧CSSでは select の矢印画像は Clubhouse パスの background ショートハンドで
-// 上書きされて消えていたため、矢印なしが現行の見た目。
 const control =
-  "h-10 w-full rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[14px] " +
-  "text-[#1d3557] focus-visible:border-rn-primary focus-visible:outline-2 " +
-  "focus-visible:outline-[rgba(29,110,224,0.25)]";
+  "h-10 w-full rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[14px] leading-[1.5] " +
+  "text-rn-text focus-visible:border-rn-primary focus-visible:outline-2 focus-visible:outline-offset-0 " +
+  "focus-visible:outline-rn-primary";
 
 const genderTabBase =
-  "cursor-pointer rounded-[999px] border px-[18px] py-[9px] font-semibold transition-all duration-[180ms] " +
-  "max-[768px]:py-2.5 ";
+  "cursor-pointer border px-[18px] py-[9px] text-[14px] font-medium leading-[1.4] " +
+  "transition-colors duration-150 motion-reduce:transition-none max-[768px]:py-2.5 ";
 
-const comboboxOptionBase =
-  "cursor-pointer rounded-lg border-0 px-2 py-[7px] text-left text-[14px] ";
+const comboboxOptionBase = "cursor-pointer border-0 px-2.5 py-[7px] text-left text-[14px] leading-[1.5] ";
 
-const chartCardBase = "rounded-rn-card bg-white p-3.5 shadow-rn-soft max-[768px]:col-span-full ";
+const chartBlockBase = "border-t border-rn-border-strong pt-4 max-[768px]:col-span-full ";
 
-const pagBtnBase =
-  "cursor-pointer rounded-[10px] border border-rn-border bg-white font-semibold text-rn-link " +
-  "enabled:hover:border-rn-primary enabled:hover:text-rn-primary " +
-  "disabled:cursor-not-allowed disabled:opacity-55 max-[768px]:min-h-10 ";
+const smallBtnBase =
+  "cursor-pointer rounded-rn-control border border-rn-border bg-white text-[13px] font-medium leading-[1.5] text-rn-text " +
+  "enabled:hover:bg-rn-surface-soft disabled:cursor-not-allowed disabled:opacity-55 max-[768px]:min-h-10 ";
 
 const chipBase =
-  "rounded-[999px] border border-[#d8e6fa] bg-rn-primary-soft px-2.5 py-[5px] text-[12px] font-medium text-rn-link ";
+  "rounded-[2px] border border-rn-border bg-white px-2.5 py-[5px] text-[12px] font-medium leading-[1.4] text-rn-text ";
+
+const tagBase = "rounded-[2px] border border-rn-border px-2 py-0.5 text-[11px] font-medium leading-[1.5] text-rn-muted";
 
 export const sx = {
-  // ヒーロー内の実績チップ
+  // ヒーロー直下のデータ概要(13px のメタ行)
   heroStats:
-    "mt-3.5 mb-0 flex list-none flex-wrap gap-x-[22px] gap-y-2 p-0 text-[13px] text-[#4a678d] " +
-    "max-[768px]:gap-x-4 max-[768px]:gap-y-1.5",
-  heroStatValue:
-    "mr-0.5 text-[16px] font-bold text-rn-primary [font-variant-numeric:tabular-nums] max-[768px]:text-[15px]",
+    "mt-4 mb-0 flex list-none flex-wrap gap-x-5 gap-y-1.5 p-0 text-[13px] leading-[1.6] text-rn-meta " +
+    "[font-variant-numeric:tabular-nums]",
+  heroStatValue: "mr-0.5 font-bold text-rn-text",
 
-  // フィルタパネル
-  panel:
-    "relative z-30 rounded-rn-card bg-white p-3.5 shadow-rn [backdrop-filter:blur(6px)] " +
-    "max-[768px]:px-3.5 max-[768px]:py-4",
+  // フィルタ(箱にせず、下のヘアラインで結果と区切る)
+  panel: "relative z-30 mt-8 border-b border-rn-border pb-5",
   genderTabs: "flex gap-2",
-  genderTabIdle:
-    genderTabBase + "border-rn-border bg-white text-[#4a6791] hover:border-rn-primary hover:text-rn-primary",
-  genderTabActive: genderTabBase + "border-rn-primary bg-rn-primary text-white",
-  filters: "my-3 grid gap-2.5",
+  genderTabIdle: genderTabBase + "border-rn-border bg-white text-rn-text hover:bg-rn-surface-soft",
+  genderTabActive: genderTabBase + "border-rn-text bg-rn-text text-white",
+  filters: "my-4 grid gap-2.5",
   filterRow:
     "grid grid-cols-[repeat(4,minmax(170px,1fr))] gap-2.5 max-[768px]:grid-cols-[repeat(2,minmax(0,1fr))]",
   filterRowSecondary:
     "grid grid-cols-[repeat(4,minmax(170px,1fr))] gap-2.5 pt-2.5 max-[768px]:grid-cols-[repeat(2,minmax(0,1fr))]",
-  secondaryWrap: "mt-0.5 grid gap-1.5 border-t border-dashed border-rn-border-soft pt-1 max-[768px]:pt-2.5",
+  secondaryWrap: "mt-1 grid gap-1.5",
   advHeader: "flex items-center",
   advToggle:
-    "inline-flex w-full cursor-pointer items-center gap-2 rounded-rn-control border border-rn-border " +
-    "bg-white px-[13px] py-[11px] text-[13px] font-semibold text-rn-link " +
-    "hover:border-rn-primary hover:bg-[#f1f7ff] hover:text-rn-primary",
-  advMeta: "ml-auto text-[12px] font-medium text-[#557395]",
-  advCaret: "text-[11px] text-[#6a84a5]",
+    "inline-flex w-full cursor-pointer items-center gap-2 border-y border-rn-border bg-white px-0 py-3 " +
+    "text-[14px] font-medium leading-[1.5] text-rn-text hover:underline",
+  advMeta: "ml-auto text-[12px] font-normal text-rn-meta",
+  advCaret: "text-[11px] text-rn-meta",
   secondaryPanel:
     "-translate-y-[2px] max-h-0 overflow-hidden opacity-0 " +
-    "[transition:max-height_0.22s_ease,opacity_0.18s_ease,transform_0.2s_ease]",
+    "[transition:max-height_0.22s_ease,opacity_0.18s_ease,transform_0.2s_ease] motion-reduce:transition-none",
   secondaryPanelOpen:
     "max-h-[360px] translate-y-0 overflow-hidden opacity-100 " +
-    "[transition:max-height_0.22s_ease,opacity_0.18s_ease,transform_0.2s_ease]",
+    "[transition:max-height_0.22s_ease,opacity_0.18s_ease,transform_0.2s_ease] motion-reduce:transition-none",
   control,
   select: control + " appearance-none pr-[34px]",
 
-  // 団体コンボボックス
+  // 団体コンボボックス(重なる候補リストは枠線だけで区別する)
   combobox: "relative",
   comboboxOpen: "relative z-[80]",
   comboboxMenu:
-    "absolute inset-x-0 top-[calc(100%+4px)] z-[90] flex max-h-[260px] flex-col gap-0.5 overflow-y-auto " +
-    "rounded-rn-control border border-rn-border bg-white p-1.5 shadow-[0_8px_24px_rgba(16,42,80,0.12)]",
-  comboboxOption: comboboxOptionBase + "bg-transparent text-[#1d3557] hover:bg-[#f2f7ff]",
-  comboboxOptionActive: comboboxOptionBase + "bg-[#e3edfb] font-bold text-[#0d4d9e]",
-  comboboxNoMatch: "px-3 py-2.5 text-[13px] text-rn-muted",
-  comboboxHint: "mx-0.5 mb-0 mt-1.5 text-[12px] font-medium text-[#8a5a00]",
+    "absolute inset-x-0 top-[calc(100%+4px)] z-[90] flex max-h-[260px] flex-col overflow-y-auto " +
+    "border border-rn-border bg-white py-1",
+  comboboxOption: comboboxOptionBase + "bg-transparent text-rn-text hover:bg-rn-surface-soft",
+  comboboxOptionActive: comboboxOptionBase + "bg-rn-surface-soft font-bold text-rn-text",
+  comboboxNoMatch: "px-3 py-2.5 text-[13px] text-rn-meta",
+  comboboxHint: "mx-0.5 mb-0 mt-1.5 text-[12px] font-medium text-rn-muted",
 
   // フィルタ操作列・チップ
-  filterActions: "flex justify-end max-[768px]:flex-wrap max-[768px]:gap-2",
+  filterActions: "flex items-center justify-end gap-3 max-[768px]:flex-wrap max-[768px]:gap-2",
   filterActionBtn:
-    "cursor-pointer rounded-[10px] border border-rn-border bg-white px-3 py-2 font-semibold text-rn-link " +
-    "hover:border-rn-primary hover:text-rn-primary " +
-    "disabled:cursor-not-allowed disabled:opacity-60 max-[768px]:ml-auto",
+    "cursor-pointer border-0 bg-transparent px-1 py-2 text-[14px] font-medium leading-[1.5] text-rn-text underline " +
+    "hover:no-underline disabled:cursor-not-allowed disabled:opacity-55 max-[768px]:ml-auto",
+  // 主ボタン(1画面に1つ): 墨地白文字
   resultsJump:
-    "mr-auto inline-flex items-center rounded-[10px] bg-rn-accent px-5 py-[11px] text-[13px] font-extrabold " +
-    "text-rn-accent-ink no-underline shadow-[0_8px_20px_rgba(255,138,61,0.35)] " +
-    "hover:brightness-[1.05] hover:no-underline " +
-    "max-[768px]:mr-0 max-[768px]:w-full max-[768px]:justify-center",
-  chips: "mt-2.5 flex flex-wrap gap-2",
-  chipClearable:
-    chipBase + "inline-flex cursor-pointer items-center gap-1.5 hover:border-[#86a7d4] hover:bg-[#eef5ff]",
-  chipEmpty: chipBase + "text-rn-muted",
-  chipClear:
-    "inline-flex h-4 w-4 items-center justify-center rounded-[999px] bg-[#dbe9fc] leading-none text-[#2c4c82]",
+    "mr-auto inline-flex min-h-10 items-center rounded-rn-control border border-rn-text bg-rn-text px-5 py-2 " +
+    "text-[14px] font-medium leading-[1.5] text-white no-underline hover:bg-rn-text-body hover:border-rn-text-body " +
+    "hover:no-underline max-[768px]:mr-0 max-[768px]:w-full max-[768px]:justify-center",
+  chips: "mt-3 flex flex-wrap gap-2",
+  chipClearable: chipBase + "inline-flex cursor-pointer items-center gap-1.5 hover:border-rn-text",
+  chipEmpty: chipBase + "border-transparent px-0 text-rn-meta",
+  chipClear: "inline-flex h-4 w-4 items-center justify-center leading-none text-rn-meta",
 
-  // 空状態ガイド
-  guide: "mt-3.5 rounded-xl border border-dashed border-rn-border bg-rn-surface-soft p-3.5",
-  guideTitle: "m-0 text-[1rem]",
-  guideText: "mb-0 mt-1.5 text-[13px] text-[#4a678d]",
-  guideActions: "mt-2.5 flex flex-wrap gap-2 max-[768px]:flex-col max-[768px]:items-stretch",
-  guideBtn:
-    "cursor-pointer rounded-[10px] border border-rn-border bg-white px-[11px] py-1.5 font-semibold " +
-    "text-[#244a74] disabled:cursor-not-allowed disabled:opacity-60 " +
-    "max-[768px]:w-full max-[768px]:px-2.5 max-[768px]:py-2",
+  // 空状態ガイド(上罫線+1文+小さなボタン。箱にしない)
+  guide: "mt-6 border-t border-rn-border pt-4",
+  guideTitle: "m-0 text-[16px] font-bold leading-[1.5] text-rn-text",
+  guideText: "mb-0 mt-1.5 text-[13px] leading-[1.6] text-rn-meta",
+  guideActions: "mt-3 flex flex-wrap gap-2 max-[768px]:flex-col max-[768px]:items-stretch",
+  guideBtn: smallBtnBase + "px-3 py-1.5 max-[768px]:w-full max-[768px]:px-2.5 max-[768px]:py-2",
 
-  // グラフ
-  chartsToggleWrap: "hidden max-[768px]:mt-3.5 max-[768px]:block",
+  // グラフ(モバイルは折りたたみ)
+  chartsToggleWrap: "hidden max-[768px]:mt-4 max-[768px]:block",
   chartsToggle:
-    "w-full cursor-pointer rounded-xl border border-rn-border bg-white p-[13px] font-semibold " +
-    "text-rn-link hover:border-rn-primary hover:text-rn-primary",
+    "w-full cursor-pointer border-y border-rn-border bg-white px-0 py-3 text-left text-[14px] font-medium " +
+    "leading-[1.5] text-rn-text hover:underline",
   cards:
-    "relative z-[1] mt-3.5 grid grid-cols-[repeat(12,minmax(0,1fr))] items-start gap-3 " +
+    "relative z-[1] mt-10 grid grid-cols-[repeat(12,minmax(0,1fr))] items-start gap-x-10 gap-y-10 " +
     "transition-[opacity,transform] duration-200 motion-reduce:transition-none max-[768px]:grid-cols-1",
-  chartCard: chartCardBase + "col-[span_6]",
-  winnerTrendCard: chartCardBase + "col-span-full",
+  chartCard: chartBlockBase + "col-[span_6]",
+  winnerTrendCard: chartBlockBase + "col-span-full",
   chartCardHead: "flex items-baseline justify-between gap-2.5",
-  chartCardTitle: "mb-2.5 mt-0 text-[1.05rem]",
-  chartCardCaption: "text-[12px] font-medium text-rn-muted",
+  chartCardTitle: "mb-3 mt-0 text-[16px] font-bold leading-[1.5] text-rn-text",
+  chartCardCaption: "text-[13px] font-normal text-rn-meta",
   chartWrap: "relative h-[260px] w-full max-[768px]:h-[228px]",
   winnerTrendWrap: "relative h-[260px] w-full max-[768px]:h-[210px]",
-  winnerTrendWrapNoData: "relative h-[190px] w-full max-[768px]:h-[150px]",
-  chartEmpty:
-    "grid h-full w-full place-items-center rounded-[10px] border border-dashed border-rn-border bg-[#f8fbff] " +
-    "font-medium text-rn-muted",
+  winnerTrendWrapNoData: "relative h-[120px] w-full max-[768px]:h-[110px]",
+  chartEmpty: "grid h-full w-full place-items-center text-[13px] text-rn-meta",
   chartEmptyNoData: "whitespace-normal text-center max-[768px]:text-[12px]",
   chartSinglePoint: "gap-1.5 p-3",
-  singlePointValue: "m-0 text-center text-[15px] text-[#1f3a5c]",
-  singlePointStrong: "text-[1.3em] text-rn-primary",
-  singlePointHint: "m-0 text-center text-[12px] font-normal text-rn-muted",
+  singlePointValue: "m-0 text-center text-[15px] text-rn-text",
+  singlePointStrong: "text-[1.3em] font-bold text-rn-text [font-variant-numeric:tabular-nums]",
+  singlePointHint: "m-0 text-center text-[12px] font-normal text-rn-meta",
   chartLoading:
-    "pointer-events-none absolute inset-0 flex items-center justify-center gap-2.5 rounded-[10px] " +
-    "bg-[rgba(255,255,255,0.42)] text-[13px] font-bold text-[#244a74]",
+    "pointer-events-none absolute inset-0 flex items-center justify-center gap-2.5 " +
+    "bg-[rgba(255,255,255,0.6)] text-[13px] font-medium text-rn-text",
   chartSpinner:
-    "h-[18px] w-[18px] animate-[spin_0.8s_linear_infinite] rounded-full border-2 border-[#b8cae2] border-t-[#1d6ee0]",
+    "h-[18px] w-[18px] animate-[spin_0.8s_linear_infinite] rounded-full border-2 border-rn-primary-soft " +
+    "border-t-rn-primary motion-reduce:animate-none",
 
-  // 結果テーブル
-  tableCard:
-    "mt-4 scroll-mt-16 rounded-rn-card bg-white p-3.5 shadow-rn-soft " +
-    "transition-[opacity,transform] duration-200 motion-reduce:transition-none",
+  // 結果テーブル(箱にせず、見出し行の下罫線と表の上罫線で区切る)
+  tableCard: "mt-12 scroll-mt-16 transition-[opacity,transform] duration-200 motion-reduce:transition-none",
   tableHead:
-    "mb-3 flex items-center justify-between gap-3 border-b border-[#e1e9f4] pb-2 " +
-    "max-[768px]:flex-col max-[768px]:items-start max-[768px]:pb-2.5",
-  tableTitle: "m-0 text-[1.05rem]",
+    "mb-3 flex items-baseline justify-between gap-3 " +
+    "max-[768px]:flex-col max-[768px]:items-start max-[768px]:gap-2",
+  tableTitle: "m-0 text-[18px] font-bold leading-[1.5] text-rn-text [font-variant-numeric:tabular-nums]",
   perPage: "inline-flex items-center gap-2 whitespace-nowrap",
-  perPageLabel: "text-[12px] font-medium text-rn-muted",
-  perPageSelect: "h-[34px] rounded-[9px] border border-rn-border bg-white px-2.5 py-1 text-[13px]",
-  tableScroll: "overflow-x-auto rounded-[10px] border border-[#d8e2f0] max-[768px]:hidden",
-  th: "border-b-2 border-[#e3edfb] bg-[#f2f8ff] font-semibold text-[#4a6791] first:rounded-tl-lg last:rounded-tr-lg",
-  tr: "group transition-[background] duration-[120ms] hover:bg-[#f6faff]",
-  tdHover: "group-hover:bg-[#f3f8ff]",
+  perPageLabel: "text-[12px] font-normal text-rn-meta",
+  perPageSelect:
+    "h-[34px] rounded-rn-control border border-rn-border bg-white px-2.5 py-1 text-[13px] text-rn-text " +
+    "focus-visible:outline-2 focus-visible:outline-rn-primary",
+  tableScroll: "overflow-x-auto max-[768px]:hidden",
+  th: "whitespace-nowrap",
+  tr: "",
+  tdHover: "",
   colYear: "w-[70px] text-center",
   colCompetition: "w-[360px]",
   colEvent: "w-[120px]",
@@ -163,49 +149,41 @@ export const sx = {
   colTime: "w-[110px] whitespace-nowrap text-right [font-variant-numeric:tabular-nums]",
   cellClamp: "line-clamp-2 min-h-[calc(1.35em*2)] leading-[1.35]",
   cellEllipsis: "truncate",
-  tableEmpty: "px-2.5 py-[18px] text-center text-rn-muted",
+  tableEmpty: "px-2.5 py-[18px] text-center text-rn-meta",
   emptyResults: "flex flex-col items-center gap-2.5 py-1.5",
   emptyResultsText: "m-0",
-  emptyResultsBtn:
-    "cursor-pointer rounded-[10px] border border-rn-border bg-white px-3.5 py-2 font-semibold text-rn-link " +
-    "hover:bg-[#eef5ff]",
-  // 後段デザインパスの上書き(ひと回り大きい円 30px + primary-soft)適用後の実効値。
-  // 色・太さはメダル/通常で排他になるため基底から分離する(ユーティリティ同士は後勝ちできない)
-  rankBadge:
-    "inline-flex h-[30px] min-w-[30px] items-center justify-center rounded-[999px] px-[7px] " +
-    "[font-variant-numeric:tabular-nums]",
-  rankBadgePlain: "bg-rn-primary-soft font-semibold text-rn-link",
+  emptyResultsBtn: smallBtnBase + "px-3.5 py-2",
 
-  // モバイル結果カード
-  mobileCards: "hidden max-[768px]:grid max-[768px]:gap-2",
-  resultCardEmpty:
-    "rounded-[10px] border border-dashed border-rn-border bg-[#f8fbff] px-3 py-3.5 text-center font-medium " +
-    "text-rn-muted",
-  resultCard: "rounded-xl bg-white p-2.5 shadow-rn-soft",
+  // モバイル結果カード(行として積む。箱にしない)
+  mobileCards: "hidden max-[768px]:block max-[768px]:border-t max-[768px]:border-rn-border-strong",
+  resultCardEmpty: "px-0 py-4 text-center text-[13px] text-rn-meta",
+  resultCard: "border-b border-rn-border py-3",
   resultCardHead: "mb-1.5 flex items-center gap-2",
-  resultCardTag: "rounded-[999px] border border-rn-border px-2 py-0.5 text-[11px] font-medium text-[#2e4f77]",
-  resultCardEvent: "m-0 font-extrabold text-[#1d3557]",
-  resultCardCompetition: "mb-2 mt-1 line-clamp-2 text-[12px] leading-[1.45] text-[#4a6791]",
-  resultCardMeta: "m-0 grid gap-1.5",
+  resultCardTag: tagBase,
+  resultCardEvent: "m-0 text-[15px] font-bold leading-[1.5] text-rn-text",
+  resultCardCompetition: "mb-2 mt-0.5 line-clamp-2 text-[12px] leading-[1.5] text-rn-meta",
+  resultCardMeta: "m-0 grid gap-1",
   resultCardMetaRow: "grid grid-cols-[44px_1fr] items-start gap-2",
-  resultCardMetaDt: "m-0 text-[11px] font-medium text-[#5e7897]",
-  resultCardMetaDd: "m-0 text-[12px] leading-[1.4] text-[#233b5f]",
+  resultCardMetaDt: "m-0 text-[11px] font-normal leading-[1.5] text-rn-meta",
+  resultCardMetaDd: "m-0 text-[13px] leading-[1.5] text-rn-text [font-variant-numeric:tabular-nums]",
 
   // ページネーション
   pagination:
-    "mt-3.5 flex flex-wrap items-center justify-end gap-2 border-t border-[#e1e9f4] pt-2.5 " +
+    "mt-4 flex flex-wrap items-center justify-end gap-2 border-t border-rn-border pt-3 " +
     "max-[768px]:justify-center",
-  pagBtn: pagBtnBase + "px-[11px] py-[7px]",
-  pageNum: pagBtnBase + "h-[34px] min-w-[34px] px-2 py-0",
+  pagBtn: smallBtnBase + "px-[11px] py-[7px]",
+  pageNum: smallBtnBase + "h-[34px] min-w-[34px] px-2 py-0 [font-variant-numeric:tabular-nums]",
   pageNumActive:
-    "h-[34px] min-w-[34px] cursor-pointer rounded-[10px] border border-rn-primary bg-rn-primary px-2 py-0 " +
-    "font-semibold text-white disabled:cursor-not-allowed disabled:opacity-55 max-[768px]:min-h-10",
+    "h-[34px] min-w-[34px] cursor-pointer rounded-rn-control border border-rn-text bg-rn-text px-2 py-0 " +
+    "text-[13px] font-medium text-white [font-variant-numeric:tabular-nums] disabled:cursor-not-allowed " +
+    "disabled:opacity-55 max-[768px]:min-h-10",
   pagPages: "flex items-center gap-1.5",
-  pagEmpty: "text-[13px] font-bold text-rn-muted",
-  pagEllipsis: "px-0.5 text-[#7a91b1]",
+  pagEmpty: "text-[13px] font-medium text-rn-meta",
+  pagEllipsis: "px-0.5 text-rn-meta",
   pagJump: "ml-1 inline-flex items-center gap-1.5",
-  pagJumpLabel: "text-[12px] font-bold text-rn-muted",
+  pagJumpLabel: "text-[12px] font-normal text-rn-meta",
   pagJumpInput:
-    "h-[34px] w-[68px] rounded-[9px] border border-rn-border px-2 py-1 text-[13px] " +
-    "focus-visible:border-rn-primary focus-visible:outline-2 focus-visible:outline-[rgba(29,110,224,0.25)]"
+    "h-[34px] w-[68px] rounded-rn-control border border-rn-border px-2 py-1 text-[13px] text-rn-text " +
+    "[font-variant-numeric:tabular-nums] focus-visible:border-rn-primary focus-visible:outline-2 " +
+    "focus-visible:outline-rn-primary"
 };

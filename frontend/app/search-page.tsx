@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { sx } from "../components/search/search-classes";
+import { rankBadgeClass } from "../components/results/results-classes";
 import {
   Bar,
   BarChart,
@@ -20,13 +21,17 @@ const DATASET_INDEX = resultsIndex as { years: number[]; total_count: number };
 const DATASET_YEAR_MIN = Math.min(...DATASET_INDEX.years);
 const DATASET_YEAR_MAX = Math.max(...DATASET_INDEX.years);
 
-// チャート配色: メダル数はブランドブルー、金メダル数はゴールド、推移はブルー
-const CHART_BLUE = "#4d94ff";
-const CHART_GOLD = "#ffb84d";
+// チャート配色(docs/design-rules.md §6「図」): 主系列は青1色、副系列は灰青、グリッドとラベルは灰。
+// 値は globals.css の --primary / --primary-soft / --surface-soft / --meta と同じ
+const CHART_BLUE = "#1d5fbf";
+const CHART_GREY = "#b9c7dc";
+const CHART_GRID = "#eef1f5";
+const CHART_LABEL = "#6f6f6f";
+const CHART_TICK = { fontSize: 11, fill: CHART_LABEL } as const;
 const CHART_TOOLTIP_STYLE = {
-  borderRadius: 14,
-  border: "2px solid #e3edfb",
-  boxShadow: "0 8px 20px rgba(16, 32, 58, 0.12)",
+  borderRadius: 0,
+  border: "1px solid #dcdcdc",
+  boxShadow: "none",
   fontSize: 12,
   padding: "8px 10px"
 } as const;
@@ -139,7 +144,7 @@ function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps
   const chars = Array.from(label);
 
   return (
-    <text x={x} y={y} textAnchor="middle" fill="#5d7398" fontSize={11} dominantBaseline="hanging">
+    <text x={x} y={y} textAnchor="middle" fill={CHART_LABEL} fontSize={11} dominantBaseline="hanging">
       {chars.map((char, index) => (
         <tspan key={`${char}-${index}`} x={x} dy={index === 0 ? 8 : 11}>
           {char}
@@ -457,14 +462,6 @@ export default function SearchPage({
     setRank("");
     setPage(1);
     emitFilterEvents("clear_filters", "all");
-  };
-
-  // テーブルの順位バッジ用(デザインパスにより金のみ #ffd76e)
-  const rankBadgeMedalClassName = (row: Result) => {
-    if (row.rank === 1) return "font-bold bg-[#ffd76e] text-[#78350f]";
-    if (row.rank === 2) return "font-bold bg-[#e5e7eb] text-[#374151]";
-    if (row.rank === 3) return "font-bold bg-[#f5d0a9] text-[#7c2d12]";
-    return "";
   };
 
   const activeFilters = useMemo(() => {
@@ -1059,16 +1056,16 @@ export default function SearchPage({
                 layout="horizontal"
                 margin={{ top: 22, left: 0, right: 10, bottom: 34 }}
               >
-                <CartesianGrid vertical={false} stroke="#e4eefb" />
+                <CartesianGrid vertical={false} stroke={CHART_GRID} />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
-                <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
+                <YAxis type="number" allowDecimals={false} width={40} tick={CHART_TICK} tickMargin={2} axisLine={false} tickLine={false} />
                 <Tooltip
                   formatter={(value) => [`${value}個`, "メダル"]}
                   labelFormatter={(label) => `団体: ${label}`}
                   contentStyle={CHART_TOOLTIP_STYLE}
                 />
-                <Bar dataKey="value" fill={CHART_BLUE} radius={[5, 5, 0, 0]}>
-                  <LabelList dataKey="value" position="top" fontSize={11} fill="#57718f" />
+                <Bar dataKey="value" fill={CHART_BLUE}>
+                  <LabelList dataKey="value" position="top" fontSize={11} fill={CHART_LABEL} />
                 </Bar>
               </BarChart>
             ) : !showChartLoading ? (
@@ -1097,16 +1094,16 @@ export default function SearchPage({
                 layout="horizontal"
                 margin={{ top: 22, left: 0, right: 10, bottom: 34 }}
               >
-                <CartesianGrid vertical={false} stroke="#e4eefb" />
+                <CartesianGrid vertical={false} stroke={CHART_GRID} />
                 <XAxis type="category" dataKey="label" interval={0} height={52} tick={renderWrappedXAxisTick} />
-                <YAxis type="number" allowDecimals={false} width={40} tick={{ fontSize: 12 }} tickMargin={2} />
+                <YAxis type="number" allowDecimals={false} width={40} tick={CHART_TICK} tickMargin={2} axisLine={false} tickLine={false} />
                 <Tooltip
                   formatter={(value) => [`${value}個`, "金メダル"]}
                   labelFormatter={(label) => `団体: ${label}`}
                   contentStyle={CHART_TOOLTIP_STYLE}
                 />
-                <Bar dataKey="value" fill={CHART_GOLD} radius={[5, 5, 0, 0]}>
-                  <LabelList dataKey="value" position="top" fontSize={11} fill="#57718f" />
+                <Bar dataKey="value" fill={CHART_GREY}>
+                  <LabelList dataKey="value" position="top" fontSize={11} fill={CHART_LABEL} />
                 </Bar>
               </BarChart>
             ) : !showChartLoading ? (
@@ -1132,12 +1129,12 @@ export default function SearchPage({
             {winnerTrendHasData ? (
               winnerTrendChartWidth > 0 ? (
                 <LineChart width={winnerTrendChartWidth} height={260} data={winnerTrend}>
-                  <CartesianGrid vertical={false} stroke="#e4eefb" />
-                  <XAxis dataKey="label" />
+                  <CartesianGrid vertical={false} stroke={CHART_GRID} />
+                  <XAxis dataKey="label" tick={CHART_TICK} tickLine={false} />
                   {/* タイム差が読めるようY軸は0起点にせずデータ範囲へフィットさせる */}
-                  <YAxis tickFormatter={formatSecondsForAxis} domain={["dataMin - 5", "dataMax + 5"]} />
+                  <YAxis tickFormatter={formatSecondsForAxis} domain={["dataMin - 5", "dataMax + 5"]} tick={CHART_TICK} axisLine={false} tickLine={false} />
                   <Tooltip formatter={(value) => formatSecondsToTime(Number(value))} contentStyle={CHART_TOOLTIP_STYLE} />
-                  <Line type="monotone" dataKey="value" stroke={CHART_BLUE} strokeWidth={3} dot />
+                  <Line type="monotone" dataKey="value" stroke={CHART_BLUE} strokeWidth={2} dot={{ r: 3, strokeWidth: 0, fill: CHART_BLUE }} activeDot={{ r: 5 }} />
                 </LineChart>
               ) : null
             ) : winnerTrendSingle ? (
@@ -1233,7 +1230,7 @@ export default function SearchPage({
                       <div className={sx.cellEllipsis}>{row.organization}</div>
                     </td>
                     <td className={`${sx.colRank} ${sx.tdHover}`}>
-                      <span className={`${sx.rankBadge} ${rankBadgeMedalClassName(row) || sx.rankBadgePlain}`}>{row.rank}</span>
+                      <span className={rankBadgeClass(row.rank)}>{row.rank}</span>
                     </td>
                     <td className={`${sx.colTime} ${sx.tdHover}`}>{row.time_display}</td>
                   </tr>
@@ -1261,7 +1258,7 @@ export default function SearchPage({
                 <header className={sx.resultCardHead}>
                   <span className={sx.resultCardTag}>{row.year}</span>
                   <span className={sx.resultCardTag}>{row.final_group}</span>
-                  <span className={`ml-auto ${sx.rankBadge} ${rankBadgeMedalClassName(row) || sx.rankBadgePlain}`}>{row.rank}</span>
+                  <span className={`ml-auto ${rankBadgeClass(row.rank)}`}>{row.rank}</span>
                 </header>
                 <p className={sx.resultCardEvent}>{row.event_name}</p>
                 <p className={sx.resultCardCompetition} title={row.competition_name}>
