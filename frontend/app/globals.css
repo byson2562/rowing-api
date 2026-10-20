@@ -101,6 +101,21 @@ body {
   min-height: 100vh;
 }
 
+/* リンクは墨色。本文中は下線、表や一覧の中は hover でだけ下線(docs/design-rules.md §2) */
+a {
+  color: var(--text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.static-table a {
+  text-decoration: none;
+}
+
+.static-table a:hover {
+  text-decoration: underline;
+}
+
 /* .site-header / .site-nav / .site-footer 系は layout.tsx・SiteHeaderでTailwind(rn-*トークン)へ移行済み(Phase 3)。スマホはハンバーガーメニュー化 */
 
 /* サイト共通のコンテナ幅。Tailwind の container ユーティリティと同名衝突を避けるため

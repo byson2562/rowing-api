@@ -44,15 +44,35 @@ export const eventTdGap = `${eventTd} w-[64px] whitespace-nowrap pr-0 text-right
 export const crewName = "text-[13px] font-semibold text-rn-text";
 export const crewOrg = "text-[12px] text-rn-muted";
 
-// 順位バッジ(検索ページと同じ金銀銅)。基底と色は排他で合成する
+// 順位バッジ(サイト共通。docs/design-rules.md §6)。基底と色は排他で合成する
+// 1位=青地白文字 / 2〜3位=灰青地 / 4位以下=薄灰地。金銀銅は使わない
 const badgeBase =
-  "inline-flex h-[26px] w-[26px] items-center justify-center rounded-full text-[12px] font-bold [font-variant-numeric:tabular-nums]";
+  "inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full text-[12px] font-bold leading-none [font-variant-numeric:tabular-nums]";
 export function rankBadgeClass(rank: number): string {
-  if (rank === 1) return `${badgeBase} bg-[#ffd76e] text-[#78350f]`;
-  if (rank === 2) return `${badgeBase} bg-[#e5e7eb] text-[#374151]`;
-  if (rank === 3) return `${badgeBase} bg-[#f5d0a9] text-[#7c2d12]`;
-  return `${badgeBase} bg-rn-primary-soft text-rn-brand`;
+  if (rank === 1) return `${badgeBase} bg-rn-primary text-white`;
+  if (rank <= 3) return `${badgeBase} bg-rn-primary-soft text-rn-text`;
+  return `${badgeBase} bg-rn-surface-soft text-rn-muted`;
 }
+
+// ---- 一段組ページ(選手・大会)の見出しブロック ----
+export const narrowPage = "mx-auto max-w-[760px]";
+export const eyebrow = "m-0 text-[13px] font-normal leading-[1.6] text-rn-meta";
+export const personName = "mt-3.5 mb-0 text-[40px] font-bold leading-[1.3] tracking-[0.02em] text-rn-text max-[640px]:text-[32px]";
+export const affiliation = "mt-2 mb-0 text-[14px] leading-[1.7] text-rn-muted";
+export const lead = "mt-6 mb-0 text-[17px] leading-[1.95] text-rn-text-body";
+
+// 統計 dl(3列。上罫線は墨、下罫線は灰)
+export const statsDl = "mt-9 mb-0 grid grid-cols-3 border-t border-rn-border-strong border-b border-rn-border";
+export const statsItem = "py-4 [&+&]:border-l [&+&]:border-rn-border [&+&]:pl-5";
+export const statsKey = "text-[12px] leading-[1.5] text-rn-meta";
+export const statsValue = "mt-1 mb-0 text-[32px] font-bold leading-[1.2] text-rn-text [font-variant-numeric:tabular-nums]";
+export const statsUnit = "ml-1 text-[14px] font-normal";
+
+// 図(上罫線なし版。統計 dl の直後に置く)
+export const figure = "mx-0 mt-12 mb-0";
+export const figureTitle = "text-[16px] font-bold leading-[1.5] text-rn-text";
+export const figureSub = "mt-1.5 mb-4 text-[13px] leading-[1.6] text-rn-meta";
+export const figureNote = "mt-4 mb-0 text-[12px] leading-[1.8] text-rn-meta";
 
 // モック(A案)に合わせたページ専用の上書き。サイト共通の .hero h1 / .static-section h2 を utilities 層で打ち消す
 export const pageTitle = "text-[30px] leading-[1.3] tracking-normal";
