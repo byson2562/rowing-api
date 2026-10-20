@@ -6,11 +6,11 @@
 - 計画の詳細は ~/.claude/plans/sequential-hugging-spark.md(承認済み)。単一ソースは docs/design-rules.md
 
 ### Spec / Plan
-- [ ] Phase 1: globals.css の :root / @theme・表・見出し既定、layout.tsx のフォント、button-classes、design-rules §1〜§6 とスキル要約を新仕様へ(1コミット)
-- [ ] Phase 2: SiteHeader(3列・中央に「データで見るボート」)、フッター、.site-container 1200px、.hero h1 38px(1コミット)
-- [ ] Phase 3a: 選手ページ(統計dl + 順位の推移の図)
-- [ ] Phase 3b: 大会ページ(760px一段組 + 2位との差の横棒図、rankBadgeClass を青・灰へ)
-- [ ] Phase 3c: ホーム(記事3列+小さな図、2列リスト)
+- [x] Phase 1: globals.css の :root / @theme・表・見出し既定、layout.tsx のフォント、button-classes、design-rules §1〜§6 とスキル要約を新仕様へ(1コミット)
+- [x] Phase 2: SiteHeader(3列・中央に「データで見るボート」)、フッター、.site-container 1200px、.hero h1 38px(1コミット)
+- [x] Phase 3a: 選手ページ(統計dl + 順位の推移の図)
+- [x] Phase 3b: 大会ページ(760px一段組 + 2位との差の横棒図、rankBadgeClass を青・灰へ)
+- [x] Phase 3c: ホーム(記事3列+小さな図、2列リスト)
 - [ ] Phase 3d: 検索ページ(箱・影の撤去、Recharts配色、墨ボタン)
 - [ ] Phase 3e: 記事(一覧の行化、本文h2の左ボーダー撤去、棒グラフ単色)
 - [ ] Phase 3f: 団体・歴代・年一覧・種目ページ(.static-*/.org-*、🥇→バッジ)
