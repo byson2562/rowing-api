@@ -35,7 +35,7 @@ function openMailFallback(subject: string, lines: string[]): void {
 function SentMessage({ children }: { children: ReactNode }) {
   return (
     <p
-      className="mt-3 mb-0 rounded-rn-card border border-rn-border bg-white p-4 text-[14px] leading-[1.7] text-rn-text"
+      className="mt-4 mb-0 border-t border-rn-border pt-4 text-[14px] leading-[1.7] text-rn-text"
       role="status"
     >
       {children}
@@ -129,7 +129,7 @@ export function SponsorApplyForm() {
           ))}
         </select>
       </label>
-      <label className="flex items-center gap-2 text-[13px] font-medium text-[#365778]">
+      <label className="flex items-center gap-2 text-[13px] font-medium text-rn-text">
         <input
           type="checkbox"
           name="listingOptOut"

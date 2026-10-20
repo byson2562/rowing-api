@@ -226,7 +226,7 @@ thead th {
 
 .lp-page {
   display: grid;
-  gap: 24px;
+  gap: 48px;
 }
 
 .lp-section-title {
