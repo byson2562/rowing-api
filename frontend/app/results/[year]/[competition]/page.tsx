@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { ShareXLink } from "../../../components/share-x-link";
 import ButtonLink from "../../../../components/ui/ButtonLink";
+import { GapBars, type ChampionRow } from "../../../../components/results/gap-bars";
 import * as rc from "../../../../components/results/results-classes";
 import {
   availableYears,
@@ -128,7 +129,8 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
   });
 
   const prevWinners = await previousYearWinners(yearNumber, competition);
-  const champions = eventNames.flatMap((eventName) => {
+  const competitionPath = `/results/${params.year}/${encodeURIComponent(competition)}`;
+  const champions: ChampionRow[] = eventNames.flatMap((eventName) => {
     const list = rowsByEvent.get(eventName) ?? [];
     const winner = list.find((row) => row.rank === 1);
     if (!winner) return [];
@@ -141,6 +143,7 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
     return [
       {
         eventName,
+        eventHref: `${competitionPath}/${encodeURIComponent(eventName)}`,
         winner,
         gap,
         prev,
@@ -149,9 +152,7 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
     ];
   });
   const defendedCount = champions.filter((c) => c.defended).length;
-  const closeFinishes = champions.filter((c) => c.gap != null && c.gap < 1).length;
   const { main: shortName, coHosted } = splitCompetitionName(competition);
-  const competitionPath = `/results/${params.year}/${encodeURIComponent(competition)}`;
 
   const searchQuery = new URLSearchParams({ year: params.year, competition }).toString();
 
@@ -178,163 +179,104 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
   return (
     <main className="site-container static-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <nav className="breadcrumbs" aria-label="パンくずリスト">
-        <Link href="/">ホーム</Link>
-        <span aria-hidden="true">›</span>
-        <Link href="/results">大会結果一覧</Link>
-        <span aria-hidden="true">›</span>
-        <Link href={`/results/${params.year}`}>{params.year}年</Link>
-        <span aria-hidden="true">›</span>
-        <span>{shortName}</span>
-      </nav>
-      <header className="hero">
-        <div>
-          <p className={rc.titleEyebrow}>{params.year}年 · 収録{rows.length.toLocaleString()}件(Final A・B)</p>
+      <div className={rc.narrowPage}>
+        <nav className="breadcrumbs" aria-label="パンくずリスト">
+          <Link href="/">ホーム</Link>
+          <span aria-hidden="true">›</span>
+          <Link href="/results">大会結果一覧</Link>
+          <span aria-hidden="true">›</span>
+          <Link href={`/results/${params.year}`}>{params.year}年</Link>
+          <span aria-hidden="true">›</span>
+          <span>{shortName}</span>
+        </nav>
+
+        <header className="mt-6">
+          <p className={rc.eyebrow}>大会結果 · {params.year}年</p>
           <h1 className={rc.pageTitle}>{shortName}</h1>
-          <p className={rc.titleSub}>
+          <p className={rc.lead}>
             {coHosted.length > 0 ? `${coHosted.join("、")}と同時開催。` : ""}
-            種目別のFinal A結果(順位・クルー・タイム)を掲載しています。
+            {champions.length}種目のFinal Aを{new Set(champions.map((c) => c.winner.organization)).size}団体が分け合った。
+            {prevWinners
+              ? defendedCount > 0
+                ? `前年と同じ団体が勝ったのは${defendedCount}種目。`
+                : "前年と同じ団体が勝った種目は無かった。"
+              : ""}
           </p>
-        </div>
-        <ShareXLink
-          text={`${params.year}年 ${shortName}の結果 | レガッタナビ`}
-          path={competitionPath}
-          hashtags={["ローイング", "ボート"]}
-        />
-      </header>
+          <p className={rc.metaLine}>
+            <span>収録{rows.length.toLocaleString()}件(Final A・B)</span>
+            <span>優勝クルー {champions.length}種目</span>
+            <span>Final A {finalARows.length}クルー</span>
+          </p>
+          <div className={rc.metaActions}>
+            <ButtonLink href={`/search?${searchQuery}`} variant="secondary" size="sm">
+              記録検索でこの大会を開く
+            </ButtonLink>
+            <ShareXLink
+              text={`${params.year}年 ${shortName}の結果 | レガッタナビ`}
+              path={competitionPath}
+              hashtags={["ローイング", "ボート"]}
+            />
+          </div>
+        </header>
 
-      <nav className={rc.entryStrip} aria-label="このページの内容">
-        <a href="#champions" className={rc.entryItem}>
-          <span className={rc.entryKey}>優勝クルー</span>
-          <span className={rc.entryValue}>
-            {champions.length}
-            <span className={rc.entryUnit}>種目</span>
-          </span>
-        </a>
-        <a href="#events" className={rc.entryItem}>
-          <span className={rc.entryKey}>種目別の結果</span>
-          <span className={rc.entryValue}>
-            {finalARows.length}
-            <span className={rc.entryUnit}>クルー</span>
-          </span>
-        </a>
-        {prevWinners ? (
-          <a href="#champions" className={rc.entryItemLast}>
-            <span className={rc.entryKey}>前年からの連覇</span>
-            <span className={rc.entryValue}>
-              {defendedCount}
-              <span className={rc.entryUnit}>種目</span>
+        <figure id="champions" className={rc.figureRuled}>
+          <figcaption>
+            <span className={`block ${rc.figureTitle}`}>優勝クルーと2位との差</span>
+            <span className={`block ${rc.figureSub}`}>
+              Final A 1位。差が小さいほど接戦で、青は1秒未満
+              {prevWinners ? "。前年の優勝団体も添えた" : ""}
             </span>
-          </a>
-        ) : (
-          <Link href={`/search?${searchQuery}`} className={rc.entryItemLast}>
-            <span className={rc.entryKey}>収録した記録</span>
-            <span className={rc.entryValue}>
-              {rows.length.toLocaleString()}
-              <span className={rc.entryUnit}>件</span>
-            </span>
-          </Link>
-        )}
-        <div className={rc.entryCta}>
-          <ButtonLink href={`/search?${searchQuery}`} variant="secondary" className="w-full text-[14px] md:w-auto">
-            記録検索でこの大会を開く
-          </ButtonLink>
-        </div>
-      </nav>
+          </figcaption>
+          <GapBars rows={champions} showPrev={Boolean(prevWinners)} renderCrew={crewCell} />
+        </figure>
 
-      <section id="champions" className={rc.section}>
-        <h2 className={rc.sectionHeading}>優勝クルー一覧</h2>
-        <p className={rc.sectionCaption}>
-          Final A 1位。
-          {closeFinishes > 0 ? `2位との差が1秒未満だった種目は${closeFinishes}つ。` : ""}
-        </p>
-        <div className="static-table-wrap">
-          <table className="static-table">
-            <thead>
-              <tr>
-                <th>種目</th>
-                <th>優勝</th>
-                <th className="text-right">タイム</th>
-                <th className="text-right">2位との差</th>
-                {prevWinners ? <th>前年優勝</th> : null}
-              </tr>
-            </thead>
-            <tbody>
-              {champions.map(({ eventName, winner, gap, prev, defended }) => (
-                <tr key={eventName}>
-                  <td data-label="種目">
-                    <Link href={`${competitionPath}/${encodeURIComponent(eventName)}`} className={rc.crewName}>
+        <section id="events" className="static-section mt-14">
+          <h2>種目別の結果</h2>
+          <p className={rc.figureSub}>各種目のFinal A。差は1位とのタイム差(秒)。</p>
+          <div className={rc.eventGrid}>
+            {eventNames.map((eventName) => {
+              const list = rowsByEvent.get(eventName) ?? [];
+              const winner = list.find((row) => row.rank === 1);
+              const eventPath = `${competitionPath}/${encodeURIComponent(eventName)}`;
+              return (
+                <div key={eventName} className={rc.eventBlock}>
+                  <h3 className={rc.eventHeading}>
+                    <Link href={eventPath} className={rc.eventHeadingLink}>
                       {eventName}
                     </Link>
-                  </td>
-                  <td data-label="優勝">
-                    {crewCell(winner)}
-                    {defended ? <span className={rc.chip}>連覇</span> : null}
-                  </td>
-                  <td data-label="タイム" className={rc.numCell}>
-                    {winner.time_display}
-                  </td>
-                  <td data-label="2位との差" className={gap != null && gap < 1 ? rc.gapCellClose : rc.gapCell}>
-                    {gap != null ? `${gap.toFixed(2)}秒` : "-"}
-                  </td>
-                  {prevWinners ? (
-                    <td data-label="前年優勝" className={rc.crewOrg}>
-                      {prev ? prev.organization : "-"}
-                    </td>
-                  ) : null}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+                    <Link href={eventPath} className={rc.eventMore}>
+                      Final Bも見る
+                    </Link>
+                  </h3>
+                  <table className={rc.eventTable}>
+                    <caption className="sr-only">
+                      {eventName} Final A({params.year}年 {competition})
+                    </caption>
+                    <tbody>
+                      {list.map((row) => (
+                        <tr key={row.id}>
+                          <td className={rc.eventTdRank}>
+                            <span className={rc.rankBadgeClass(row.rank)}>{row.rank}</span>
+                          </td>
+                          <td className={rc.eventTd}>{crewCell(row)}</td>
+                          <td className={rc.eventTdTime}>{row.time_display}</td>
+                          <td className={rc.eventTdGap}>{gapText(row, winner)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })}
+          </div>
+        </section>
 
-      <section id="events" className={rc.section}>
-        <h2 className={rc.sectionHeading}>種目別の結果</h2>
-        <p className={rc.sectionCaption}>各種目のFinal A。差は1位とのタイム差(秒)。</p>
-        <div className={rc.eventGrid}>
-          {eventNames.map((eventName) => {
-            const list = rowsByEvent.get(eventName) ?? [];
-            const winner = list.find((row) => row.rank === 1);
-            const eventPath = `${competitionPath}/${encodeURIComponent(eventName)}`;
-            return (
-              <div key={eventName} className={rc.eventBlock}>
-                <h3 className={rc.eventHeading}>
-                  <Link href={eventPath} className={rc.eventHeadingLink}>
-                    {eventName}
-                  </Link>
-                  <Link href={eventPath} className={rc.eventMore}>
-                    Final Bも見る
-                  </Link>
-                </h3>
-                <table className={rc.eventTable}>
-                  <caption className="sr-only">
-                    {eventName} Final A({params.year}年 {competition})
-                  </caption>
-                  <tbody>
-                    {list.map((row) => (
-                      <tr key={row.id}>
-                        <td className={rc.eventTdRank}>
-                          <span className={rc.rankBadgeClass(row.rank)}>{row.rank}</span>
-                        </td>
-                        <td className={rc.eventTd}>{crewCell(row)}</td>
-                        <td className={rc.eventTdTime}>{row.time_display}</td>
-                        <td className={rc.eventTdGap}>{gapText(row, winner)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <p className="static-cta">
-        予選・敗者復活戦を含む全結果は
-        <Link href={`/search?${searchQuery}`}>記録検索ページでこの大会を開く</Link>
-        と確認できます。
-      </p>
+        <p className="static-cta">
+          予選・敗者復活戦を含む全結果は
+          <Link href={`/search?${searchQuery}`}>記録検索ページでこの大会を開く</Link>
+          と確認できます。
+        </p>
+      </div>
     </main>
   );
 }
