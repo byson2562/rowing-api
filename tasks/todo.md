@@ -6,19 +6,34 @@
 - サーバーで動いていたもの: `app/api/v1/results`(+filters/stats)、`app/og/route.tsx`、`app/feed.xml`、`app/health`、ホームの `permanentRedirect`、`next.config` の `redirects()`
 
 ### Spec / Plan
-- [ ] 1. 検索をクライアント側へ: `lib/results-core.ts`(純粋な絞り込み・集計)と `lib/results-data.ts`(JSON 読み込み+キャッシュ)に分離。検索ページは `useSearchParams` で URL を読み、年 JSON を動的 import で取得して絞り込み・ページング・集計。title/canonical/robots はクライアントで同期。`app/api/` を削除
-- [ ] 2. OG 画像をビルド時に生成: `lib/og-targets.ts` で全ページの (title, subtitle) を列挙 → `app/og-manifest.json/route.ts`(force-static)が一覧を書き出し → `scripts/generate-og.mjs` が satori + @resvg/resvg-js で `out/og/<id>.png` を並列生成。`lib/og-image.ts` は `/og/<id>.png` を指す。`public/og-thumb` と `generate-og-thumbs.mjs` は廃止
-- [ ] 3. 残りの route: `feed.xml` は force-static のまま(ビルドで `out/feed.xml`)、`health` 削除、`next.config` の redirects とホームの旧クエリ救済を `public/_redirects` + クライアント側リダイレクトへ
-- [ ] 4. `output: "export"`、`dynamicParams` を外す、`out/` の生成と多バイト URL の確認
-- [ ] 5. デプロイ先: 既存 Worker `regattanavi` を assets-only に(`wrangler.jsonc` の `main` を外し `assets.directory: out`)。カスタムドメインの設定はそのまま使えるので DNS 変更なし。`@opennextjs/cloudflare` と `open-next.config.ts` を削除。`wrangler deploy --dry-run` で検証
-- [ ] 6. 検証: build / lint / tsc / vitest、`wrangler dev` で配信してホーム・検索・大会・選手・記事・OG を確認、本番とスクリーンショット比較
-- [ ] 7. Review を追記してコミット(push はしない)
+- [x] 1. 検索をクライアント側へ: `lib/results-core.ts`(純粋な絞り込み・集計)と `lib/results-data.ts`(JSON 読み込み+キャッシュ)に分離。検索ページは `useSearchParams` で URL を読み、年 JSON を動的 import で取得して絞り込み・ページング・集計。title/canonical/robots はクライアントで同期。`app/api/` を削除(c7fba05)
+- [x] 2. OG 画像をビルド時に生成: `lib/og-targets.ts` で全ページの (title, subtitle) を列挙 → `app/og-manifest.json/route.ts`(force-static)が一覧を書き出し → `scripts/generate-og.mjs` が satori + @resvg/resvg-js で `out/og/<id>.png` を並列生成。`lib/og-image.ts` は `/og/<id>.png` を指す。`public/og-thumb` と `generate-og-thumbs.mjs` は廃止(6778571)
+- [x] 3. 残りの route: `feed.xml` は force-static のまま(ビルドで `out/feed.xml`)、`health` 削除、`next.config` の redirects を `public/_redirects` へ、ホームの旧クエリ救済はクライアント側リダイレクトへ(128d408)
+- [x] 4. `output: "export"`、`dynamicParams` を false に、`out/` の生成と多バイト URL の確認(8656a21)
+- [x] 5. デプロイ先: 既存 Worker `regattanavi` を assets-only に(`wrangler.jsonc` の `main` を外し `assets.directory: out`)。カスタムドメインの設定はそのまま使えるので DNS 変更なし。`@opennextjs/cloudflare` と `open-next.config.ts` を削除。`wrangler deploy --dry-run` で検証(ecd324f)
+- [x] 6. 検証: build / lint / tsc / vitest、`npx serve out` で配信してホーム・検索・大会・選手・記事・OG を確認、本番とスクリーンショット比較(`wrangler dev` はこの Mac で起動できず、下記)
+- [x] 7. Review を追記してコミット(push はしない)
 
 ### 判断
 - 検索データは `public/` へ複製せず、年ごとの JSON を動的 `import()` でコード分割チャンクとして配る。サーバー側ローダーと同じ `importYear` を共有でき、チャンク名にハッシュが付くので更新時のキャッシュ事故がない
 - OG 画像の URL は `/og/<title+subtitle のハッシュ>.png`。ページ側と生成側が同じ `lib/og-targets.ts` を使うので食い違わない
 - `_redirects` はクエリ文字列を照合できない(Cloudflare 仕様)ため、ホームの旧フィルタ URL は JS で `/search` へ置換する。301 が必要になれば `run_worker_first` の小さな Worker で対応できる
 - 静的エクスポートでは `/search?year=…` ごとの metadata をサーバーで出せない。HTML は固定(title/canonical=/search)、クライアントで従来の規則(年+大会 → /results 配下へ canonical、対応なしは noindex)を適用する
+- OG 画像の見出しは 400(Regular)で描く。旧 route は 700 を指定していたが、next/og が Google Fonts から取れたのは Regular だけで、本番と承認済みサムネイルはすべて 400 で描かれていた。太字にしたければ `scripts/generate-og.mjs` の `HEADING_WEIGHT` と `loadFonts` に 700 を足す
+- `.next-dev-preview2/`(30MB の dev ビルド成果物)がコミットされていて、`app/api` を消すと古い型定義が tsc を落とすので追跡を外した(8dc3a97)
+
+### Review
+- **コミット**(ブランチ `claude/static-export-325b81`、main から 6 コミット、未 push): 8dc3a97 untrack dev build → c7fba05 検索のクライアント化 → 6778571 OG のビルド時生成 → 128d408 redirects/health → 8656a21 output: export → ecd324f Static Assets デプロイ → (本コミット) Review
+- **所要時間**: `npm run build` 83〜102 秒(Mac, 8 コア)= next build 約 60〜80 秒(1,978 ページ)+ OG 生成 15〜25 秒
+- **OG 画像**: 1,969 枚(種目 788・選手 674・団体 383・大会 69・歴代 23・年 18・固定ページ 9・記事 4・既定 1)、1200×630 PNG、合計 53MB。8 並列で 15〜18 秒。`out/og-manifest.json` の id と `out/og/*.png`、HTML が参照する `/og/*.png` の 3 者が一致することを確認した。`npm run og` 単体なら既存ファイルをスキップし、`--force` で作り直す
+- **out/ の中身**: ファイル 13,994(HTML 1,974 / RSC セグメント `.txt` 9,866 / OG 1,969 / その他)、370MB。`wrangler deploy --dry-run` は 15,975 ファイルを読んで成功("No bindings found")。Workers Static Assets の上限は 20,000 ファイル・1 ファイル 25MiB。**セグメント `.txt` が 1 ページあたり約 5 個**つくので、ページが約 1,200 増えると上限に当たる(年 100〜150 ページ増のペースなら数年は余裕)。Next 16 にこれを止める公開オプションは見つからなかった(PPR/segment cache の内部)
+- **Workers から外したもの**: OpenNext ランタイム(`@opennextjs/cloudflare`、`open-next.config.ts`、`.open-next/`)、`/api/v1/results`・`/filters`・`/stats`、`/og`(next/og)、`/health`、`next.config` の `redirects()`、ホームの `permanentRedirect`、`initOpenNextCloudflareForDev`。依存に OpenNext は残っていない(package.json / lock とも 0 件)。追加した devDependencies: satori、@resvg/resvg-js、@fontsource/noto-sans-jp(84MB、woff を使う)
+- **検証**: lint(既存の no-img-element 警告 1 件のみ)/ tsc / vitest 10 件 すべて通過。`npx serve out -l 8788` で `/`・`/search`・`/results`・`/results/2026`・`/results/2026/第76回全日本社会人ローイング選手権大会`・`/results/2026/第104回…/男子エイト`・`/records`・`/records/男子エイト`・`/athletes`・`/organizations`・`/articles`・`/articles/rowing-glossary`・`/about`・`/feed.xml`・`/sitemap.xml`(1,970 URL)・`/robots.txt`・`/og/default.png`・`/og/<id>.png` が 200、`/nonexistent`・`/api/v1/results`・`/health` が 404。ブラウザで `/search?year=2025&event=男子エイト` は 31 件と 2 つの図、年を外すと全 18 年のチャンクを読み 534 件と優勝タイム推移。`/?year=2025&event=男子エイト` は JS で `/search?…` へ置換。ホーム・大会ページ・検索の見た目は本番(regattanavi.jp)のスクリーンショットと一致(本番ホームには main の新しいコミット c0dfead「次の大会」帯と 9858618 新人選手権記事が載っていて、その 2 点だけ差がある)
+- **検索ページの `<head>`**: Next は静的 HTML の metadata を hydration 後にもう一度 `<head>` へ流し込むため、一度 DOM を書き換えるだけでは既定値に戻る。MutationObserver で `<head>` を監視して当て直し、重複した canonical/robots は 1 つに畳む。`?year=2025&competition=第103回…` で canonical が `/results/2025/第103回…`、`?year=2025&event=男子エイト` で noindex・canonical なし、`/search` 単体で canonical `/search` になることを確認。JS 実行前の HTML は常に「title 既定・canonical /search」なので、Google が JS を実行しない場合は旧サーバー版より弱い
+- **できなかったこと**: `wrangler dev` がこの Mac では `spawn EBADF`(wrangler 4.151.3 同梱 esbuild の同期サービス起動)で落ち、サンドボックス外・ターミナル・main 付きの設定でも同じだったため、`_redirects`(9 ルール、`wrangler dev` は "Parsed 9 valid redirect rules" まで出る)と `html_handling` の実挙動は未確認。`/results/2026/`(末尾スラッシュ)→ 307、`/rowing-results` → 301 `/about`、多バイトの `/records/男子舵手なしペア` → 301 は**本番切替直後に curl で確認する**こと。Playwright の e2e(`tests/e2e/*.spec.ts`)は `/api/v1` をモックし `/` を検索ページとして開く古い前提のままで、今回は触っていない(CI でも走っていない)
+- **本番切替の手順**(人が実行): (1) main の c0dfead・9858618 をこのブランチへ取り込む(`frontend/app/page.tsx` と `lib/articles.ts` が触れ合うので衝突を確認)→ (2) `cd frontend && npm ci && npm run build && npx wrangler deploy --dry-run` → (3) main へマージして push すると `.github/workflows/deploy-cloudflare.yml` が `npm run build` → `npx wrangler deploy` を実行する。手で流すなら `cd frontend && npm run cf:deploy`。Worker 名 `regattanavi`・カスタムドメイン regattanavi.jp は同じ設定を使うので **DNS・ルートの変更は不要**。初回は約 16,000 ファイル(370MB)のアップロードで数分かかる(2 回目以降は差分のみ)→ (4) 切替後に `curl -I` で `/`、`/results/2026/`、`/rowing-results`、`/records/%E7%94%B7%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%9A%E3%82%A2`、`/og/default.png`、`/feed.xml` を確認し、X の Card Validator か Slack で大会ページの OG 画像が出ることを見る → (5) Cloudflare ダッシュボードの Worker に古い OpenNext のバージョンが残っても害はないが、`observability` の設定が消えるのでログは Static Assets のアナリティクスで見る
+- **戻し方**: main を ecd324f の前(110773c)へ戻して push すれば旧 workflow が OpenNext でデプロイし直す(Worker 名が同じなので上書きされる)
+
 
 # デザインシステム刷新: 日経ビジュアルデータ寄りへ (2026-10-20)
 

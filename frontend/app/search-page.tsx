@@ -33,7 +33,8 @@ import {
   type ResultRecord,
   type StatPoint
 } from "../lib/results-data";
-import { searchHeadState } from "../lib/search-meta";
+import { searchHeadState, type SearchHeadState } from "../lib/search-meta";
+import { siteUrl } from "../lib/site-url";
 
 const DATASET_INDEX = resultsIndex as { years: number[]; total_count: number };
 const DATASET_YEAR_MIN = Math.min(...DATASET_INDEX.years);
@@ -127,17 +128,47 @@ function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps
   );
 }
 
-// <head> の link/meta をクライアントで差し替える(静的HTMLには /search の既定値が入っている)
-function syncHeadElement(selector: string, create: () => HTMLElement, value: string | null) {
-  const existing = document.head.querySelector<HTMLElement>(selector);
+// <head> の link/meta をクライアントで差し替える(静的HTMLには /search の既定値が入っている)。
+// 値が同じなら触らない(MutationObserver から呼ばれるため、無駄な変更でループさせない)
+function syncHeadElement(selector: string, attribute: "href" | "content", create: () => HTMLElement, value: string | null) {
+  // Next が後から同じ要素を追加してくることがある(canonical が2つ並ぶと検索エンジンは両方無視する)ので、
+  // 1つ目だけ残して重複は消す
+  const [existing, ...duplicates] = Array.from(document.head.querySelectorAll<HTMLElement>(selector));
+  duplicates.forEach((element) => element.remove());
   if (value === null) {
     existing?.remove();
     return;
   }
+  if (existing?.getAttribute(attribute) === value) return;
   const element = existing ?? create();
-  if (selector.startsWith("link")) element.setAttribute("href", value);
-  else element.setAttribute("content", value);
+  element.setAttribute(attribute, value);
   if (!existing) document.head.appendChild(element);
+}
+
+function applySearchHead(head: SearchHeadState) {
+  const title = `${head.title} | レガッタナビ`;
+  if (document.title !== title) document.title = title;
+  syncHeadElement(
+    'link[rel="canonical"]',
+    "href",
+    () => {
+      const link = document.createElement("link");
+      link.setAttribute("rel", "canonical");
+      return link;
+    },
+    head.canonical ? `${siteUrl}${head.canonical}` : null
+  );
+  // layout の metadata が <meta name="robots" content="index, follow"> を出すので、その要素を書き換える
+  syncHeadElement(
+    'meta[name="robots"]',
+    "content",
+    () => {
+      const meta = document.createElement("meta");
+      meta.setAttribute("name", "robots");
+      return meta;
+    },
+    head.noindex ? "noindex, follow" : "index, follow"
+  );
 }
 
 export default function SearchPage() {
@@ -276,29 +307,17 @@ export default function SearchPage() {
     return ["", ...Array.from(options)];
   }, [filterOptions.genders]);
 
-  // title / canonical / robots を従来のサーバー側 metadata と同じ規則で同期する
+  // title / canonical / robots を従来のサーバー側 metadata と同じ規則で同期する。
+  // Next は静的 HTML の metadata を hydration 後にもう一度 <head> へ流し込む(ストリーミング metadata)ため、
+  // 一度書き換えるだけでは既定値に戻される。<head> の変化を監視して、変わるたびに同じ値を当て直す
   useEffect(() => {
     if (typeof document === "undefined" || isRefreshing) return;
     const head = searchHeadState(filters, DATASET_INDEX.years, filtered);
-    document.title = `${head.title} | レガッタナビ`;
-    syncHeadElement(
-      'link[rel="canonical"]',
-      () => {
-        const link = document.createElement("link");
-        link.setAttribute("rel", "canonical");
-        return link;
-      },
-      head.canonical ? new URL(head.canonical, window.location.origin).toString() : null
-    );
-    syncHeadElement(
-      'meta[name="robots"]',
-      () => {
-        const meta = document.createElement("meta");
-        meta.setAttribute("name", "robots");
-        return meta;
-      },
-      head.noindex ? "noindex, follow" : null
-    );
+    const apply = () => applySearchHead(head);
+    apply();
+    const observer = new MutationObserver(apply);
+    observer.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
   }, [filtered, filters, isRefreshing]);
 
   useEffect(() => {
