@@ -1,8 +1,12 @@
 name: Deploy to Cloudflare
 
-# Vercel は GitHub 連携で main を自動デプロイしていたが、Cloudflare Workers への移行に
+# Vercel は GitHub 連携で main を自動デプロイしていたが、Cloudflare への移行に
 # ともないその仕組みがなくなった。JARA の自動更新PRをマージしても本番へ反映されなく
 # なるため、ここでデプロイを担う。
+#
+# サイトは next build の完全静的エクスポート(out/)で、Worker スクリプトは無い。
+# wrangler deploy が out/ を Workers Static Assets として既存の Worker「regattanavi」へ
+# アップロードする(frontend/wrangler.jsonc)。
 on:
   push:
     branches: [main]
@@ -39,15 +43,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
       - name: Type check
         run: npx tsc --noEmit
 
       - name: Unit tests
         run: npm test
 
-      # NEXT_PUBLIC_* は frontend/.env.production から読まれる(公開値のみ)
-      - name: Build and deploy
-        run: npm run cf:deploy
+      # NEXT_PUBLIC_* は frontend/.env.production から読まれる(公開値のみ)。
+      # next build のあと scripts/generate-og.mjs が全ページの OG 画像を out/og/ に書き出す
+      - name: Build static site
+        run: npm run build
+
+      - name: Deploy static assets
+        run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

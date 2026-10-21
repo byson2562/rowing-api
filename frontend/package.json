@@ -4,15 +4,14 @@
   "version": "0.2.0",
   "scripts": {
     "dev": "NEXT_DIST_DIR=.next-dev next dev -H 0.0.0.0 -p 5173",
-    "build": "NEXT_DIST_DIR=.next-build next build",
-    "start": "NEXT_DIST_DIR=.next-build next start -p 5173",
+    "build": "next build && node scripts/generate-og.mjs",
+    "preview": "wrangler dev --port 5173",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
-    "cf:build": "opennextjs-cloudflare build",
-    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:deploy": "npm run build && wrangler deploy",
+    "cf:check": "wrangler deploy --dry-run",
     "og": "node scripts/generate-og.mjs"
   },
   "dependencies": {
@@ -23,7 +22,6 @@
   },
   "devDependencies": {
     "@fontsource/noto-sans-jp": "^5.3.1",
-    "@opennextjs/cloudflare": "^1.20.12",
     "@playwright/test": "^1.54.2",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4.3.3",

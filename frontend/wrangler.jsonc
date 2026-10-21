@@ -1,19 +1,19 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
+  // 完全静的サイト。Worker スクリプトは持たず(main なし)、next build の out/ を
+  // Workers Static Assets としてそのまま配信する。Worker 名とカスタムドメインは
+  // OpenNext 時代と同じなので、デプロイしても DNS やルートの変更はいらない。
   "name": "regattanavi",
-  "main": ".open-next/worker.js",
   "compatibility_date": "2025-09-23",
-  // nodejs_compat: Next.js のサーバーコードが Node API を使うため必須
-  // global_fetch_strictly_public: 自サイトへの fetch を公開URL経由にする(OpenNext 推奨)
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "routes": [
     { "pattern": "regattanavi.jp", "custom_domain": true }
   ],
   "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
-  "observability": {
-    "enabled": true
+    "directory": "./out",
+    // /results/2026 → out/results/2026.html を返し、/results/2026/ は /results/2026 へ 307。
+    // Next の trailingSlash: false と対応する
+    "html_handling": "auto-trailing-slash",
+    // 存在しないパスは Next が書き出す out/404.html を 404 で返す
+    "not_found_handling": "404-page"
   }
 }
