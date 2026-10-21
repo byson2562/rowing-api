@@ -39,6 +39,7 @@ export const metadata: Metadata = {
 
 // 2026年大会の日程・会場・出漕資格の一次情報(日本ローイング協会の大会ページ、2026-10-21 確認)
 const JARA_EVENT_URL = "https://www.jara.or.jp/race/current/2026freshman.html";
+const JARA_BULLETIN_URL = "https://www.jara.or.jp/race/current/2026freshman_bulletin.pdf";
 
 const isFreshmanChampionship = (name: string) => name.includes("新人");
 
@@ -198,7 +199,11 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>種目構成</h2>
         <p>
-          2026年大会の要項では男女4種目ずつの8種目です。男子がシングルスカル、ダブルスカル、舵手つきフォア、エイト。女子がシングルスカル、ダブルスカル、舵手つきクォドルプル、エイト。エントリーが6クルー未満の種目は実施されず、女子エイトだけは2クルー以上で実施されます。
+          2026年大会の
+          <a href={JARA_BULLETIN_URL} target="_blank" rel="noopener noreferrer">
+            開催要項(PDF)
+          </a>
+          では男女4種目ずつの8種目です。男子がシングルスカル、ダブルスカル、舵手つきフォア、エイト。女子がシングルスカル、ダブルスカル、舵手つきクォドルプル、エイト。エントリーが6クルー未満の種目は実施されず、女子エイトだけは2クルー以上で実施されます。
         </p>
         <p>
           収録データの{firstYear}〜{latestYear}年は毎年{latestEvents.length}種目で、女子エイトは含まれていません。{latestYear}年大会でFinal Aが行われたのは男子が{menEvents.length}種目(
@@ -253,8 +258,7 @@ export default async function FreshmanChampionshipGuide() {
               <OrgLink name={org} />が{ys.length}回({[...ys].sort().map((y) => `${y}年`).join("・")})
             </span>
           ))}
-          です(混成クルーは別の団体として数えています)。{latestYear}年の{menEight[0]?.organization}
-          のように、複数の団体を組み合わせた混成クルーが勝つ年もあります。
+          です(混成クルーは別の団体として数えています)。
         </p>
         <div className={articleTableWrap}>
           <table className={articleTable}>
