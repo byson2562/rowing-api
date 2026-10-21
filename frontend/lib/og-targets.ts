@@ -42,6 +42,10 @@ const ARTICLE_OG: Record<string, OgTarget> = {
   "university-power-map-2009-2025": {
     title: "大学ボートの勢力図 2009-2025",
     subtitle: "金メダル202個を男女別に集計"
+  },
+  "freshman-championship-guide": {
+    title: "全日本新人ローイング選手権とは",
+    subtitle: "2026年の日程・種目・歴代優勝クルー"
   }
 };
 

@@ -5,6 +5,7 @@ import { allResults, organizationSlug, type ResultRecord } from "../../../lib/re
 import { articles, getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
 import { ogImages } from "../../../lib/og-image";
+import { articleOg } from "../../../lib/og-targets";
 import {
   articleMeta,
   articleNote,
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     description: meta.description,
     type: "article",
     url: `/articles/${meta.slug}`,
-    images: ogImages("全日本新人ローイング選手権とは", "2026年の日程・種目・歴代優勝クルー")
+    images: ogImages(articleOg(meta))
   }
 };
 
