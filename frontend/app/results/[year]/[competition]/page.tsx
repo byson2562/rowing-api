@@ -18,6 +18,8 @@ import {
   type ResultRecord
 } from "../../../../lib/results-data";
 import { siteUrl } from "../../../../lib/site-url";
+import { ogImageUrl } from "../../../../lib/og-image";
+import { competitionOg } from "../../../../lib/og-targets";
 
 type Params = { year: string; competition: string };
 
@@ -55,7 +57,7 @@ export async function generateMetadata(props: { params: Promise<Params> }): Prom
     ? `${competition}（${year}年）結果`
     : `${competition}（${year}年）ローイング結果`;
   const description = `${year}年開催「${competition}」のローイング（ボート）競技結果。種目別のFinal A順位・クルー・タイムを掲載しています。`;
-  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(competition)}&subtitle=${encodeURIComponent(`${year}年 ローイング大会結果`)}`;
+  const ogImage = ogImageUrl(competitionOg(year, competition));
 
   return {
     title,

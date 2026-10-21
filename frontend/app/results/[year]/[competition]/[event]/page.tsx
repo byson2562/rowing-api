@@ -13,6 +13,8 @@ import {
   type ResultRecord
 } from "../../../../../lib/results-data";
 import { siteUrl } from "../../../../../lib/site-url";
+import { ogImageUrl } from "../../../../../lib/og-image";
+import { eventOg } from "../../../../../lib/og-targets";
 
 type Params = { year: string; competition: string; event: string };
 
@@ -55,7 +57,7 @@ export async function generateMetadata(props: { params: Promise<Params> }): Prom
     ? `${event}の結果｜${competition}（${params.year}年）`
     : `${event}の結果｜${competition}ローイング（${params.year}年）`;
   const description = `${params.year}年「${competition}」${event}のローイング（ボート）競技結果。${winner ? `優勝は${winner.organization}（${winner.time_display}）。` : ""}Final A・Final Bの順位・クルー・タイムを掲載しています。`;
-  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(event)}&subtitle=${encodeURIComponent(winner ? `優勝 ${winner.organization} ${winner.time_display}（${params.year}年）` : `${params.year}年 ${competition}`)}`;
+  const ogImage = ogImageUrl(eventOg(params.year, competition, event, winner));
 
   return {
     title,

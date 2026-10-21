@@ -1,53 +1,37 @@
 ---
 name: article-thumbnails
-description: 記事のサムネイルPNGを再生成する。frontend/lib/articles.ts に記事を追加した、記事のタイトルを変えた、記事を削除した、OG画像のデザイン(app/og/route.tsx)を変えた——このいずれかを行ったら、明示的な指示がなくてもこのスキルを実行する。「サムネイルを作り直して」「OG画像を再生成して」の依頼でも使う。
+description: OG画像(SNSシェア用の 1200x630 PNG)の仕組みと確認手順。記事を追加・改題した、OG画像のデザイン(scripts/generate-og.mjs)を変えた、新しいページ種別を追加した、「サムネイルを作り直して」「OG画像を再生成して」と頼まれた——このいずれかで読む。
 ---
 
-# 記事サムネイルの再生成
+# OG画像の生成(ビルド時)
 
-ホームと `/articles` に並ぶ記事サムネイルは、`frontend/public/og-thumb/<slug>.png` の**静的PNG**を配信している。記事を足したり改題したりしても自動では作られないので、ここで再生成してコミットする。
+OG画像は**ビルド時に全ページぶんを一括生成**する。手で再生成してコミットする作業はもう無い。
 
-## なぜ静的PNGなのか
+- 絵柄・描画: `frontend/scripts/generate-og.mjs`(satori + @resvg/resvg-js、Noto Sans JP は `@fontsource/noto-sans-jp`)
+- 各ページの (title, subtitle): `frontend/lib/og-targets.ts`。ページの `generateMetadata` と、一覧を書き出す `app/og-manifest.json/route.ts` が同じ関数を使う
+- URL: `frontend/lib/og-image.ts` の `ogImageUrl()` が `/og/<title+subtitle のハッシュ>.png` を返す
+- 流れ: `next build` → `out/og-manifest.json` → `node scripts/generate-og.mjs` → `out/og/*.png`(`npm run build` が両方やる)
 
-以前はページ内サムネイルも `/og` を直接参照していた。すると**ホームを開くたびに satori の画像生成が3回走り**、Cloudflare Workers 無料枠の CPU 上限を超えて Worker 全体が停止した(Error 1102 / 静的ページまで503)。絵柄は `/og` が返すものと同一なので、静的化しても見た目は変わらない。
+## 記事を足した・改題したとき
 
-OGPメタタグ側は今も `/og` を使う(SNSシェア時にしか叩かれず頻度が低い。エッジキャッシュも入れてある)。**メタタグを静的PNGに変えてはいけない** — 全1,900ページ分の画像が必要になる。
+1. `frontend/lib/articles.ts` に登録する(一覧・サイトマップ・OG はここを読む)
+2. OG の見出しを短くしたい場合だけ `lib/og-targets.ts` の `ARTICLE_OG` に slug をキーにして title/subtitle を書く。無ければ記事タイトルの「主題 | 補足」を分割して使う
+3. 記事ページの metadata は `ogImages(articleOg(meta))` を使う(他の記事ページと同じ)
 
-## 手順
+## 新しいページ種別を足したとき
 
-1. 記事の登録が `frontend/lib/articles.ts` に入っていることを確認する(スクリプトはここを読む)。
+`lib/og-targets.ts` に `xxxOg(...)` を足し、`listOgTargets()` にも列挙を足す。ページ側で独自に文字列を組んで `/og/...` を参照してはいけない(一覧に無い画像は生成されず 404 になる)。
 
-2. 再生成する:
+## 確認
 
-   ```bash
-   cd frontend && npm run og:thumbs
-   ```
+```bash
+cd frontend && npm run build && ls out/og | wc -l
+```
 
-   既定では**本番の `/og`** から取得する。デザイン変更を反映したい場合など、まだ本番に出ていない絵柄を使うときはローカルの dev サーバーを起動して:
-
-   ```bash
-   cd frontend && OG_ORIGIN=http://localhost:5173 npm run og:thumbs
-   ```
-
-3. 生成物を確認する。**1200x630 の PNG**であること、記事数と枚数が一致することを見る:
-
-   ```bash
-   ls -la frontend/public/og-thumb/
-   ```
-
-4. ページ内で実際に表示されるか確かめる(dev サーバーで `/` と `/articles` を開き、`img` の `naturalWidth > 0` を確認する)。
-
-5. PNG をコミットする。CI(`.github/workflows/deploy-cloudflare.yml`)が main への push で本番へ配信する。
-
-## 注意
-
-- **`/og` が 503 を返すことがある**。画像生成が重なるとリソース上限に当たるため。スクリプトは5秒間隔で6回まで再試行し、各記事の間も3秒空ける。それでも失敗したら少し待って再実行する。
-- スクリプトはタイトルを `主題 | 補足` で分割し、`title` と `subtitle` に割り当てる。この規則は `lib/og-image.ts` の `articleOgImageUrl` と一致させてある。**片方だけ変えない**。
-- 記事を削除したときは `public/og-thumb/<slug>.png` も手で消す(スクリプトは古いファイルを掃除しない)。
-- サムネイルの参照は `articleThumbUrl(slug)`(`lib/og-image.ts`)。ページ内で `articleOgImageUrl` を使うと Error 1102 が再発する。
+- `out/og-manifest.json` の件数と `out/og/*.png` の枚数が一致すること
+- 絵柄を変えたときは、任意の1枚を開いて白地・墨の見出し・左揃え・青の短い罫線・「レ」のマークを確認する(docs/design-rules.md §2)
+- 1枚だけ試すなら `node scripts/generate-og.mjs --manifest <json> --out <dir> --force`(json は `[{"id":"x","title":"…","subtitle":"…"}]`)
 
 ## 関連
 
-- 生成スクリプト: `frontend/scripts/generate-og-thumbs.mjs`
-- OG画像の生成本体: `frontend/app/og/route.tsx`(エッジキャッシュ付き)
 - 記事を新規作成したら、公開前に `article-review` スキルで校正を回す。

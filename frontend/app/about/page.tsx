@@ -18,6 +18,7 @@ import {
 } from "../../components/lp/lp-classes";
 import { getDatasetSummary } from "../../lib/results-data";
 import { ogImages } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 
 export const metadata: Metadata = {
   title: "レガッタナビとは（データ範囲・使い方）",
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     description:
       "レガッタナビは、日本の主要ローイング（ボート）大会の結果と記録のデータベースです。最新結果・条件検索・歴代記録・データ分析記事を提供しています。",
     url: "/about",
-    images: ogImages("レガッタナビとは", "ローイング大会結果データベース")
+    images: ogImages(FIXED_OG.about)
   }
 };
 

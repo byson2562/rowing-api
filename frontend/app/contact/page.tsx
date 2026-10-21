@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ContactForm } from "../../components/contact-forms";
 import { ogImages } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 import {
   lpAuthor,
   lpAuthorMeta,
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     description:
       "レガッタナビへのお問い合わせページです。掲載データの誤り・ご要望・協賛のご相談など、フォームまたはメールでご連絡ください。",
     url: "/contact",
-    images: ogImages("お問い合わせ", "レガッタナビ")
+    images: ogImages(FIXED_OG.contact)
   }
 };
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SponsorApplyForm } from "../../components/contact-forms";
 import ButtonLink from "../../components/ui/ButtonLink";
 import { ogImages } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 import {
   lpAuthor,
   lpAuthorMetaLink,
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "レガッタナビは個人が運営する無料のローイング大会結果データベースです。運営を続けるため、応援してくださる企業・団体・個人の方からのご連絡を受け付けています。",
     url: "/sponsor",
-    images: ogImages("スポンサー募集", "レガッタナビ")
+    images: ogImages(FIXED_OG.sponsor)
   }
 };
 

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { allResults } from "../../../lib/results-data";
 import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
+import { ogImageUrl } from "../../../lib/og-image";
+import { articleOg } from "../../../lib/og-targets";
 import { BoatPartsFigure, CrewLayoutFigure, ScullFigure, SweepFigure } from "../../../components/article/glossary-figures";
 import {
   articleFigure,
@@ -39,7 +41,7 @@ export const metadata: Metadata = {
     url: `/articles/${meta.slug}`,
     images: [
       {
-        url: `${siteUrl}/og?title=${encodeURIComponent("ローイング用語集")}&subtitle=${encodeURIComponent("種目・大会・練習でよく出る言葉")}`,
+        url: ogImageUrl(articleOg(meta)),
         width: 1200,
         height: 630,
         alt: meta.title

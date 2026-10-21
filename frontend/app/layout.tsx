@@ -7,6 +7,7 @@ import Link from "next/link";
 import SiteHeader from "../components/SiteHeader";
 import { sponsors } from "../lib/sponsors";
 import { siteUrl } from "../lib/site-url";
+import { ogImageUrl } from "../lib/og-image";
 
 // 書体は Noto Sans JP に一本化(2026-10-20)。数字は tabular-nums で桁を揃える。
 // 和文サブセットは next/font が自動で unicode-range 分割するため、latin サブセットの指定で足りる
@@ -70,7 +71,7 @@ export const metadata: Metadata = {
       "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるレガッタナビ。",
     images: [
       {
-        url: `${siteUrl}/og`,
+        url: ogImageUrl(),
         width: 1200,
         height: 630,
         alt: "レガッタナビ",
@@ -82,7 +83,7 @@ export const metadata: Metadata = {
     title: "ローイング・ボート記録検索 | レガッタナビ",
     description:
       "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるレガッタナビ。",
-    images: [`${siteUrl}/og`],
+    images: [ogImageUrl()],
   },
   robots: {
     index: true,

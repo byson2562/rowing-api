@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { listAthleteResults, organizationSlug, type ResultRecord } from "../../lib/results-data";
 import { siteUrl } from "../../lib/site-url";
+import { ogImageUrl } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 
 export const metadata: Metadata = {
   title: "選手別シングルスカル成績一覧",
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
     description: "ローイング（ボート）シングルスカル種目の選手別成績一覧。",
     images: [
       {
-        url: `${siteUrl}/og?title=${encodeURIComponent("選手別 成績一覧")}&subtitle=${encodeURIComponent("シングルスカル")}`,
+        url: ogImageUrl(FIXED_OG.athletes),
         width: 1200,
         height: 630,
         alt: "選手別シングルスカル成績一覧"

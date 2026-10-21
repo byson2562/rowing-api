@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { allResults, listRecordEventNames, type ResultRecord } from "../../lib/results-data";
 import { siteUrl } from "../../lib/site-url";
+import { ogImageUrl } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 
 export const metadata: Metadata = {
   title: "種目別 歴代最速タイムランキング",
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
     description: "ローイング（ボート）の種目別・歴代最速タイムランキング。",
     images: [
       {
-        url: `${siteUrl}/og?title=${encodeURIComponent("歴代最速タイム")}&subtitle=${encodeURIComponent("種目別ランキング")}`,
+        url: ogImageUrl(FIXED_OG.records),
         width: 1200,
         height: 630,
         alt: "種目別 歴代最速タイムランキング"

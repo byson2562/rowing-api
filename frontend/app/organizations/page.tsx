@@ -8,6 +8,8 @@ import {
   organizationSlug
 } from "../../lib/results-data";
 import { siteUrl } from "../../lib/site-url";
+import { ogImageUrl } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 import {
   OrganizationsIndex,
   type OrganizationGroup
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
     description: "大学・クラブなど団体別のローイング（ボート）成績一覧。",
     images: [
       {
-        url: `${siteUrl}/og?title=${encodeURIComponent("団体別 成績一覧")}&subtitle=${encodeURIComponent("ローイング大会結果")}`,
+        url: ogImageUrl(FIXED_OG.organizations),
         width: 1200,
         height: 630,
         alt: "団体別ローイング成績一覧"
