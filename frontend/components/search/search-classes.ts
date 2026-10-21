@@ -44,21 +44,9 @@ export const sx = {
   filters: "my-4 grid gap-2.5",
   filterRow:
     "grid grid-cols-[repeat(4,minmax(170px,1fr))] gap-2.5 max-[768px]:grid-cols-[repeat(2,minmax(0,1fr))]",
+  // 2段目(Final / 順位 / 団体 / 団体区分)。折りたたまず常に出す
   filterRowSecondary:
-    "grid grid-cols-[repeat(4,minmax(170px,1fr))] gap-2.5 pt-2.5 max-[768px]:grid-cols-[repeat(2,minmax(0,1fr))]",
-  secondaryWrap: "mt-1 grid gap-1.5",
-  advHeader: "flex items-center",
-  advToggle:
-    "inline-flex w-full cursor-pointer items-center gap-2 border-x-0 border-y border-rn-border bg-white px-0 py-3 " +
-    "text-[14px] font-medium leading-[1.5] text-rn-text hover:underline",
-  advMeta: "ml-auto text-[12px] font-normal text-rn-meta",
-  advCaret: "text-[11px] text-rn-meta",
-  secondaryPanel:
-    "-translate-y-[2px] max-h-0 overflow-hidden opacity-0 " +
-    "[transition:max-height_0.22s_ease,opacity_0.18s_ease,transform_0.2s_ease] motion-reduce:transition-none",
-  secondaryPanelOpen:
-    "max-h-[360px] translate-y-0 overflow-hidden opacity-100 " +
-    "[transition:max-height_0.22s_ease,opacity_0.18s_ease,transform_0.2s_ease] motion-reduce:transition-none",
+    "grid grid-cols-[repeat(4,minmax(170px,1fr))] gap-2.5 max-[768px]:grid-cols-[repeat(2,minmax(0,1fr))]",
   control,
   select: control + " appearance-none pr-[34px]",
 

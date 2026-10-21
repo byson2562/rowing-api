@@ -186,7 +186,6 @@ export default function SearchPage({
   const [organization, setOrganization] = useState(initialFilters.organization);
   const [organizationSearch, setOrganizationSearch] = useState(initialFilters.organization);
   const [organizationMenuOpen, setOrganizationMenuOpen] = useState(false);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [chartsExpanded, setChartsExpanded] = useState(false);
   const [rank, setRank] = useState(initialFilters.rank);
   const [page, setPage] = useState(initialPage);
@@ -504,15 +503,6 @@ export default function SearchPage({
     if (!keyword) return options;
     return options.filter((option) => option.toLowerCase().includes(keyword));
   }, [filterOptions.organizations, organizationSearch]);
-  const advancedActiveCount = useMemo(() => {
-    let count = 0;
-    if (finalGroup) count += 1;
-    if (rank) count += 1;
-    if (organization) count += 1;
-    if (affiliationType) count += 1;
-    return count;
-  }, [affiliationType, finalGroup, organization, rank]);
-
   const pageNumbers = useMemo(() => {
     const total = pagination.total_pages;
     const current = pagination.page;
@@ -783,29 +773,7 @@ export default function SearchPage({
             </div>
           </div>
 
-          <div className={sx.secondaryWrap}>
-            <div className={sx.advHeader}>
-              <button
-                type="button"
-                className={sx.advToggle}
-                aria-expanded={showAdvancedFilters}
-                aria-controls="advanced-filters-panel"
-                onClick={() => setShowAdvancedFilters((prev) => !prev)}
-              >
-                <span>詳細条件</span>
-                <span className={sx.advMeta}>
-                  {advancedActiveCount > 0 ? `${advancedActiveCount}件選択中` : "未設定"}
-                </span>
-                <span aria-hidden="true" className={sx.advCaret}>{showAdvancedFilters ? "▲" : "▼"}</span>
-              </button>
-            </div>
-            <div
-              className={showAdvancedFilters ? sx.secondaryPanelOpen : sx.secondaryPanel}
-              id="advanced-filters-panel"
-              aria-label="詳細条件"
-              aria-hidden={!showAdvancedFilters}
-            >
-              <div className={sx.filterRowSecondary}>
+          <div className={sx.filterRowSecondary} aria-label="詳細フィルター">
             <select
               className={sx.select}
               data-testid="final-group-select"
@@ -945,8 +913,6 @@ export default function SearchPage({
                 </option>
               ))}
             </select>
-              </div>
-            </div>
           </div>
         </section>
 
