@@ -272,9 +272,12 @@ export default async function HomePage(props: { searchParams: Promise<SearchPara
             {summary.minYear}〜{summary.maxYear}年 · {competitionCount}大会 · {summary.totalCount.toLocaleString()}件のFinal A・B
           </p>
         </div>
-        <ButtonLink href="/about" variant="secondary">
-          収録データについて
-        </ButtonLink>
+        <div className="flex flex-wrap gap-3">
+          <ButtonLink href="/search">記録を検索する</ButtonLink>
+          <ButtonLink href="/about" variant="secondary">
+            収録データについて
+          </ButtonLink>
+        </div>
       </div>
 
       {featured ? (
