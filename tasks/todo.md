@@ -1,3 +1,25 @@
+# 完全静的サイトへの移行: output: "export" + Cloudflare Workers Static Assets (2026-10-21)
+
+### 背景
+- OpenNext の実行時サーバーが負担(Next 15 期限切れで CI 停止、Workers 無料枠の 3MB バンドル上限、`/og` 生成が重なると Worker ごと 503)
+- 方針: Next は残し、サーバー実行をやめて `output: "export"` の完全静的サイトにし、Cloudflare の静的配信に乗せる。見た目と URL は変えない
+- サーバーで動いていたもの: `app/api/v1/results`(+filters/stats)、`app/og/route.tsx`、`app/feed.xml`、`app/health`、ホームの `permanentRedirect`、`next.config` の `redirects()`
+
+### Spec / Plan
+- [ ] 1. 検索をクライアント側へ: `lib/results-core.ts`(純粋な絞り込み・集計)と `lib/results-data.ts`(JSON 読み込み+キャッシュ)に分離。検索ページは `useSearchParams` で URL を読み、年 JSON を動的 import で取得して絞り込み・ページング・集計。title/canonical/robots はクライアントで同期。`app/api/` を削除
+- [ ] 2. OG 画像をビルド時に生成: `lib/og-targets.ts` で全ページの (title, subtitle) を列挙 → `app/og-manifest.json/route.ts`(force-static)が一覧を書き出し → `scripts/generate-og.mjs` が satori + @resvg/resvg-js で `out/og/<id>.png` を並列生成。`lib/og-image.ts` は `/og/<id>.png` を指す。`public/og-thumb` と `generate-og-thumbs.mjs` は廃止
+- [ ] 3. 残りの route: `feed.xml` は force-static のまま(ビルドで `out/feed.xml`)、`health` 削除、`next.config` の redirects とホームの旧クエリ救済を `public/_redirects` + クライアント側リダイレクトへ
+- [ ] 4. `output: "export"`、`dynamicParams` を外す、`out/` の生成と多バイト URL の確認
+- [ ] 5. デプロイ先: 既存 Worker `regattanavi` を assets-only に(`wrangler.jsonc` の `main` を外し `assets.directory: out`)。カスタムドメインの設定はそのまま使えるので DNS 変更なし。`@opennextjs/cloudflare` と `open-next.config.ts` を削除。`wrangler deploy --dry-run` で検証
+- [ ] 6. 検証: build / lint / tsc / vitest、`wrangler dev` で配信してホーム・検索・大会・選手・記事・OG を確認、本番とスクリーンショット比較
+- [ ] 7. Review を追記してコミット(push はしない)
+
+### 判断
+- 検索データは `public/` へ複製せず、年ごとの JSON を動的 `import()` でコード分割チャンクとして配る。サーバー側ローダーと同じ `importYear` を共有でき、チャンク名にハッシュが付くので更新時のキャッシュ事故がない
+- OG 画像の URL は `/og/<title+subtitle のハッシュ>.png`。ページ側と生成側が同じ `lib/og-targets.ts` を使うので食い違わない
+- `_redirects` はクエリ文字列を照合できない(Cloudflare 仕様)ため、ホームの旧フィルタ URL は JS で `/search` へ置換する。301 が必要になれば `run_worker_first` の小さな Worker で対応できる
+- 静的エクスポートでは `/search?year=…` ごとの metadata をサーバーで出せない。HTML は固定(title/canonical=/search)、クライアントで従来の規則(年+大会 → /results 配下へ canonical、対応なしは noindex)を適用する
+
 # デザインシステム刷新: 日経ビジュアルデータ寄りへ (2026-10-20)
 
 ### 背景

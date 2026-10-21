@@ -6,9 +6,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
-      // JSON APIはインデックス不要のためクロール予算を節約する
-      disallow: "/api/"
+      allow: "/"
     },
     sitemap: `${siteUrl}/sitemap.xml`
   };

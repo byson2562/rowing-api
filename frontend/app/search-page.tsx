@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { sx } from "../components/search/search-classes";
 import { rankBadgeClass } from "../components/results/results-classes";
@@ -16,10 +17,28 @@ import {
   YAxis
 } from "recharts";
 import resultsIndex from "../data/results/index.json";
+import {
+  allResults,
+  availableYears,
+  buildFilterOptions,
+  computeStats,
+  filterResults,
+  paginate,
+  parseQueryFilters,
+  parseYear,
+  sortForIndex,
+  type FiltersResponse,
+  type Pagination,
+  type QueryFilters,
+  type ResultRecord,
+  type StatPoint
+} from "../lib/results-data";
+import { searchHeadState } from "../lib/search-meta";
 
 const DATASET_INDEX = resultsIndex as { years: number[]; total_count: number };
 const DATASET_YEAR_MIN = Math.min(...DATASET_INDEX.years);
 const DATASET_YEAR_MAX = Math.max(...DATASET_INDEX.years);
+const PER_PAGE_OPTIONS = ["25", "50", "100", "200"];
 
 // チャート配色(docs/design-rules.md §6「図」): 主系列は青1色、副系列は灰青、グリッドとラベルは灰。
 // 値は globals.css の --primary / --primary-soft / --surface-soft / --meta と同じ
@@ -36,66 +55,20 @@ const CHART_TOOLTIP_STYLE = {
   padding: "8px 10px"
 } as const;
 
-type Result = {
-  id: number;
-  year: number;
-  competition_name: string;
-  event_name: string;
-  final_group: string;
-  crew_name: string;
-  organization: string;
-  rank: number;
-  time_seconds: number;
-  time_display: string;
-};
-
-type StatPoint = { label: string; value: number };
-type StatsResponse = { group_by: string; data: StatPoint[] };
-type Pagination = { page: number; per_page: number; total_count: number; total_pages: number };
-type ResultsResponse = { data: Result[]; pagination: Pagination };
+type Result = ResultRecord;
 type ActiveFilterChip = { key: string; text: string; onClear: () => void };
-type FilterOptionsResponse = {
-  years: number[];
-  genders: string[];
-  affiliation_types: string[];
-  competition_categories: string[];
-  final_groups: string[];
-  competitions: string[];
-  events: string[];
-  organizations: string[];
+type FilterOptionsResponse = FiltersResponse;
+
+const EMPTY_FILTER_OPTIONS: FilterOptionsResponse = {
+  years: availableYears(),
+  genders: [],
+  affiliation_types: [],
+  competition_categories: [],
+  final_groups: [],
+  competitions: [],
+  events: [],
+  organizations: []
 };
-
-export type SearchPageInitialFilters = {
-  q: string;
-  year: string;
-  gender: string;
-  affiliationType: string;
-  event: string;
-  finalGroup: string;
-  competition: string;
-  competitionCategory: string;
-  organization: string;
-  rank: string;
-};
-
-export type SearchPageProps = {
-  initialFilters: SearchPageInitialFilters;
-  initialPage: number;
-  initialPerPage: string;
-  initialResults: Result[];
-  initialPagination: Pagination;
-  initialFilterOptions: FilterOptionsResponse;
-  initialOrganizationMedals: StatPoint[];
-  initialOrganizationGolds: StatPoint[];
-  initialWinnerTrend: StatPoint[];
-};
-
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api").replace(/\/$/, "");
-const API_PREFIX = API_BASE_URL.endsWith("/api") ? API_BASE_URL : `${API_BASE_URL}/api`;
-
-function apiUrl(path: string): string {
-  return `${API_PREFIX}${path}`;
-}
 
 // 競漕記録の慣例表記 m:ss.cc（例 6:12.08）
 function formatSecondsToTime(totalSeconds: number): string {
@@ -154,44 +127,46 @@ function renderWrappedXAxisTick({ x = 0, y = 0, payload }: WrappedXAxisTickProps
   );
 }
 
-export default function SearchPage({
-  initialFilters,
-  initialPage,
-  initialPerPage,
-  initialResults,
-  initialPagination,
-  initialFilterOptions,
-  initialOrganizationMedals,
-  initialOrganizationGolds,
-  initialWinnerTrend
-}: SearchPageProps) {
-  const [results, setResults] = useState<Result[]>(initialResults);
-  const [organizationMedals, setOrganizationMedals] = useState<StatPoint[]>(initialOrganizationMedals);
-  const [organizationGolds, setOrganizationGolds] = useState<StatPoint[]>(initialOrganizationGolds);
-  const [winnerTrend, setWinnerTrend] = useState<StatPoint[]>(initialWinnerTrend);
-  const [pagination, setPagination] = useState<Pagination>(initialPagination);
-  const [filterOptions, setFilterOptions] = useState<FilterOptionsResponse>(initialFilterOptions);
-  const [loading, setLoading] = useState(true);
-  const resultsRequestRef = useRef(0);
-  const filtersRequestRef = useRef(0);
+// <head> の link/meta をクライアントで差し替える(静的HTMLには /search の既定値が入っている)
+function syncHeadElement(selector: string, create: () => HTMLElement, value: string | null) {
+  const existing = document.head.querySelector<HTMLElement>(selector);
+  if (value === null) {
+    existing?.remove();
+    return;
+  }
+  const element = existing ?? create();
+  if (selector.startsWith("link")) element.setAttribute("href", value);
+  else element.setAttribute("content", value);
+  if (!existing) document.head.appendChild(element);
+}
 
-  const [q, setQ] = useState(initialFilters.q);
-  const [year, setYear] = useState(initialFilters.year);
-  const [gender, setGender] = useState(initialFilters.gender);
-  const [affiliationType, setAffiliationType] = useState(initialFilters.affiliationType);
-  const [event, setEvent] = useState(initialFilters.event);
-  const [finalGroup, setFinalGroup] = useState(initialFilters.finalGroup);
-  const [competition, setCompetition] = useState(initialFilters.competition);
-  const [competitionCategory, setCompetitionCategory] = useState(initialFilters.competitionCategory);
-  const [organization, setOrganization] = useState(initialFilters.organization);
-  const [organizationSearch, setOrganizationSearch] = useState(initialFilters.organization);
+export default function SearchPage() {
+  // URL のクエリから初期状態を復元する(共有リンク・ブックマーク・リロード対応)
+  const searchParams = useSearchParams();
+  const initial = useMemo(() => parseQueryFilters(new URLSearchParams(searchParams.toString())), [searchParams]);
+  const initialPage = Math.max(Number(searchParams.get("page") ?? 1) || 1, 1);
+  const rawPerPage = searchParams.get("per_page") ?? "50";
+  const initialPerPage = PER_PAGE_OPTIONS.includes(rawPerPage) ? rawPerPage : "50";
+
+  // 年ごとの JSON をブラウザで読み込む。年フィルタがあればその年だけ、無ければ全年
+  const [dataset, setDataset] = useState<{ key: string; rows: Result[] } | null>(null);
+
+  const [q, setQ] = useState(initial.q ?? "");
+  const [year, setYear] = useState(initial.year ?? "");
+  const [gender, setGender] = useState(initial.gender ?? "");
+  const [affiliationType, setAffiliationType] = useState(initial.affiliation_type ?? "");
+  const [event, setEvent] = useState(initial.event ?? "");
+  const [finalGroup, setFinalGroup] = useState(initial.final_group ?? "");
+  const [competition, setCompetition] = useState(initial.competition ?? "");
+  const [competitionCategory, setCompetitionCategory] = useState(initial.competition_category ?? "");
+  const [organization, setOrganization] = useState(initial.organization ?? "");
+  const [organizationSearch, setOrganizationSearch] = useState(initial.organization ?? "");
   const [organizationMenuOpen, setOrganizationMenuOpen] = useState(false);
   const [chartsExpanded, setChartsExpanded] = useState(false);
-  const [rank, setRank] = useState(initialFilters.rank);
+  const [rank, setRank] = useState(initial.rank ?? "");
   const [page, setPage] = useState(initialPage);
   const [perPage, setPerPage] = useState(initialPerPage);
   const [pageInput, setPageInput] = useState(initialPage.toString());
-  const [isRefreshing, setIsRefreshing] = useState(true);
   const organizationGoldChartRef = useRef<HTMLDivElement | null>(null);
   const organizationMedalChartRef = useRef<HTMLDivElement | null>(null);
   const winnerTrendChartRef = useRef<HTMLDivElement | null>(null);
@@ -202,16 +177,23 @@ export default function SearchPage({
   const searchExecutionStorageKey = "rowingapi_search_execution_keys_v1";
 
   const rankOptions = useMemo(() => Array.from({ length: 8 }, (_, index) => `${index + 1}`), []);
-  const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 8), [organizationGolds]);
-  const topOrganizationMedals = useMemo(() => organizationMedals.slice(0, 8), [organizationMedals]);
   const organizationBarChartHeight = 260;
-  const genderTabOptions = useMemo(() => {
-    const options = new Set(["男子", "女子"]);
-    filterOptions.genders
-      .filter((value) => value === "男子" || value === "女子")
-      .forEach((value) => options.add(value));
-    return ["", ...Array.from(options)];
-  }, [filterOptions.genders]);
+
+  const filters = useMemo<QueryFilters>(
+    () => ({
+      q: q || undefined,
+      year: year || undefined,
+      gender: gender || undefined,
+      affiliation_type: affiliationType || undefined,
+      event: event || undefined,
+      final_group: finalGroup || undefined,
+      competition: competition || undefined,
+      competition_category: competitionCategory || undefined,
+      organization: organization || undefined,
+      rank: rank || undefined
+    }),
+    [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]
+  );
 
   const baseQuery = useMemo(() => {
     const params = new URLSearchParams();
@@ -228,123 +210,96 @@ export default function SearchPage({
     return params.toString();
   }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, q, rank, year]);
 
-  // 初期値はサーバーがURLから復元した状態と一致している（ページリセット判定に使う）
+  // 初期値はURLから復元した状態と一致している（ページリセット判定に使う）
   const lastFiltersSnapshotRef = useRef(baseQuery);
 
-  const resultsQuery = useMemo(() => {
-    const params = new URLSearchParams(baseQuery);
-    params.set("page", page.toString());
-    params.set("per_page", perPage);
-    return params.toString();
-  }, [baseQuery, page, perPage]);
-
-  const filterQuery = useMemo(() => {
-    const params = new URLSearchParams();
-    if (year) params.set("year", year);
-    if (gender) params.set("gender", gender);
-    if (affiliationType) params.set("affiliation_type", affiliationType);
-    if (competition) params.set("competition", competition);
-    if (competitionCategory) params.set("competition_category", competitionCategory);
-    if (event) params.set("event", event);
-    if (finalGroup) params.set("final_group", finalGroup);
-    if (organization) params.set("organization", organization);
-    return params.toString();
-  }, [affiliationType, competition, competitionCategory, event, finalGroup, gender, organization, year]);
-
+  // 読み込む年の集合をキーにする。収録外の年が指定されたときは全年を読み、絞り込みで0件にする
+  const datasetKey = parseYear(year) ? year : "all";
   useEffect(() => {
-    const requestId = resultsRequestRef.current + 1;
-    resultsRequestRef.current = requestId;
-    const controller = new AbortController();
-
-    const fetchData = async () => {
-      setLoading(true);
-      setIsRefreshing(true);
-      try {
-        const [resultsRes, orgMedalRes, orgGoldRes, winnerTrendRes] = await Promise.all([
-          fetch(apiUrl(`/v1/results?${resultsQuery}`), { signal: controller.signal }),
-          fetch(apiUrl(`/v1/results/stats?group_by=organization_medals&${baseQuery}`), { signal: controller.signal }),
-          fetch(apiUrl(`/v1/results/stats?group_by=organization_golds&${baseQuery}`), { signal: controller.signal }),
-          event
-            ? fetch(apiUrl(`/v1/results/stats?group_by=winner_time_trend&${baseQuery}`), { signal: controller.signal })
-            : Promise.resolve(null)
-        ]);
-
-        const resultsData = (await resultsRes.json()) as ResultsResponse;
-        const orgMedalData = (await orgMedalRes.json()) as StatsResponse;
-        const orgGoldData = (await orgGoldRes.json()) as StatsResponse;
-
-        if (requestId !== resultsRequestRef.current) return;
-
-        setResults(Array.isArray(resultsData.data) ? resultsData.data : []);
-        setPagination(
-          resultsData.pagination ?? {
-            page: page,
-            per_page: Number(perPage),
-            total_count: 0,
-            total_pages: 0
-          }
-        );
-        setOrganizationMedals(orgMedalData.data ?? []);
-        setOrganizationGolds(orgGoldData.data ?? []);
-        if (winnerTrendRes) {
-          const winnerTrendData = (await winnerTrendRes.json()) as StatsResponse;
-          setWinnerTrend(winnerTrendData.data ?? []);
-        } else {
-          setWinnerTrend([]);
-        }
-      } catch (error) {
-        if ((error as DOMException).name !== "AbortError") {
-          console.error(error);
-        }
-      } finally {
-        if (requestId === resultsRequestRef.current) {
-          setLoading(false);
-          setIsRefreshing(false);
-        }
-      }
-    };
-
-    fetchData();
-
+    let cancelled = false;
+    allResults(datasetKey === "all" ? undefined : { year: datasetKey })
+      .then((rows) => {
+        if (!cancelled) setDataset({ key: datasetKey, rows });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     return () => {
-      controller.abort();
+      cancelled = true;
     };
-  }, [baseQuery, event, page, perPage, resultsQuery]);
+  }, [datasetKey]);
 
+  // 読み込み済みデータが現在の年と食い違う間は「読み込み中」。前の結果は薄く表示する(従来の「更新中」表示と同じ)
+  const loading = dataset === null || dataset.key !== datasetKey;
+  const isRefreshing = loading;
+  const sourceRows = useMemo(() => dataset?.rows ?? [], [dataset]);
+
+  const filtered = useMemo(() => filterResults(sourceRows, filters), [filters, sourceRows]);
+  const ordered = useMemo(() => sortForIndex(filtered), [filtered]);
+  const payload = useMemo(() => paginate(ordered, String(page), perPage), [ordered, page, perPage]);
+  const results: Result[] = payload.data;
+  const pagination: Pagination = payload.pagination;
+
+  const organizationMedals = useMemo<StatPoint[]>(() => computeStats(filtered, "organization_medals"), [filtered]);
+  const organizationGolds = useMemo<StatPoint[]>(() => computeStats(filtered, "organization_golds"), [filtered]);
+  const winnerTrend = useMemo<StatPoint[]>(
+    () => (event ? computeStats(filtered, "winner_time_trend") : []),
+    [event, filtered]
+  );
+
+  // セレクトの選択肢は q と順位を除いた条件から作る(従来の /filters API と同じ条件)
+  const filterOptions = useMemo<FilterOptionsResponse>(() => {
+    if (dataset === null) return EMPTY_FILTER_OPTIONS;
+    return buildFilterOptions(
+      sourceRows,
+      {
+        year: filters.year,
+        gender: filters.gender,
+        affiliation_type: filters.affiliation_type,
+        competition: filters.competition,
+        competition_category: filters.competition_category,
+        event: filters.event,
+        final_group: filters.final_group,
+        organization: filters.organization
+      },
+      DATASET_INDEX.years
+    );
+  }, [dataset, filters, sourceRows]);
+
+  const topOrganizationGolds = useMemo(() => organizationGolds.slice(0, 8), [organizationGolds]);
+  const topOrganizationMedals = useMemo(() => organizationMedals.slice(0, 8), [organizationMedals]);
+  const genderTabOptions = useMemo(() => {
+    const options = new Set(["男子", "女子"]);
+    filterOptions.genders
+      .filter((value) => value === "男子" || value === "女子")
+      .forEach((value) => options.add(value));
+    return ["", ...Array.from(options)];
+  }, [filterOptions.genders]);
+
+  // title / canonical / robots を従来のサーバー側 metadata と同じ規則で同期する
   useEffect(() => {
-    const requestId = filtersRequestRef.current + 1;
-    filtersRequestRef.current = requestId;
-    const controller = new AbortController();
-
-    const fetchFilterOptions = async () => {
-      try {
-        const response = await fetch(apiUrl(`/v1/results/filters?${filterQuery}`), { signal: controller.signal });
-        const payload = (await response.json()) as FilterOptionsResponse;
-        if (requestId !== filtersRequestRef.current) return;
-
-        setFilterOptions({
-          years: payload.years ?? [],
-          genders: payload.genders ?? [],
-          affiliation_types: payload.affiliation_types ?? [],
-          competition_categories: payload.competition_categories ?? [],
-          final_groups: payload.final_groups ?? [],
-          competitions: payload.competitions ?? [],
-          events: payload.events ?? [],
-          organizations: payload.organizations ?? []
-        });
-      } catch (error) {
-        if ((error as DOMException).name !== "AbortError") {
-          console.error(error);
-        }
-      }
-    };
-
-    fetchFilterOptions();
-
-    return () => {
-      controller.abort();
-    };
-  }, [filterQuery]);
+    if (typeof document === "undefined" || isRefreshing) return;
+    const head = searchHeadState(filters, DATASET_INDEX.years, filtered);
+    document.title = `${head.title} | レガッタナビ`;
+    syncHeadElement(
+      'link[rel="canonical"]',
+      () => {
+        const link = document.createElement("link");
+        link.setAttribute("rel", "canonical");
+        return link;
+      },
+      head.canonical ? new URL(head.canonical, window.location.origin).toString() : null
+    );
+    syncHeadElement(
+      'meta[name="robots"]',
+      () => {
+        const meta = document.createElement("meta");
+        meta.setAttribute("name", "robots");
+        return meta;
+      },
+      head.noindex ? "noindex, follow" : null
+    );
+  }, [filtered, filters, isRefreshing]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
