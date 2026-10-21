@@ -22,6 +22,8 @@ pnpm-debug.log*
 .env.local
 .env.*.local
 .next-dev-preview/
+.next-dev-preview2/
+.next-dev-static/
 tsconfig.tsbuildinfo
 .vercel
 .env*
