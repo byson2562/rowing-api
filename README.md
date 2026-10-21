@@ -13,8 +13,6 @@ docker compose up --build
 ```
 
 - App: [http://localhost:5173](http://localhost:5173)
-- API (Next Route): `http://localhost:5173/api/v1/results`
-- Health: `http://localhost:5173/health`
 
 ## E2E
 Playwright 依存ライブラリを含む専用サービスで実行します。

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { permanentRedirect } from "next/navigation";
 
 import ButtonLink from "../components/ui/ButtonLink";
 import { MiniBars, YearCells, type MiniBarRow, type YearCell } from "../components/home/home-figures";
+import LegacySearchRedirect from "../components/home/legacy-search-redirect";
 import { articles, getArticle, type ArticleMeta } from "../lib/articles";
 import {
   allResults,
@@ -159,44 +159,7 @@ async function buildRecentCompetitions(limit = 3) {
   return items;
 }
 
-type SearchParams = Record<string, string | string[] | undefined>;
-
-// 旧ホームの検索フィルタ。ここにあるキーが付いていたときだけ /search へ送る
-const SEARCH_FILTER_KEYS = new Set([
-  "q",
-  "year",
-  "gender",
-  "affiliation_type",
-  "event",
-  "final_group",
-  "competition",
-  "competition_category",
-  "organization",
-  "rank",
-  "rank_from",
-  "rank_to",
-  "time_from",
-  "time_to"
-]);
-
-export default async function HomePage(props: { searchParams: Promise<SearchParams> }) {
-  const searchParams = await props.searchParams;
-  // 旧ホーム(検索)のフィルタ付きURLは /search へ恒久リダイレクトして互換を保つ。
-  // 判定は検索フィルタのキー(lib/results-data.ts の parseQueryFilters と対応)に限る。
-  // 以前は「クエリが1つでもあれば」でリダイレクトしていたため、?utm_source= や
-  // ?gclid= を付けた広告・SNSからの流入までホームではなく検索へ飛んでいた。
-  const params = new URLSearchParams();
-  let hasSearchFilter = false;
-  Object.entries(searchParams).forEach(([key, value]) => {
-    const first = Array.isArray(value) ? value[0] : value;
-    if (typeof first !== "string" || !first.trim()) return;
-    params.set(key, first.trim());
-    if (SEARCH_FILTER_KEYS.has(key)) hasSearchFilter = true;
-  });
-  if (hasSearchFilter) {
-    permanentRedirect(`/search?${params.toString()}`);
-  }
-
+export default async function HomePage() {
   const summary = getDatasetSummary();
   const competitionCount = new Set((await allResults()).map((row) => `${row.year}|${row.competition_name}`)).size;
   const recent = await buildRecentCompetitions();
@@ -254,6 +217,7 @@ export default async function HomePage(props: { searchParams: Promise<SearchPara
 
   return (
     <main className="site-container">
+      <LegacySearchRedirect />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <div className={topRow}>
