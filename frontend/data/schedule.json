@@ -1,0 +1,41 @@
+{
+  "_comment": "当サイトが収録対象にしている全日本級大会の年度日程。日本ローイング協会の大会日程ページ(https://www.jara.or.jp/race/current/)から手で転記する。category は lib/results-data.ts の COMPETITION_CATEGORY_RULES の label と一致させる(収録済みかの判定に使う)。",
+  "source": "https://www.jara.or.jp/race/current/",
+  "updatedAt": "2026-10-21",
+  "competitions": [
+    {
+      "name": "第76回全日本社会人ローイング選手権大会",
+      "category": "全日本社会人選手権",
+      "start": "2026-05-09",
+      "end": "2026-05-10",
+      "venue": "戸田",
+      "url": "https://www.jara.or.jp/race/current/"
+    },
+    {
+      "name": "第104回全日本ローイング選手権大会",
+      "category": "全日本選手権",
+      "start": "2026-06-04",
+      "end": "2026-06-07",
+      "venue": "海の森",
+      "url": "https://www.jara.or.jp/race/current/"
+    },
+    {
+      "name": "第53回全日本大学ローイング選手権大会",
+      "category": "全日本大学選手権",
+      "start": "2026-08-26",
+      "end": "2026-08-30",
+      "venue": "戸田",
+      "url": "https://www.jara.or.jp/race/current/",
+      "guide": "university-championship-guide"
+    },
+    {
+      "name": "第67回全日本新人ローイング選手権大会",
+      "category": "全日本新人選手権",
+      "start": "2026-10-23",
+      "end": "2026-10-25",
+      "venue": "戸田",
+      "url": "https://www.jara.or.jp/race/current/2026freshman.html",
+      "guide": "freshman-championship-guide"
+    }
+  ]
+}

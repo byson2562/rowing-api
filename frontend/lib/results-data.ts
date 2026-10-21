@@ -300,6 +300,11 @@ function startsWithGender(eventName: string, gender?: string): boolean {
   return eventName.startsWith(gender);
 }
 
+/** 大会名から収録カテゴリ(COMPETITION_CATEGORY_RULES の label)を引く。該当なしは null */
+export function competitionCategoryOf(name: string): string | null {
+  return competitionCategoryFor(name);
+}
+
 function competitionCategoryFor(name: string): string | null {
   for (const rule of COMPETITION_CATEGORY_RULES) {
     if (rule.keywords.some((keyword) => name.includes(keyword))) {

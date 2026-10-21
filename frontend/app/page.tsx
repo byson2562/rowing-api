@@ -13,6 +13,7 @@ import {
   getFilteredResults
 } from "../lib/results-data";
 import { championGaps, goldCounts, winnersByYear } from "../lib/univ-championship";
+import { featuredCompetition, formatDateRange } from "../lib/schedule";
 import { siteUrl } from "../lib/site-url";
 import { ogImages } from "../lib/og-image";
 
@@ -38,8 +39,15 @@ export const metadata: Metadata = {
 const topRow = "flex flex-wrap items-end justify-between gap-x-6 gap-y-4";
 const pageTitle = "m-0 text-[24px] font-bold leading-[1.4] text-rn-text [text-wrap:balance] max-[640px]:text-[22px]";
 const datasetMeta = "mt-2 mb-0 text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
+// 「次の大会」の帯。箱にせず、上下のヘアラインで区切る1行(docs/design-rules.md §6「次の大会」)
+const nextStrip =
+  "mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1.5 border-t border-rn-border-strong py-3.5 text-[14px] leading-[1.6]";
+const nextLabel = "shrink-0 font-bold text-rn-text";
+const nextName = "font-medium text-rn-text";
+const nextMeta = "text-rn-meta [font-variant-numeric:tabular-nums]";
+const nextLink = "text-rn-text underline hover:no-underline";
 const articleGrid =
-  "mt-8 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-12 border-t border-rn-border-strong pt-10";
+  "grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-12 border-t border-rn-border-strong pt-10";
 const articleCard = "flex min-w-0 flex-col gap-4 border-b border-rn-border pb-5";
 const articleTitle = "m-0 text-[24px] font-bold leading-[1.45] text-rn-text [text-wrap:balance]";
 const articleTitleLink = "text-rn-text no-underline hover:underline";
@@ -198,6 +206,7 @@ export default async function HomePage(props: { searchParams: Promise<SearchPara
   }
 
   const summary = getDatasetSummary();
+  const featured = await featuredCompetition();
   const competitionCount = new Set((await allResults()).map((row) => `${row.year}|${row.competition_name}`)).size;
   const recent = await buildRecentCompetitions();
 
@@ -268,8 +277,31 @@ export default async function HomePage(props: { searchParams: Promise<SearchPara
         </ButtonLink>
       </div>
 
+      {featured ? (
+        <aside className={nextStrip} aria-label="次の大会">
+          <span className={nextLabel}>
+            {featured.status === "ongoing" ? "開催中" : featured.status === "awaiting_results" ? "結果を収録中" : "次の大会"}
+          </span>
+          <span className={nextName}>{featured.competition.name}</span>
+          <span className={nextMeta}>
+            {formatDateRange(featured.competition.start, featured.competition.end)} · {featured.competition.venue}
+          </span>
+          {featured.status === "awaiting_results" ? (
+            <span className={nextMeta}>結果は公式発表のあと、収録でき次第ここに出します</span>
+          ) : featured.competition.guide ? (
+            <Link href={`/articles/${featured.competition.guide}`} className={nextLink}>
+              大会の見かた
+            </Link>
+          ) : (
+            <a href={featured.competition.url} target="_blank" rel="noopener noreferrer" className={nextLink}>
+              日本ローイング協会の大会ページ
+            </a>
+          )}
+        </aside>
+      ) : null}
+
       {latestArticles.length > 0 && (
-        <section aria-label="記事" className={articleGrid}>
+        <section aria-label="記事" className={`${featured ? "mt-0" : "mt-8"} ${articleGrid}`}>
           {latestArticles.map((article, index) => (
             <article key={article.slug} className={articleCard}>
               <h2 className={articleTitle}>
