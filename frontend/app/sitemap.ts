@@ -12,6 +12,9 @@ import {
 import { articles } from "../lib/articles";
 import { siteUrl } from "../lib/site-url";
 
+// output: export では Route Handler を静的と明示する必要がある
+export const dynamic = "force-static";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 

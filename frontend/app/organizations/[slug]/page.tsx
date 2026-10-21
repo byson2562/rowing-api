@@ -17,7 +17,8 @@ import { organizationOg } from "../../../lib/og-targets";
 
 type Params = { slug: string };
 
-export const dynamicParams = true;
+// 完全静的サイト(output: export)なので generateStaticParams の一覧だけを生成し、それ以外は 404
+export const dynamicParams = false;
 
 function decodeSlug(raw: string): string {
   try {

@@ -23,9 +23,8 @@ import { competitionOg } from "../../../../lib/og-targets";
 
 type Params = { year: string; competition: string };
 
-// ビルド時に全大会ページを生成しつつ、未知パラメータはページ内のnotFound判定に任せる
-// （多バイトのdynamic paramsはdevでdynamicParams:falseの照合と相性が悪い）
-export const dynamicParams = true;
+// 完全静的サイト(output: export)なので generateStaticParams の一覧だけを生成し、それ以外は 404
+export const dynamicParams = false;
 
 // Next.jsのdynamic paramsはURLエンコードされたまま渡ることがあるため、常に復号して扱う
 function decodeCompetition(raw: string): string {

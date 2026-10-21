@@ -17,7 +17,8 @@ import { athleteOg } from "../../../lib/og-targets";
 
 type Params = { name: string };
 
-export const dynamicParams = true;
+// 完全静的サイト(output: export)なので generateStaticParams の一覧だけを生成し、それ以外は 404
+export const dynamicParams = false;
 
 function decodeName(raw: string): string {
   try {
