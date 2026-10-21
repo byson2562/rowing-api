@@ -12,10 +12,13 @@ import {
   type ResultRecord
 } from "../../../lib/results-data";
 import { siteUrl } from "../../../lib/site-url";
+import { ogImageUrl } from "../../../lib/og-image";
+import { athleteOg } from "../../../lib/og-targets";
 
 type Params = { name: string };
 
-export const dynamicParams = true;
+// 完全静的サイト(output: export)なので generateStaticParams の一覧だけを生成し、それ以外は 404
+export const dynamicParams = false;
 
 function decodeName(raw: string): string {
   try {
@@ -45,7 +48,7 @@ export async function generateMetadata(props: { params: Promise<Params> }): Prom
   const path = `/athletes/${encodeURIComponent(name)}`;
   const title = `${name}選手のシングルスカル記録（ローイング・ボート）`;
   const description = `${name}選手（${best.organization}）のローイング・シングルスカル成績。自己ベストは${best.time_display}（${best.year}年 ${best.competition_name}）${wins > 0 ? `、全日本規模の大会で優勝${wins}回` : ""}。年度別の全成績を掲載しています。`;
-  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(name)}&subtitle=${encodeURIComponent(`${best.event_name} ${best.time_display}（${best.year}年）`)}`;
+  const ogImage = ogImageUrl(athleteOg(name, best));
 
   return {
     title,

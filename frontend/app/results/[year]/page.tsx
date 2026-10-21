@@ -9,13 +9,13 @@ import {
   sortForIndex
 } from "../../../lib/results-data";
 import { siteUrl } from "../../../lib/site-url";
+import { ogImageUrl } from "../../../lib/og-image";
+import { yearOg } from "../../../lib/og-targets";
 
 type Params = { year: string };
 
-// OpenNext(Cloudflare)は dynamicParams=false のプリレンダリング済みルートを解決できず
-// 全件404になるため true にする。収録外の年は下の isValidYear で notFound() を返すので、
-// 外から見た挙動は変わらない。
-export const dynamicParams = true;
+// 完全静的サイト(output: export)なので generateStaticParams の一覧だけを生成し、それ以外は 404
+export const dynamicParams = false;
 
 export function generateStaticParams(): Params[] {
   return availableYears().map((year) => ({ year: String(year) }));
@@ -31,7 +31,7 @@ export async function generateMetadata(props: { params: Promise<Params> }): Prom
   const year = params.year;
   const title = `${year}年のローイング大会結果`;
   const description = `${year}年に開催されたローイング（ボート）大会の結果一覧。全日本選手権などの種目別優勝クルー・タイムを掲載しています。`;
-  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(`${year}年の大会結果`)}&subtitle=${encodeURIComponent("ローイング大会結果")}`;
+  const ogImage = ogImageUrl(yearOg(year));
 
   return {
     title,

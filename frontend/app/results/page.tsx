@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import { availableYears, competitionsByRecency, getFilteredResults } from "../../lib/results-data";
 import { siteUrl } from "../../lib/site-url";
+import { ogImageUrl } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 
 export const metadata: Metadata = {
   title: "年度別ローイング大会結果一覧",
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
     description: "ローイング（ボート）大会結果を年度別に一覧できます。",
     images: [
       {
-        url: `${siteUrl}/og?title=${encodeURIComponent("年度別 大会結果一覧")}&subtitle=${encodeURIComponent("ローイング大会結果")}`,
+        url: ogImageUrl(FIXED_OG.results),
         width: 1200,
         height: 630,
         alt: "年度別ローイング大会結果一覧"

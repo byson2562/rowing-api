@@ -4,6 +4,7 @@ import Link from "next/link";
 import { articles } from "../../lib/articles";
 import { siteUrl } from "../../lib/site-url";
 import { ogImages } from "../../lib/og-image";
+import { FIXED_OG } from "../../lib/og-targets";
 
 export const metadata: Metadata = {
   title: "記事・データ分析",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     description:
       "レガッタナビ収録の大会記録データをもとにした、ローイング(ボート)の分析記事・コラムの一覧です。",
     url: "/articles",
-    images: ogImages("記事・データ分析", "ローイング大会結果データベース")
+    images: ogImages(FIXED_OG.articles)
   }
 };
 

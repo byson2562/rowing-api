@@ -5,6 +5,7 @@ import { allResults, organizationSlug, type ResultRecord } from "../../../lib/re
 import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
 import { ogImages } from "../../../lib/og-image";
+import { articleOg } from "../../../lib/og-targets";
 import {
   articleMeta,
   articleNote,
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
     description: meta.description,
     type: "article",
     url: `/articles/${meta.slug}`,
-    images: ogImages("インカレ(ボート)2026の結果", "全日本大学ローイング選手権 種目別の優勝校とタイム")
+    images: ogImages(articleOg(meta))
   }
 };
 

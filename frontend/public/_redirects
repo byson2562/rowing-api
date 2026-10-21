@@ -1,0 +1,14 @@
+# Cloudflare Workers Static Assets のリダイレクト(旧 next.config.mjs の redirects() から移した)。
+# 書式: 元パス 先パス ステータス。クエリ文字列は照合できない(ホームの旧フィルタURLは
+# components/home/legacy-search-redirect.tsx がブラウザで /search へ送る)。
+/rowing-results /about 301
+# 旧サポートページはスポンサー募集ページへ統合(2026-07)
+/support /sponsor 301
+# 2021年のJARA表記変更に合わせて種目名を名寄せした際の旧URL救済(/records/<旧種目名> → /records/<現行名>)
+/records/%E7%94%B7%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%9A%E3%82%A2 /records/%E7%94%B7%E5%AD%90%E3%83%9A%E3%82%A2 301
+/records/%E7%94%B7%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%95%E3%82%A9%E3%82%A2 /records/%E7%94%B7%E5%AD%90%E3%83%95%E3%82%A9%E3%82%A2 301
+/records/%E7%94%B7%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%82%AF%E3%82%A9%E3%83%89%E3%83%AB%E3%83%97%E3%83%AB /records/%E7%94%B7%E5%AD%90%E3%82%AF%E3%82%A9%E3%83%89%E3%83%AB%E3%83%97%E3%83%AB 301
+/records/%E5%A5%B3%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%9A%E3%82%A2 /records/%E5%A5%B3%E5%AD%90%E3%83%9A%E3%82%A2 301
+/records/%E5%A5%B3%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%82%AF%E3%82%A9%E3%83%89%E3%83%AB%E3%83%97%E3%83%AB /records/%E5%A5%B3%E5%AD%90%E3%82%AF%E3%82%A9%E3%83%89%E3%83%AB%E3%83%97%E3%83%AB 301
+/records/%E8%BB%BD%E9%87%8F%E7%B4%9A%E7%94%B7%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%9A%E3%82%A2 /records/%E8%BB%BD%E9%87%8F%E7%B4%9A%E7%94%B7%E5%AD%90%E3%83%9A%E3%82%A2 301
+/records/%E8%BB%BD%E9%87%8F%E7%B4%9A%E5%A5%B3%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%9A%E3%82%A2 /records/%E8%BB%BD%E9%87%8F%E7%B4%9A%E5%A5%B3%E5%AD%90%E3%83%9A%E3%82%A2 301

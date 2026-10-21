@@ -4,16 +4,15 @@
   "version": "0.2.0",
   "scripts": {
     "dev": "NEXT_DIST_DIR=.next-dev next dev -H 0.0.0.0 -p 5173",
-    "build": "NEXT_DIST_DIR=.next-build next build",
-    "start": "NEXT_DIST_DIR=.next-build next start -p 5173",
+    "build": "next build && node scripts/generate-og.mjs",
+    "preview": "wrangler dev --port 5173",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
-    "cf:build": "opennextjs-cloudflare build",
-    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "og:thumbs": "node scripts/generate-og-thumbs.mjs"
+    "cf:deploy": "npm run build && wrangler deploy",
+    "cf:check": "wrangler deploy --dry-run",
+    "og": "node scripts/generate-og.mjs"
   },
   "dependencies": {
     "next": "16.4.2",
@@ -22,14 +21,16 @@
     "recharts": "^2.15.4"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.20.12",
+    "@fontsource/noto-sans-jp": "^5.3.1",
     "@playwright/test": "^1.54.2",
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "22.10.2",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.1",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.4.2",
+    "satori": "^0.63.2",
     "tailwindcss": "^4.3.3",
     "typescript": "5.7.2",
     "vitest": "^2.1.9",

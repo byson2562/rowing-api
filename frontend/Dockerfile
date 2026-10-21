@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 5173
 
-CMD ["sh", "-c", "npm install && npm run build && npm run start"]
+CMD ["sh", "-c", "npm install && npm run build && npm run preview"]

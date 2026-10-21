@@ -4,6 +4,8 @@ import Link from "next/link";
 import { allResults, organizationSlug } from "../../../lib/results-data";
 import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
+import { ogImageUrl } from "../../../lib/og-image";
+import { articleOg } from "../../../lib/og-targets";
 import {
   articleBarFill,
   articleBarLabel,
@@ -44,7 +46,7 @@ export const metadata: Metadata = {
     url: `/articles/${meta.slug}`,
     images: [
       {
-        url: `${siteUrl}/og?title=${encodeURIComponent("大学ボートの勢力図 2009-2025")}&subtitle=${encodeURIComponent("金メダル202個を男女別に集計")}`,
+        url: ogImageUrl(articleOg(meta)),
         width: 1200,
         height: 630,
         alt: meta.title

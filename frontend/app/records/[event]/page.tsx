@@ -11,10 +11,13 @@ import {
   organizationSlug
 } from "../../../lib/results-data";
 import { siteUrl } from "../../../lib/site-url";
+import { ogImageUrl } from "../../../lib/og-image";
+import { recordOg } from "../../../lib/og-targets";
 
 type Params = { event: string };
 
-export const dynamicParams = true;
+// 完全静的サイト(output: export)なので generateStaticParams の一覧だけを生成し、それ以外は 404
+export const dynamicParams = false;
 
 const RANKING_SIZE = 20;
 
@@ -42,7 +45,7 @@ export async function generateMetadata(props: { params: Promise<Params> }): Prom
   const path = `/records/${encodeURIComponent(event)}`;
   const title = `${event}の歴代最速タイム｜ローイング・ボート記録`;
   const description = `ローイング（ボート）${event}の歴代最速タイムランキング。現在の最速記録は${best ? `${best.organization}の${best.time_display}（${best.year}年）` : "未収録"}。全日本規模の大会結果からTop${RANKING_SIZE}を掲載しています。`;
-  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(`${event} 歴代最速`)}&subtitle=${encodeURIComponent(best ? `${best.time_display} ${best.organization}（${best.year}年）` : "歴代タイムランキング")}`;
+  const ogImage = ogImageUrl(recordOg(event, best));
 
   return {
     title,

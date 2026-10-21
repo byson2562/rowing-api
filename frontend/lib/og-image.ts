@@ -1,5 +1,10 @@
 import { siteUrl } from "./site-url";
 
+export type OgTarget = {
+  title?: string;
+  subtitle?: string;
+};
+
 export type OgImage = {
   url: string;
   width: number;
@@ -7,25 +12,42 @@ export type OgImage = {
   alt: string;
 };
 
-/**
- * OGP画像(/og の動的生成)のURLを組み立てる。
- * title を省略するとブランドマーク+サービス名だけの汎用画像になる。
- */
-export function ogImageUrl(title?: string, subtitle?: string): string {
-  if (!title) return `${siteUrl}/og`;
-  const params = new URLSearchParams({ title });
-  if (subtitle) params.set("subtitle", subtitle);
-  return `${siteUrl}/og?${params.toString()}`;
+export const OG_DEFAULT_ID = "default";
+
+// cyrb53: 依存なしで使える 53bit ハッシュ。ページ側(URL)と生成側(ファイル名)が
+// 同じ (title, subtitle) から同じ id を得るためだけに使うので暗号学的強度は不要
+function cyrb53(str: string, seed = 0): number {
+  let h1 = 0xdeadbeef ^ seed;
+  let h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0; i < str.length; i += 1) {
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
 /**
- * 記事タイトル「主題 | 補足」を og画像のタイトル/サブタイトルへ割り当てる。
- * 記事一覧のサムネイルと記事のOGPで同じ絵柄を使うためのヘルパー。
+ * OG画像のファイル名。title を省略するとブランドマーク+サービス名だけの汎用画像(default)。
+ * 画像はビルド時に scripts/generate-og.mjs が out/og/<id>.png として書き出す。
  */
-export function articleOgImageUrl(articleTitle: string): string {
-  const [main, ...rest] = articleTitle.split("|");
-  const subtitle = rest.join("|").trim();
-  return ogImageUrl(main.trim(), subtitle || undefined);
+export function ogImageId(target?: OgTarget): string {
+  const title = (target?.title ?? "").trim();
+  if (!title) return OG_DEFAULT_ID;
+  const subtitle = (target?.subtitle ?? "").trim();
+  return cyrb53(`${title}\u0000${subtitle}`).toString(16).padStart(14, "0");
+}
+
+export function ogImagePath(target?: OgTarget): string {
+  return `/og/${ogImageId(target)}.png`;
+}
+
+export function ogImageUrl(target?: OgTarget): string {
+  return `${siteUrl}${ogImagePath(target)}`;
 }
 
 /**
@@ -33,26 +55,13 @@ export function articleOgImageUrl(articleTitle: string): string {
  * Next.jsのmetadataはopenGraphをオブジェクト単位で置換するため、
  * ページ側でopenGraphを定義する場合はimagesも必ず自分で指定する必要がある。
  */
-export function ogImages(title?: string, subtitle?: string): OgImage[] {
+export function ogImages(target?: OgTarget): OgImage[] {
   return [
     {
-      url: ogImageUrl(title, subtitle),
+      url: ogImageUrl(target),
       width: 1200,
       height: 630,
-      alt: title ?? "レガッタナビ"
+      alt: target?.title ?? "レガッタナビ"
     }
   ];
-}
-
-/**
- * 記事一覧・ホームのサムネイル用。ビルド前に生成して public/og-thumb/ に置いた
- * 静的PNGを指す。
- *
- * ページを開くたびに /og を叩くと satori の画像生成が走り、Workers の CPU 制限を
- * 超えて Worker 全体が 503 になる(Error 1102)。絵柄は /og と同一のものを
- * scripts/generate-og-thumbs.mjs で書き出しているため、見た目は変わらない。
- * OGPメタタグ側は従来どおり /og を使う(SNSシェア時のみ生成されるため頻度が低い)。
- */
-export function articleThumbUrl(slug: string): string {
-  return `/og-thumb/${slug}.png`;
 }
