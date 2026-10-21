@@ -11,6 +11,13 @@ export type ArticleMeta = {
 
 export const articles: ArticleMeta[] = [
   {
+    slug: "freshman-championship-guide",
+    title: "全日本新人ローイング選手権(ボート)とは | 2026年の日程・種目・歴代優勝クルー",
+    description:
+      "全日本新人ローイング選手権は例年10月下旬に戸田で開かれる3日間の大会で、2026年の第67回は10月23日(金)から25日(日)。大学・高校・社会人のクルーが同じ水面で競います。出場できる人の範囲、種目構成、2025年の種目別優勝クルー、男子エイトの歴代優勝、収録内の最速タイムを当サイトの収録データからまとめました。",
+    publishedAt: "2026-10-21"
+  },
+  {
     slug: "university-championship-2026-results",
     title: "インカレ(ボート)2026の結果 | 全日本大学ローイング選手権 種目別の優勝校とタイム",
     description:

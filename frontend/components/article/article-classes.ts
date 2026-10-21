@@ -39,8 +39,9 @@ export const articleNoteList = "mt-2 mb-0 pl-[1.3em] text-[14px] leading-[1.8] t
 // ---- データテーブル(狭幅では data-label の行に積む) ----
 // グローバル legacy の table/th/td 規則(上罫線墨・ヘッダ12px灰・行罫線)の上に差分だけを重ねる。
 export const articleTableWrap = "mt-[1.4em] overflow-x-auto max-[640px]:overflow-visible";
+// グローバルの table { min-width: 980px; table-layout: fixed } は記事の 760px 幅に収まらないので打ち消す
 export const articleTable =
-  "mt-0 w-full text-[14px] [font-variant-numeric:tabular-nums] max-[640px]:block max-[640px]:min-w-0 max-[640px]:text-[13px]";
+  "mt-0 w-full min-w-0 text-[14px] [font-variant-numeric:tabular-nums] [table-layout:auto] max-[640px]:block max-[640px]:text-[13px]";
 export const articleThead =
   "max-[640px]:absolute max-[640px]:h-px max-[640px]:w-px max-[640px]:overflow-hidden max-[640px]:[clip:rect(0_0_0_0)]";
 export const articleTbody = "max-[640px]:block max-[640px]:border-t max-[640px]:border-rn-border-strong";
