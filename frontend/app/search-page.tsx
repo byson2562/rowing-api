@@ -442,9 +442,14 @@ export default function SearchPage({
     }
   }, [baseQuery, page, perPage]);
 
-  useEffect(() => {
+  // ページ番号が変わったらジャンプ入力欄を追従させる。effect 内の setState は
+  // react-hooks/set-state-in-effect に抵触するため、レンダー中に前回値と比較して更新する
+  // (https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
+  const [syncedPage, setSyncedPage] = useState(page);
+  if (syncedPage !== page) {
+    setSyncedPage(page);
     setPageInput(page.toString());
-  }, [page]);
+  }
 
   const clearFilters = () => {
     setQ("");

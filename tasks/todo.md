@@ -578,3 +578,26 @@
 
 ### 各記事の共通フロー
 作成 → article-review(校正サブエージェント) → 要修正反映 → 公開 → X告知(humanizer-ja適用)
+
+## Next 16 への更新と OpenNext 回避フラグの撤去 (2026-10-21)
+
+背景: `@opennextjs/cloudflare` 1.20 の build が Next 15.5 を「公開から2年でサポート外」として拒否し、CI の Deploy to Cloudflare が失敗。aff9014 で `--dangerouslyUseUnsupportedNextVersion` を付けて暫定復旧した。根本対応として Next 16 へ上げる。
+
+### Plan
+- [x] 1. `next` 16.4.2 / `eslint-config-next` 16.4.2 / `@opennextjs/cloudflare` 1.20.12 / `wrangler` 4.151 に更新(OpenNext 1.20.12 の peer は `next >=16.4.1`)。react 19.2 は Next 16 の要件(19.2+)を満たすので据え置き
+- [x] 2. 破壊的変更の対応: `next lint` 廃止 → ESLint 9 + flat config、`webpack` カスタム設定(dev キャッシュ無効化)は Turbopack 既定化で不要になるので削除、params/searchParams の Promise 化は 15 で対応済みなので確認のみ
+- [x] 3. `cf:build` / `cf:preview` / `cf:deploy` からフラグを外し `npm run cf:build` を通す
+- [x] 4. `npm run lint` / `npx tsc --noEmit` / `npm test` / `npm run build` を通す
+- [x] 5. dev サーバーでホーム・検索・大会・選手・記事・/og を目視確認(見た目は変えない)
+- [x] 6. コミット(push は指示待ち)
+
+### Review
+- 更新後の版: next 16.4.2 / eslint-config-next 16.4.2 / eslint 9.39 / @opennextjs/cloudflare 1.20.12 / wrangler 4.151.3。react・react-dom は 19.2.0 のまま(Next 16 の要件は 19.2+。OpenNext 1.20.12 は `next >=16.4.1` を要求するので 16.3 以下では解決しない)
+- `next lint` 廃止: 公式 codemod `next-lint-to-eslint-cli` で `lint: eslint .` へ。生成された eslint.config.mjs は不要な `path`/`__dirname` を落として整理し、.eslintrc.json / .eslintignore は削除。CI は lint を回していないので workflow の変更は不要
+- eslint-config-next 16 に同梱の react-hooks 7 で新ルール `set-state-in-effect` が app/search-page.tsx のページ番号→入力欄の同期 effect をエラーにした。React 公式の「レンダー中に前回値と比較して setState」パターンへ置き換え(挙動は同じ)。`.next-dev-preview2/` の古いビルド産物も lint 対象に入っていたので globalIgnores で除外
+- `next.config.mjs` の `webpack` カスタム(dev のキャッシュ無効化、ca6ee22)は Turbopack 既定化で `next build` が拒否するため削除。Turbopack はこのキャッシュ設定を持たない
+- Turbopack(lightningcss)が globals.css の記事セクション冒頭コメント(`.article-card*/` と書いていた箇所)を途中でコメント終端と解釈して dev が 500 になった。コメントの表記を変えて解消。`next build` は通っていたので dev のみの事象
+- Next 16 が tsconfig.json(`jsx: react-jsx`、`<distDir>/dev/types` の include)と next-env.d.ts(`import` 形式、root-params.d.ts)を書き換える。distDir が 3 つ(.next / .next-dev / .next-build)あるので dev/types の include は 3 つとも先に入れ、以後の churn を防いだ
+- 検証: `npm run build` / `npm run cf:build`(フラグなし)/ `npm run lint` / `npx tsc --noEmit` / `npm test` すべて成功。dev サーバー(5174)でホーム・/search?year=2025・大会・選手・記事・/og?title=test を本番とスクリーンショット比較して差分なし。さらに `wrangler dev` で .open-next/worker.js を起動し、同じ 8 ルートが Workers ランタイムで 200 を返すことを確認(/og は image/png)
+- 見送り: ESLint 10(eslint-config-next 16.4 は対応しているが、今回は codemod が入れた 9 系に留めた)、React 19.3 / @types/react 19.3(必須ではない)、React Compiler・cacheComponents(未採用のまま)
+- push と本番デプロイは指示待ち

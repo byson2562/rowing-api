@@ -641,10 +641,12 @@ thead th {
 }
 
 /* ===== 記事(articles) ===== */
-/* 記事の各コンポーネント(.article-list/.article-card*/.article-card-meta/.article-chart/
-   .article-bar-*/.article-era-grid*/.article-table*/.article-note*)は
+/* 記事の各コンポーネント(.article-list、.article-card 系、.article-card-meta、.article-chart、
+   .article-bar 系、.article-era-grid 系、.article-table 系、.article-note 系)は
    components/article/article-classes.ts のTailwindクラスへ移行済み。
-   ここには本文の版面・タイポグラフィ(.article-page/.article-body/h1/h2/p)のみ残す。 */
+   ここには本文の版面・タイポグラフィ(.article-page/.article-body/h1/h2/p)のみ残す。
+   (注: コメント内に「*」と「/」を続けて書くと Turbopack(lightningcss)がコメント終端と誤認して
+   CSS の解析に失敗するため、ワイルドカード表記は使わない) */
 
 .article-page {
   max-width: 760px;
