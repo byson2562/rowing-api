@@ -141,6 +141,23 @@ export default async function UniversityPowerMapArticle() {
   const womenEraFirst = countBy(women.filter((r) => r.year < ERA_SPLIT)).slice(0, 5);
   const womenEraSecond = countBy(women.filter((r) => r.year >= ERA_SPLIT)).slice(0, 5);
 
+  // 日大が男子で1年に5個以上を取った年(前期と後期で比べる)
+  const nichidaiBigYears = (from: number, to: number) =>
+    Array.from({ length: to - from + 1 }, (_, i) => from + i).filter(
+      (y) => men.filter((r) => r.year === y && r.organization === "日本大学").length >= 5
+    );
+  const nichidaiBigFirst = nichidaiBigYears(FROM_YEAR, ERA_SPLIT - 1);
+  const nichidaiBigSecond = nichidaiBigYears(ERA_SPLIT, TO_YEAR);
+
+  // まとめ用: 後期の仙台大の順位。学校同士の比較なので男女別に出す
+  const sendaiLate = [
+    { sex: "男子", ranking: menEraSecond },
+    { sex: "女子", ranking: womenEraSecond }
+  ].map(({ sex, ranking }) => {
+    const idx = ranking.findIndex(([org]) => org === "仙台大学");
+    return { sex, rank: idx + 1, ahead: ranking.slice(0, Math.max(0, idx)).map(([org]) => org) };
+  });
+
   const yearlyTop: { year: number; men: string; women: string }[] = [];
   // 最多と同数のクルーが複数あればすべて併記する(タイ記録を落とさない)
   const topLabel = (entries: [string, number][]) => {
@@ -222,8 +239,9 @@ export default async function UniversityPowerMapArticle() {
         </p>
         <GoldBarChart ranking={menRanking} label="男子の大学別金メダル累計ランキング" />
         <p>
-          ただ、時期を分けると勢いの変化は見えます。前期(2009-2017)の日大は9年で47個、年平均5個以上。筆者が早稲田で漕いでいた頃、男子のFinal
-          Aで日大の金が5個前後に達する年が何度もありました。後期(2018-2025)は20個で、首位のまま半分以下に数を減らしています。空いた分を拾ったのが仙台大(8個)、
+          ただ、時期を分けると勢いの変化は見えます。前期(2009-2017)の日大は9年で47個、年平均5個以上。1年で5個以上を取った年が
+          {ERA_SPLIT - FROM_YEAR}年のうち{nichidaiBigFirst.length}年ありました。後期(2018-2025)は20個で、首位のまま半分以下に数を減らしています。5個以上の年は
+          {nichidaiBigSecond.join("年と")}年の{nichidaiBigSecond.length}回です。空いた分を拾ったのが仙台大(8個)、
           <OrgLink name="富山国際大学" />(5個)、<OrgLink name="日本体育大学" />
           あたりで、2019年と2020年は仙台大が、2023年は富山国際大が日大と並んで年間最多に立ちました。
         </p>
@@ -272,7 +290,14 @@ export default async function UniversityPowerMapArticle() {
 
         <h2>まとめ</h2>
         <p>
-          男子は「日大の一強が緩みつつ続く」、女子は「早稲田の牙城に立命館と仙台大が食い込んだ」。この2つの流れが重なる場所に立っているのが仙台大です。金メダルは前期の男子2個・女子0個から、後期は男子8個・女子6個。後期の男女合計14個は、日大(20個)に次ぐ数字です。日大と早稲田が巻き返すのか、仙台大の時代が定着するのか。次の大学選手権は、この表を手元に置いて見るとひと味変わるはずです。
+          男子は「日大の一強が緩みつつ続く」、女子は「早稲田の牙城に立命館と仙台大が食い込んだ」。この2つの流れが重なる場所に立っているのが仙台大です。金メダルは前期の男子2個・女子0個から、後期は男子8個・女子6個。後期だけで数えると、
+          {sendaiLate.map((g, i) => (
+            <span key={g.sex}>
+              {i > 0 ? "、" : ""}
+              {g.sex}は{g.ahead.join("・")}に次ぐ{g.rank}位
+            </span>
+          ))}
+          です。
         </p>
         <p>
           気になった大学があれば、<Link href="/organizations">団体別ページ</Link>
