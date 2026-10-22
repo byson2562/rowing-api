@@ -13,6 +13,9 @@ import {
   articleBarTrack,
   articleBarValue,
   articleChart,
+  articleEraCard,
+  articleEraCardTitle,
+  articleEraGrid,
   articleMeta,
   articleNote,
   articleNoteList,
@@ -166,15 +169,35 @@ export default async function FreshmanChampionshipGuide() {
   const menEvents = latestEvents.filter((e) => e.startsWith("男子"));
   const womenEvents = latestEvents.filter((e) => e.startsWith("女子"));
 
-  // ---- 団体別の優勝回数(全種目・全期間) ----
-  const winsByOrg = new Map<string, ResultRecord[]>();
-  golds.forEach((r) => winsByOrg.set(r.organization, [...(winsByOrg.get(r.organization) ?? []), r]));
-  const orgRanking = [...winsByOrg.entries()]
-    .map(([org, list]) => ({ org, count: list.length, events: new Set(list.map((r) => r.event_name)).size }))
-    .sort((a, b) => b.count - a.count || a.org.localeCompare(b.org, "ja"));
-  const topOrgs = orgRanking.slice(0, 10);
-  const topCount = topOrgs[0]?.count ?? 1;
-  const orgCount = orgRanking.length;
+  // ---- 団体別の優勝回数(全期間、男女別) ----
+  // 男子と女子は種目も勝つ団体も違うので、団体の比較は男女で分けて数える
+  const orgRankings = (["男子", "女子"] as const).map((gender) => {
+    const list = golds.filter((r) => r.event_name.startsWith(gender));
+    const winsByOrg = new Map<string, ResultRecord[]>();
+    list.forEach((r) => winsByOrg.set(r.organization, [...(winsByOrg.get(r.organization) ?? []), r]));
+    const ranking = [...winsByOrg.entries()]
+      .map(([org, wins]) => ({ org, count: wins.length, events: new Set(wins.map((r) => r.event_name)).size }))
+      .sort((a, b) => b.count - a.count || a.org.localeCompare(b.org, "ja"));
+    // 上位10を目安に、10位と同じ回数の団体は名前順で落とさず全部載せる。
+    // 同数が多すぎて12団体を超えるときは、その回数の手前で切る
+    const cutoff = ranking[Math.min(9, ranking.length - 1)]?.count ?? 0;
+    const withTies = ranking.filter((o) => o.count >= cutoff);
+    // 本文で名前を挙げるのは上位3団体。3位と同じ回数の団体が続くときは、その回数の手前までを名前で挙げ、
+    // 同数の団体は数でまとめる(名前順で1つだけ選ばない)
+    const third = ranking[2]?.count ?? 0;
+    const tiedAtThird = ranking.length > 3 && ranking[3].count === third;
+    return {
+      gender,
+      total: list.length,
+      eventCount: new Set(list.map((r) => r.event_name)).size,
+      orgCount: ranking.length,
+      top: withTies.length <= 12 ? withTies : ranking.filter((o) => o.count > cutoff),
+      leaders: tiedAtThird ? ranking.filter((o) => o.count > third) : ranking.slice(0, 3),
+      tied: tiedAtThird ? { count: third, orgs: ranking.filter((o) => o.count === third).length } : null
+    };
+  });
+  // 男女の図を横に並べるので、棒の物差しは両方で揃える
+  const topCount = Math.max(1, ...orgRankings.map((g) => g.top[0]?.count ?? 0));
 
   // ---- 種目ごとの勢力図 ----
   const eventPower = events.map((event) => {
@@ -423,32 +446,46 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>優勝回数の多い団体({firstYear}〜{latestYear}年)</h2>
         <p>
-          全種目のFinal A優勝{golds.length}件を団体別に数えると、優勝した団体は{orgCount}団体にのぼります。上位は
-          {topOrgs.slice(0, 3).map((o, i) => (
-            <span key={o.org}>
-              {i > 0 ? "、" : ""}
-              <OrgLink name={o.org} />の{o.count}回
-            </span>
-          ))}
-          。混成クルーは別の団体として数えています。
+          全種目のFinal A優勝{golds.length}件を団体別に数えます。男子と女子では種目も勝つ団体も違うので、分けて並べました。混成クルーは別の団体として数えています。
         </p>
-        <div className={articleChart} role="img" aria-label={`団体別のFinal A優勝回数 上位${topOrgs.length}`}>
-          {topOrgs.map((o) => (
-            <div className={articleBarRow} key={o.org}>
-              <span className={articleBarLabel}>{o.org.replace(/大学$/, "大")}</span>
-              <span className={articleBarTrack}>
-                <span className={articleBarFill} style={{ width: `${(o.count / topCount) * 100}%` }} />
-              </span>
-              <span className={articleBarValue}>{o.count}</span>
+        <div className={articleEraGrid}>
+          {orgRankings.map((g) => (
+            <div className={articleEraCard} key={g.gender}>
+              <h3 className={articleEraCardTitle}>
+                {g.gender}(全{g.total}件・{g.orgCount}団体)
+              </h3>
+              <div className={articleChart} role="img" aria-label={`${g.gender}の団体別Final A優勝回数 上位${g.top.length}`}>
+                {g.top.map((o) => (
+                  <div className={articleBarRow} key={o.org}>
+                    <span className={articleBarLabel}>{o.org.replace(/大学$/, "大")}</span>
+                    <span className={articleBarTrack}>
+                      <span className={articleBarFill} style={{ width: `${(o.count / topCount) * 100}%` }} />
+                    </span>
+                    <span className={articleBarValue}>{o.count}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
         <p>
-          回数だけでなく「何種目で勝ったか」も違います。
-          {topOrgs.slice(0, 5).map((o, i) => (
-            <span key={o.org}>
-              {i > 0 ? "、" : ""}
-              {o.org}は{o.events}種目
+          {orgRankings.map((g) => (
+            <span key={g.gender}>
+              {g.gender}の上位は
+              {g.leaders.map((o, i) => (
+                <span key={o.org}>
+                  {i > 0 ? "、" : ""}
+                  <OrgLink name={o.org} />の{o.count}回
+                </span>
+              ))}
+              {g.tied ? `で、${g.tied.count}回の${g.tied.orgs}団体が続きます。` : "。"}
+            </span>
+          ))}
+          何種目で勝ったかを見ると、
+          {orgRankings.map((g, gi) => (
+            <span key={g.gender}>
+              {gi > 0 ? "、" : ""}
+              {g.gender}の{g.top[0].org}は{g.eventCount}種目のうち{g.top[0].events}種目
             </span>
           ))}
           で優勝しています。
