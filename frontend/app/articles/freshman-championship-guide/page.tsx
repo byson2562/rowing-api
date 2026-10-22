@@ -106,6 +106,57 @@ function CrewCell({ row }: { row: ResultRecord }) {
   );
 }
 
+// 回数の多い順の上位3。3位と同じ回数の団体は名前順で落とさず全部挙げる
+function topThreeWithTies<T>(ranking: T[], count: (item: T) => number): T[] {
+  if (ranking.length <= 3) return ranking;
+  const third = count(ranking[2]);
+  return ranking.filter((item) => count(item) >= third);
+}
+
+// 歴代優勝の「回数が多い順に〜です」の並び
+function WinnerCounts({ leaders }: { leaders: [string, number[]][] }) {
+  return (
+    <>
+      {leaders.map(([org, ys], i) => (
+        <span key={org}>
+          {i > 0 ? "、" : ""}
+          <OrgLink name={org} />が{ys.length}回({[...ys].sort().map((y) => `${y}年`).join("・")})
+        </span>
+      ))}
+    </>
+  );
+}
+
+// 歴代優勝の表(年・優勝・タイム、新しい年から)
+function HistoryTable({ rows }: { rows: ResultRecord[] }) {
+  return (
+    <div className={articleTableWrap}>
+      <table className={articleTable}>
+        <thead className={articleThead}>
+          <tr>
+            <th scope="col" className={articleTh}>年</th>
+            <th scope="col" className={articleTh}>優勝</th>
+            <th scope="col" className={articleTh}>タイム</th>
+          </tr>
+        </thead>
+        <tbody className={articleTbody}>
+          {rows.map((r) => (
+            <tr key={r.year} className={articleTr}>
+              <td data-label="年" className={`${articleTd} ${articleTdYear}`}>
+                <Link href={`/results/${r.year}`}>{r.year}</Link>
+              </td>
+              <td data-label="優勝" className={articleTd}>
+                <OrgLink name={r.organization} />
+              </td>
+              <td data-label="タイム" className={articleTd}>{r.time_display}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function gapText(winner: ResultRecord, second: ResultRecord | undefined): string {
   if (!second || winner.time_seconds <= 0 || second.time_seconds <= 0) return "—";
   return `${(second.time_seconds - winner.time_seconds).toFixed(2)}秒`;
@@ -243,11 +294,17 @@ export default async function FreshmanChampionshipGuide() {
   const underOneSecond = allGaps.filter((g) => g.gap < 1).length;
   const averageGap = allGaps.reduce((sum, g) => sum + g.gap, 0) / allGaps.length;
 
-  // ---- 男子エイトの歴代優勝 ----
-  const menEight = golds.filter((r) => r.event_name === "男子エイト").sort((a, b) => b.year - a.year);
-  const menEightCounts = new Map<string, number[]>();
-  menEight.forEach((r) => menEightCounts.set(r.organization, [...(menEightCounts.get(r.organization) ?? []), r.year]));
-  const menEightRanking = [...menEightCounts.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "ja"));
+  // ---- 男女の花形種目の歴代優勝 ----
+  // 収録データの新人選手権に女子エイトはないので、女子は艇がいちばん大きい舵手つきクォドルプルを並べる
+  const eventHistory = (event: string) => {
+    const list = golds.filter((r) => r.event_name === event).sort((a, b) => b.year - a.year);
+    const counts = new Map<string, number[]>();
+    list.forEach((r) => counts.set(r.organization, [...(counts.get(r.organization) ?? []), r.year]));
+    const ranking = [...counts.entries()].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "ja"));
+    return { list, leaders: topThreeWithTies(ranking, ([, ys]) => ys.length) };
+  };
+  const menEight = eventHistory("男子エイト");
+  const womenQuad = eventHistory("女子舵手つきクォドルプル");
 
   // ---- 種目別の優勝タイムの幅 ----
   const timeRanges = events.map((event) => {
@@ -399,42 +456,22 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>男子エイトの歴代優勝({firstYear}〜{latestYear}年)</h2>
         <p>
-          漕手8人と舵手が乗る男子エイトの優勝クルーを並べます。収録している{menEight.length}大会で、回数が多い順に
-          {menEightRanking.slice(0, 3).map(([org, ys], i) => (
-            <span key={org}>
-              {i > 0 ? "、" : ""}
-              <OrgLink name={org} />が{ys.length}回({[...ys].sort().map((y) => `${y}年`).join("・")})
-            </span>
-          ))}
+          漕手8人と舵手が乗る男子エイトの優勝クルーを並べます。収録している{menEight.list.length}大会で、回数が多い順に
+          <WinnerCounts leaders={menEight.leaders} />
           です。
         </p>
-        <div className={articleTableWrap}>
-          <table className={articleTable}>
-            <thead className={articleThead}>
-              <tr>
-                <th scope="col" className={articleTh}>年</th>
-                <th scope="col" className={articleTh}>優勝</th>
-                <th scope="col" className={articleTh}>タイム</th>
-              </tr>
-            </thead>
-            <tbody className={articleTbody}>
-              {menEight.map((r) => (
-                <tr key={r.year} className={articleTr}>
-                  <td data-label="年" className={`${articleTd} ${articleTdYear}`}>
-                    <Link href={`/results/${r.year}`}>{r.year}</Link>
-                  </td>
-                  <td data-label="優勝" className={articleTd}>
-                    <OrgLink name={r.organization} />
-                  </td>
-                  <td data-label="タイム" className={articleTd}>{r.time_display}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <HistoryTable rows={menEight.list} />
+
+        <h2>女子舵手つきクォドルプルの歴代優勝({firstYear}〜{latestYear}年)</h2>
+        <p>
+          漕手4人がそれぞれ2本のオールを持ち、舵手が乗る種目です。収録データの新人選手権に女子エイトはなく、女子ではこれがいちばん大きな艇です。収録している{womenQuad.list.length}大会で、回数が多い順に
+          <WinnerCounts leaders={womenQuad.leaders} />
+          です。
+        </p>
+        <HistoryTable rows={womenQuad.list} />
 
         <p>
-          男子エイト以外の種目も含めた各年の全着順は、年ごとの結果ページ(
+          ほかの種目も含めた各年の全着順は、年ごとの結果ページ(
           {[...years].reverse().map((y, i) => (
             <span key={y}>
               {i > 0 ? "、" : ""}
