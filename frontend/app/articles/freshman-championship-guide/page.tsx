@@ -6,7 +6,6 @@ import { articles, getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
 import { ogImages } from "../../../lib/og-image";
 import { articleOg } from "../../../lib/og-targets";
-import { GapBars, type ChampionRow } from "../../../components/results/gap-bars";
 import {
   articleBarFill,
   articleBarLabel,
@@ -14,9 +13,6 @@ import {
   articleBarTrack,
   articleBarValue,
   articleChart,
-  articleFigure,
-  articleFigureCaption,
-  articleFigureFrame,
   articleMeta,
   articleNote,
   articleNoteList,
@@ -154,18 +150,19 @@ export default async function FreshmanChampionshipGuide() {
     return winner ? [{ event, winner, second }] : [];
   });
   const prevYear = years[years.length - 2];
-  const gapRows: ChampionRow[] = latestChamps.map(({ event, winner, second }) => {
+  const latestRows = latestChamps.map(({ event, winner, second }) => {
     const prev = golds.find((r) => r.year === prevYear && r.event_name === event);
     return {
-      eventName: event,
-      eventHref: `/results/${latestYear}/${encodeURIComponent(latestCompetition)}/${encodeURIComponent(event)}`,
+      event,
+      href: `/results/${latestYear}/${encodeURIComponent(latestCompetition)}/${encodeURIComponent(event)}`,
       winner,
-      gap: second && second.time_seconds > 0 && winner.time_seconds > 0 ? second.time_seconds - winner.time_seconds : null,
+      second,
+      close: !!second && second.time_seconds > 0 && winner.time_seconds > 0 && second.time_seconds - winner.time_seconds < 1,
       prev,
       defended: !!prev && prev.organization === winner.organization
     };
   });
-  const closeFinalsLatest = gapRows.filter((r) => r.gap != null && r.gap < 1).length;
+  const closeFinalsLatest = latestRows.filter((r) => r.close).length;
   const menEvents = latestEvents.filter((e) => e.startsWith("男子"));
   const womenEvents = latestEvents.filter((e) => e.startsWith("女子"));
 
@@ -330,7 +327,7 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>{latestYear}年の種目別優勝クルー</h2>
         <p>
-          直近の{latestCompetition}から。バーは2位との差です。
+          直近の{latestCompetition}から、種目ごとの優勝クルーと2位との差を並べます。
           {closeFinalsLatest > 0 ? `${latestYear}年は${latestEvents.length}種目のうち${closeFinalsLatest}種目が1秒未満の差でした。` : `${latestYear}年は1秒未満の差になった種目がありませんでした。`}
           前年と同じ団体が勝った種目には「連覇」を付けています。全着順は<Link href={latestResultsHref}>{latestYear}年大会の結果ページ</Link>にあります。
           {resultsArticles[0] && resultsArticles[0].year === latestYear ? (
@@ -339,14 +336,43 @@ export default async function FreshmanChampionshipGuide() {
             </>
           ) : null}
         </p>
-        <figure className={articleFigure}>
-          <div className={articleFigureFrame}>
-            <GapBars rows={gapRows} showPrev renderCrew={(row) => <CrewCell row={row} />} />
-          </div>
-          <figcaption className={articleFigureCaption}>
-            {latestYear}年 Final A の優勝クルーと2位との差(秒)。種目名からその種目の全着順に飛べます。
-          </figcaption>
-        </figure>
+        <div className={articleTableWrap}>
+          <table className={articleTable}>
+            <thead className={articleThead}>
+              <tr>
+                <th scope="col" className={articleTh}>種目</th>
+                <th scope="col" className={articleTh}>優勝</th>
+                <th scope="col" className={articleTh}>2位との差</th>
+                <th scope="col" className={articleTh}>前年の優勝</th>
+              </tr>
+            </thead>
+            <tbody className={articleTbody}>
+              {latestRows.map((r) => (
+                <tr key={r.event} className={articleTr}>
+                  <td data-label="種目" className={`${articleTd} ${articleTdYear}`}>
+                    <span>
+                      <Link href={r.href}>{r.event}</Link>
+                    </span>
+                  </td>
+                  <td data-label="優勝" className={articleTd}>
+                    <span>
+                      <CrewCell row={r.winner} /> {r.winner.time_display}
+                    </span>
+                  </td>
+                  <td data-label="2位との差" className={r.close ? `${articleTd} ${articleTdYear}` : articleTd}>
+                    {gapText(r.winner, r.second)}
+                  </td>
+                  <td data-label="前年の優勝" className={articleTd}>
+                    <span>
+                      {r.prev ? <OrgLink name={r.prev.organization} /> : "—"}
+                      {r.defended ? <span className="ml-1.5 font-bold text-rn-text">連覇</span> : null}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <h2>男子エイトの歴代優勝({firstYear}〜{latestYear}年)</h2>
         <p>
