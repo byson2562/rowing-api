@@ -724,3 +724,17 @@
 - [x] 読者体験: 1回目 要改善(中6・低2: 速報が遠い、種目一覧の重複、Final A の補足、年ごとの歴代、節の順、年×所属表が長い)→ 2回目 合格
 - [x] yomiyasu: 静的検査のみ(文末の連続と意味を担う「ではなく」)
 - [x] 校正: 1回目 要改善(全集計は再集計と一致。要修正は「32にのぼります」の単位抜け。推奨: 資格要約の「一般団体」「中学卒業」、「唯一の大型艇」、ヒタ市・関西電力の事業所別の注記、GapBars との重複、コロン)→ 2回目 合格。ビルドはバックグラウンドで実行中のまま使用上限に達したため、結果は次のセッションで確認する
+
+## 検証・push とリダイレクト Worker の Route 化(2026-10-22)
+
+- [x] 前セッションで未確認だった新人ガイド作り直し(ad22497)の検証: `npm run lint`(エラー0・既存の `<img>` 警告1)/ `npx tsc --noEmit`(0)/ `npm test`(19件)/ `npm run build`(OG 1,971枚)すべて成功。出力HTMLの h2 がデータ中心の構成に入れ替わっていることも確認
+- [x] ad22497 を push。Deploy to Cloudflare 成功(2分9秒)、本番の記事2本が200
+- [x] 未コミットだった2件を分けてコミットし push: 8e0182e(tsconfig に `.next-dev-preview/dev/types` を追加)、5269e82(リダイレクト Worker を `custom_domain` から Workers Route へ)
+- [x] e7d585c: `.gitignore` に `infra/ec2/` の state・backup・tfvars・`.terraform/` を追加(`infra/github/` しか塞いでいなかった)。`git check-ignore` で4つとも確認
+- [x] `workers/rowing-api-redirect` で `wrangler deploy`。トリガーは `rowing-api.com/*` (zone name: rowing-api.com)、Version ID 823db74d-544e-4d44-8d04-06e039f886e4
+
+### Review
+- `deploy-cloudflare.yml` の paths は `frontend/**` と workflow 自身だけなので、`.gitignore` や `workers/` の変更では CI は動かない。Worker は手で `wrangler deploy` する必要がある
+- wrangler の OAuth は保存済み認証(8/4)が失効していて、Bash からは非対話で弾かれた。ターミナルタブで実行して認可。認可コードの待ち受けは2分程度で閉じるので、ブラウザでの承認はその場で済ませる
+- デプロイ前後で同じ5URLを突き合わせ、301の挙動とパス・クエリの引き継ぎに差分がないことを確認した。`www.rowing-api.com` は前後とも名前解決せず(000)。Route のパターンに www は含まれないので、拾うなら DNS と Route の追加が要る
+- 未着手: `infra/ec2/` は `.tf` が1つもなく state と lock だけが残っている。削除するか管理下に戻すかは保留
