@@ -49,11 +49,11 @@
 - サーバーで動いていたもの: `app/api/v1/results`(+filters/stats)、`app/og/route.tsx`、`app/feed.xml`、`app/health`、ホームの `permanentRedirect`、`next.config` の `redirects()`
 
 ### Spec / Plan
-- [x] 1. 検索をクライアント側へ: `lib/results-core.ts`(純粋な絞り込み・集計)と `lib/results-data.ts`(JSON 読み込み+キャッシュ)に分離。検索ページは `useSearchParams` で URL を読み、年 JSON を動的 import で取得して絞り込み・ページング・集計。title/canonical/robots はクライアントで同期。`app/api/` を削除(c7fba05)
-- [x] 2. OG 画像をビルド時に生成: `lib/og-targets.ts` で全ページの (title, subtitle) を列挙 → `app/og-manifest.json/route.ts`(force-static)が一覧を書き出し → `scripts/generate-og.mjs` が satori + @resvg/resvg-js で `out/og/<id>.png` を並列生成。`lib/og-image.ts` は `/og/<id>.png` を指す。`public/og-thumb` と `generate-og-thumbs.mjs` は廃止(6778571)
-- [x] 3. 残りの route: `feed.xml` は force-static のまま(ビルドで `out/feed.xml`)、`health` 削除、`next.config` の redirects を `public/_redirects` へ、ホームの旧クエリ救済はクライアント側リダイレクトへ(128d408)
-- [x] 4. `output: "export"`、`dynamicParams` を false に、`out/` の生成と多バイト URL の確認(8656a21)
-- [x] 5. デプロイ先: 既存 Worker `regattanavi` を assets-only に(`wrangler.jsonc` の `main` を外し `assets.directory: out`)。カスタムドメインの設定はそのまま使えるので DNS 変更なし。`@opennextjs/cloudflare` と `open-next.config.ts` を削除。`wrangler deploy --dry-run` で検証(ecd324f)
+- [x] 1. 検索をクライアント側へ: `lib/results-core.ts`(純粋な絞り込み・集計)と `lib/results-data.ts`(JSON 読み込み+キャッシュ)に分離。検索ページは `useSearchParams` で URL を読み、年 JSON を動的 import で取得して絞り込み・ページング・集計。title/canonical/robots はクライアントで同期。`app/api/` を削除(20f1e28)
+- [x] 2. OG 画像をビルド時に生成: `lib/og-targets.ts` で全ページの (title, subtitle) を列挙 → `app/og-manifest.json/route.ts`(force-static)が一覧を書き出し → `scripts/generate-og.mjs` が satori + @resvg/resvg-js で `out/og/<id>.png` を並列生成。`lib/og-image.ts` は `/og/<id>.png` を指す。`public/og-thumb` と `generate-og-thumbs.mjs` は廃止(c70f043)
+- [x] 3. 残りの route: `feed.xml` は force-static のまま(ビルドで `out/feed.xml`)、`health` 削除、`next.config` の redirects を `public/_redirects` へ、ホームの旧クエリ救済はクライアント側リダイレクトへ(3aefd50)
+- [x] 4. `output: "export"`、`dynamicParams` を false に、`out/` の生成と多バイト URL の確認(1d7b1a6)
+- [x] 5. デプロイ先: 既存 Worker `regattanavi` を assets-only に(`wrangler.jsonc` の `main` を外し `assets.directory: out`)。カスタムドメインの設定はそのまま使えるので DNS 変更なし。`@opennextjs/cloudflare` と `open-next.config.ts` を削除。`wrangler deploy --dry-run` で検証(fe44740)
 - [x] 6. 検証: build / lint / tsc / vitest、`npx serve out` で配信してホーム・検索・大会・選手・記事・OG を確認、本番とスクリーンショット比較(`wrangler dev` はこの Mac で起動できず、下記)
 - [x] 7. Review を追記してコミット(push はしない)
 
@@ -63,20 +63,20 @@
 - `_redirects` はクエリ文字列を照合できない(Cloudflare 仕様)ため、ホームの旧フィルタ URL は JS で `/search` へ置換する。301 が必要になれば `run_worker_first` の小さな Worker で対応できる
 - 静的エクスポートでは `/search?year=…` ごとの metadata をサーバーで出せない。HTML は固定(title/canonical=/search)、クライアントで従来の規則(年+大会 → /results 配下へ canonical、対応なしは noindex)を適用する
 - OG 画像の見出しは 400(Regular)で描く。旧 route は 700 を指定していたが、next/og が Google Fonts から取れたのは Regular だけで、本番と承認済みサムネイルはすべて 400 で描かれていた。太字にしたければ `scripts/generate-og.mjs` の `HEADING_WEIGHT` と `loadFonts` に 700 を足す
-- `.next-dev-preview2/`(30MB の dev ビルド成果物)がコミットされていて、`app/api` を消すと古い型定義が tsc を落とすので追跡を外した(8dc3a97)
+- `.next-dev-preview2/`(30MB の dev ビルド成果物)がコミットされていて、`app/api` を消すと古い型定義が tsc を落とすので追跡を外した(6ac883a)
 
 ### Review
-- **コミット**(ブランチ `claude/static-export-325b81`、main から 6 コミット、未 push): 8dc3a97 untrack dev build → c7fba05 検索のクライアント化 → 6778571 OG のビルド時生成 → 128d408 redirects/health → 8656a21 output: export → ecd324f Static Assets デプロイ → (本コミット) Review
+- **コミット**(ブランチ `claude/static-export-325b81`、main から 6 コミット、未 push): 6ac883a untrack dev build → 20f1e28 検索のクライアント化 → c70f043 OG のビルド時生成 → 3aefd50 redirects/health → 1d7b1a6 output: export → fe44740 Static Assets デプロイ → (本コミット) Review
 - **所要時間**: `npm run build` 83〜102 秒(Mac, 8 コア)= next build 約 60〜80 秒(1,978 ページ)+ OG 生成 15〜25 秒
 - **OG 画像**: 1,969 枚(種目 788・選手 674・団体 383・大会 69・歴代 23・年 18・固定ページ 9・記事 4・既定 1)、1200×630 PNG、合計 53MB。8 並列で 15〜18 秒。`out/og-manifest.json` の id と `out/og/*.png`、HTML が参照する `/og/*.png` の 3 者が一致することを確認した。`npm run og` 単体なら既存ファイルをスキップし、`--force` で作り直す
 - **out/ の中身**: ファイル 13,994(HTML 1,974 / RSC セグメント `.txt` 9,866 / OG 1,969 / その他)、370MB。`wrangler deploy --dry-run` は 15,975 ファイルを読んで成功("No bindings found")。Workers Static Assets の上限は 20,000 ファイル・1 ファイル 25MiB。**セグメント `.txt` が 1 ページあたり約 5 個**つくので、ページが約 1,200 増えると上限に当たる(年 100〜150 ページ増のペースなら数年は余裕)。Next 16 にこれを止める公開オプションは見つからなかった(PPR/segment cache の内部)
 - **Workers から外したもの**: OpenNext ランタイム(`@opennextjs/cloudflare`、`open-next.config.ts`、`.open-next/`)、`/api/v1/results`・`/filters`・`/stats`、`/og`(next/og)、`/health`、`next.config` の `redirects()`、ホームの `permanentRedirect`、`initOpenNextCloudflareForDev`。依存に OpenNext は残っていない(package.json / lock とも 0 件)。追加した devDependencies: satori、@resvg/resvg-js、@fontsource/noto-sans-jp(84MB、woff を使う)
-- **検証**: lint(既存の no-img-element 警告 1 件のみ)/ tsc / vitest 10 件 すべて通過。`npx serve out -l 8788` で `/`・`/search`・`/results`・`/results/2026`・`/results/2026/第76回全日本社会人ローイング選手権大会`・`/results/2026/第104回…/男子エイト`・`/records`・`/records/男子エイト`・`/athletes`・`/organizations`・`/articles`・`/articles/rowing-glossary`・`/about`・`/feed.xml`・`/sitemap.xml`(1,970 URL)・`/robots.txt`・`/og/default.png`・`/og/<id>.png` が 200、`/nonexistent`・`/api/v1/results`・`/health` が 404。ブラウザで `/search?year=2025&event=男子エイト` は 31 件と 2 つの図、年を外すと全 18 年のチャンクを読み 534 件と優勝タイム推移。`/?year=2025&event=男子エイト` は JS で `/search?…` へ置換。ホーム・大会ページ・検索の見た目は本番(regattanavi.jp)のスクリーンショットと一致(本番ホームには main の新しいコミット c0dfead「次の大会」帯と 9858618 新人選手権記事が載っていて、その 2 点だけ差がある)
+- **検証**: lint(既存の no-img-element 警告 1 件のみ)/ tsc / vitest 10 件 すべて通過。`npx serve out -l 8788` で `/`・`/search`・`/results`・`/results/2026`・`/results/2026/第76回全日本社会人ローイング選手権大会`・`/results/2026/第104回…/男子エイト`・`/records`・`/records/男子エイト`・`/athletes`・`/organizations`・`/articles`・`/articles/rowing-glossary`・`/about`・`/feed.xml`・`/sitemap.xml`(1,970 URL)・`/robots.txt`・`/og/default.png`・`/og/<id>.png` が 200、`/nonexistent`・`/api/v1/results`・`/health` が 404。ブラウザで `/search?year=2025&event=男子エイト` は 31 件と 2 つの図、年を外すと全 18 年のチャンクを読み 534 件と優勝タイム推移。`/?year=2025&event=男子エイト` は JS で `/search?…` へ置換。ホーム・大会ページ・検索の見た目は本番(regattanavi.jp)のスクリーンショットと一致(本番ホームには main の新しいコミット 22d6bb8「次の大会」帯と 1201abd 新人選手権記事が載っていて、その 2 点だけ差がある)
 - **検索ページの `<head>`**: Next は静的 HTML の metadata を hydration 後にもう一度 `<head>` へ流し込むため、一度 DOM を書き換えるだけでは既定値に戻る。MutationObserver で `<head>` を監視して当て直し、重複した canonical/robots は 1 つに畳む。`?year=2025&competition=第103回…` で canonical が `/results/2025/第103回…`、`?year=2025&event=男子エイト` で noindex・canonical なし、`/search` 単体で canonical `/search` になることを確認。JS 実行前の HTML は常に「title 既定・canonical /search」なので、Google が JS を実行しない場合は旧サーバー版より弱い
 - **できなかったこと**: `wrangler dev` がこの Mac では `spawn EBADF`(wrangler 4.151.3 同梱 esbuild の同期サービス起動)で落ち、サンドボックス外・ターミナル・main 付きの設定でも同じだったため、`_redirects`(9 ルール、`wrangler dev` は "Parsed 9 valid redirect rules" まで出る)と `html_handling` の実挙動は未確認。`/results/2026/`(末尾スラッシュ)→ 307、`/rowing-results` → 301 `/about`、多バイトの `/records/男子舵手なしペア` → 301 は**本番切替直後に curl で確認する**こと。Playwright の e2e(`tests/e2e/*.spec.ts`)は `/api/v1` をモックし `/` を検索ページとして開く古い前提のままで、今回は触っていない(CI でも走っていない)
-- **本番切替の手順**(人が実行): (1) main の c0dfead・9858618 をこのブランチへ取り込む(`frontend/app/page.tsx` と `lib/articles.ts` が触れ合うので衝突を確認)→ (2) `cd frontend && npm ci && npm run build && npx wrangler deploy --dry-run` → (3) main へマージして push すると `.github/workflows/deploy-cloudflare.yml` が `npm run build` → `npx wrangler deploy` を実行する。手で流すなら `cd frontend && npm run cf:deploy`。Worker 名 `regattanavi`・カスタムドメイン regattanavi.jp は同じ設定を使うので **DNS・ルートの変更は不要**。初回は約 16,000 ファイル(370MB)のアップロードで数分かかる(2 回目以降は差分のみ)→ (4) 切替後に `curl -I` で `/`、`/results/2026/`、`/rowing-results`、`/records/%E7%94%B7%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%9A%E3%82%A2`、`/og/default.png`、`/feed.xml` を確認し、X の Card Validator か Slack で大会ページの OG 画像が出ることを見る → (5) Cloudflare ダッシュボードの Worker に古い OpenNext のバージョンが残っても害はないが、`observability` の設定が消えるのでログは Static Assets のアナリティクスで見る
-- **切替結果(2026-10-21)**: 上記 (1)〜(4) を実施。main へ `--no-ff` マージ(197b807、`lib/results-data.ts` は branch 側+`competitionCategoryOf` の再エクスポート、`tasks/todo.md` は両節を保持)。ローカルで `npm ci` → lint(warning 1 のみ)→ tsc → vitest 19 件 → `npm run build`(OG 1,971 枚生成、out/ 14,003 ファイル)→ `wrangler deploy --dry-run`(15,986 assets 読込)まで通してから push。途中で直したもの: 新人ガイドの `ogImages("…", "…")` 旧シグネチャ(ビルド時生成では `lib/og-targets.ts` の `ARTICLE_OG` に無い画像は作られないので、エントリを足して `ogImages(articleOg(meta))` に揃えた、8f86a8a)。ローカル固有の障害: 残っていた `.open-next/` が lint を、古い `.next-build/.next-dev` の validator.ts が tsc を落としていたので削除。GitHub Actions run 39611986237 は 9,901 assets をアップロードして成功。切替後の curl: `/` 200、`/results/2026/` → 307 `/results/2026`、`/about/` → 307、`/rowing-results` → 301 `/about`、`/support` → 301 `/sponsor`、多バイトの `/records/男子舵手なしペア` → 301 `/records/男子ペア`、`/og/default.png` と記事の og:image 200 image/png、`/feed.xml`・`/sitemap.xml` 200、`/search?year=2025` 200、`/api/v1/results`・`/no-such-page`・`/_redirects` は 404(404.html)。server: cloudflare。**未コミットの `app/articles/first-regatta/`(WIP)も同じ `ogImages` 旧シグネチャのままなので、仕上げるときに `articleOg` 方式へ直すこと**(ローカル build を通すため一時的に stash して戻した)
-- **戻し方**: main を ecd324f の前(110773c)へ戻して push すれば旧 workflow が OpenNext でデプロイし直す(Worker 名が同じなので上書きされる)
+- **本番切替の手順**(人が実行): (1) main の 22d6bb8・1201abd をこのブランチへ取り込む(`frontend/app/page.tsx` と `lib/articles.ts` が触れ合うので衝突を確認)→ (2) `cd frontend && npm ci && npm run build && npx wrangler deploy --dry-run` → (3) main へマージして push すると `.github/workflows/deploy-cloudflare.yml` が `npm run build` → `npx wrangler deploy` を実行する。手で流すなら `cd frontend && npm run cf:deploy`。Worker 名 `regattanavi`・カスタムドメイン regattanavi.jp は同じ設定を使うので **DNS・ルートの変更は不要**。初回は約 16,000 ファイル(370MB)のアップロードで数分かかる(2 回目以降は差分のみ)→ (4) 切替後に `curl -I` で `/`、`/results/2026/`、`/rowing-results`、`/records/%E7%94%B7%E5%AD%90%E8%88%B5%E6%89%8B%E3%81%AA%E3%81%97%E3%83%9A%E3%82%A2`、`/og/default.png`、`/feed.xml` を確認し、X の Card Validator か Slack で大会ページの OG 画像が出ることを見る → (5) Cloudflare ダッシュボードの Worker に古い OpenNext のバージョンが残っても害はないが、`observability` の設定が消えるのでログは Static Assets のアナリティクスで見る
+- **切替結果(2026-10-21)**: 上記 (1)〜(4) を実施。main へ `--no-ff` マージ(0880faf、`lib/results-data.ts` は branch 側+`competitionCategoryOf` の再エクスポート、`tasks/todo.md` は両節を保持)。ローカルで `npm ci` → lint(warning 1 のみ)→ tsc → vitest 19 件 → `npm run build`(OG 1,971 枚生成、out/ 14,003 ファイル)→ `wrangler deploy --dry-run`(15,986 assets 読込)まで通してから push。途中で直したもの: 新人ガイドの `ogImages("…", "…")` 旧シグネチャ(ビルド時生成では `lib/og-targets.ts` の `ARTICLE_OG` に無い画像は作られないので、エントリを足して `ogImages(articleOg(meta))` に揃えた、695bad0)。ローカル固有の障害: 残っていた `.open-next/` が lint を、古い `.next-build/.next-dev` の validator.ts が tsc を落としていたので削除。GitHub Actions run 39611986237 は 9,901 assets をアップロードして成功。切替後の curl: `/` 200、`/results/2026/` → 307 `/results/2026`、`/about/` → 307、`/rowing-results` → 301 `/about`、`/support` → 301 `/sponsor`、多バイトの `/records/男子舵手なしペア` → 301 `/records/男子ペア`、`/og/default.png` と記事の og:image 200 image/png、`/feed.xml`・`/sitemap.xml` 200、`/search?year=2025` 200、`/api/v1/results`・`/no-such-page`・`/_redirects` は 404(404.html)。server: cloudflare。**未コミットの `app/articles/first-regatta/`(WIP)も同じ `ogImages` 旧シグネチャのままなので、仕上げるときに `articleOg` 方式へ直すこと**(ローカル build を通すため一時的に stash して戻した)
+- **戻し方**: main を fe44740 の前(0c83385)へ戻して push すれば旧 workflow が OpenNext でデプロイし直す(Worker 名が同じなので上書きされる)
 
 
 # デザインシステム刷新: 日経ビジュアルデータ寄りへ (2026-10-20)
@@ -104,15 +104,15 @@
 - `first-regatta` 記事(作業中・未コミット)には触れない
 
 ### Review
-- Phase 1(4155de0): トークン差し替え。墨 #1f1f1f・罫線 #dcdcdc・データの青 #1d5fbf・灰青 #b9c7dc、`--text-body` / `--meta` / `--border-strong` 追加、radius 0/4px、影はリングのみ、Noto Sans JP 一本化(Inter 廃止)、表のヘッダ地と sticky を廃止、見出しのアクセント棒を廃止。design-rules §1〜§8 とスキル要約を書き換え
-- Phase 2(a77f61c): ヘッダーを3列(ワードマーク / データで見るボート / 13px ナビ)に、青いロゴをヘッダーから外した。コンテナ 1200px・h1 38px・ヒーローの箱を廃止
-- Phase 3a(3550970): 選手ページを 760px 一段組に。統計 dl、Final A の順位の推移(CSS グリッドの図 `rank-timeline.tsx`)、出場レース表。順位バッジを青/灰青/薄灰へ(`rankBadgeClass`)
-- Phase 3b(bb78227): 大会ページを 760px 一段組に。入口帯と優勝一覧表を「優勝クルーと2位との差」の横棒図(`gap-bars.tsx`、85パーセンタイルの物差し)に統合
-- Phase 3c(23c5cf6): ホームを記事3列+小さな図(`home-figures.tsx`、集計は `lib/univ-championship.ts`)+2列リストに。最新結果テーブル・検索ボックス・見出しアイコンを廃止
-- Phase 3d(ee5909a): 検索ページの箱・影・pill を撤去。Recharts を青/灰青/灰グリッドに、金色系列を廃止、主ボタンを墨に
-- Phase 3e(cce860c): 記事一覧を行に、本文 760px、棒グラフ単色、用語集 SVG をトークン色に、lpFadeUp 廃止
-- Phase 3f(5e7964a): 団体ページのメダルカード(🥇🥈🥉)を統計 dl に、歴代・種目ページの順位をバッジに。未使用の EmptyState / PageTitle を削除
-- Phase 3g(96be424): LP の箱・見出しアイコン・固有色を撤去、フォームを新規定に
+- Phase 1(46e9a8e): トークン差し替え。墨 #1f1f1f・罫線 #dcdcdc・データの青 #1d5fbf・灰青 #b9c7dc、`--text-body` / `--meta` / `--border-strong` 追加、radius 0/4px、影はリングのみ、Noto Sans JP 一本化(Inter 廃止)、表のヘッダ地と sticky を廃止、見出しのアクセント棒を廃止。design-rules §1〜§8 とスキル要約を書き換え
+- Phase 2(c8ffb18): ヘッダーを3列(ワードマーク / データで見るボート / 13px ナビ)に、青いロゴをヘッダーから外した。コンテナ 1200px・h1 38px・ヒーローの箱を廃止
+- Phase 3a(fe3e9ce): 選手ページを 760px 一段組に。統計 dl、Final A の順位の推移(CSS グリッドの図 `rank-timeline.tsx`)、出場レース表。順位バッジを青/灰青/薄灰へ(`rankBadgeClass`)
+- Phase 3b(1574197): 大会ページを 760px 一段組に。入口帯と優勝一覧表を「優勝クルーと2位との差」の横棒図(`gap-bars.tsx`、85パーセンタイルの物差し)に統合
+- Phase 3c(e153dfe): ホームを記事3列+小さな図(`home-figures.tsx`、集計は `lib/univ-championship.ts`)+2列リストに。最新結果テーブル・検索ボックス・見出しアイコンを廃止
+- Phase 3d(c3400f0): 検索ページの箱・影・pill を撤去。Recharts を青/灰青/灰グリッドに、金色系列を廃止、主ボタンを墨に
+- Phase 3e(7ffa01c): 記事一覧を行に、本文 760px、棒グラフ単色、用語集 SVG をトークン色に、lpFadeUp 廃止
+- Phase 3f(61e8cbc): 団体ページのメダルカード(🥇🥈🥉)を統計 dl に、歴代・種目ページの順位をバッジに。未使用の EmptyState / PageTitle を削除
+- Phase 3g(a37d371): LP の箱・見出しアイコン・固有色を撤去、フォームを新規定に
 - Phase 4: OG 画像を白地・墨の見出し・左揃え・青の短い罫線に。記事サムネイル4枚を再生成(first-regatta は未コミット記事なので除外)。about のプレビュー画像を新デザインの検索画面で撮り直し(Playwright、1280×1060)
 - 検証: 各ページで desktop 1280 / mobile 375 のスクリーンショット、`scrollWidth === clientWidth`、computed style で Noto Sans JP・バッジ色を実測。`npm run lint` は既存の no-img-element 警告のみ、`npm run build` exit 0
 - 残件: `first-regatta` 記事と `articles.ts` のそのエントリは未コミットのまま。push はユーザー指示待ち
@@ -662,7 +662,7 @@
 
 ## Next 16 への更新と OpenNext 回避フラグの撤去 (2026-10-21)
 
-背景: `@opennextjs/cloudflare` 1.20 の build が Next 15.5 を「公開から2年でサポート外」として拒否し、CI の Deploy to Cloudflare が失敗。aff9014 で `--dangerouslyUseUnsupportedNextVersion` を付けて暫定復旧した。根本対応として Next 16 へ上げる。
+背景: `@opennextjs/cloudflare` 1.20 の build が Next 15.5 を「公開から2年でサポート外」として拒否し、CI の Deploy to Cloudflare が失敗。3d8c729 で `--dangerouslyUseUnsupportedNextVersion` を付けて暫定復旧した。根本対応として Next 16 へ上げる。
 
 ### Plan
 - [x] 1. `next` 16.4.2 / `eslint-config-next` 16.4.2 / `@opennextjs/cloudflare` 1.20.12 / `wrangler` 4.151 に更新(OpenNext 1.20.12 の peer は `next >=16.4.1`)。react 19.2 は Next 16 の要件(19.2+)を満たすので据え置き
@@ -727,10 +727,10 @@
 
 ## 検証・push とリダイレクト Worker の Route 化(2026-10-22)
 
-- [x] 前セッションで未確認だった新人ガイド作り直し(ad22497)の検証: `npm run lint`(エラー0・既存の `<img>` 警告1)/ `npx tsc --noEmit`(0)/ `npm test`(19件)/ `npm run build`(OG 1,971枚)すべて成功。出力HTMLの h2 がデータ中心の構成に入れ替わっていることも確認
-- [x] ad22497 を push。Deploy to Cloudflare 成功(2分9秒)、本番の記事2本が200
-- [x] 未コミットだった2件を分けてコミットし push: 8e0182e(tsconfig に `.next-dev-preview/dev/types` を追加)、5269e82(リダイレクト Worker を `custom_domain` から Workers Route へ)
-- [x] e7d585c: `.gitignore` に `infra/ec2/` の state・backup・tfvars・`.terraform/` を追加(`infra/github/` しか塞いでいなかった)。`git check-ignore` で4つとも確認
+- [x] 前セッションで未確認だった新人ガイド作り直し(7c89f66)の検証: `npm run lint`(エラー0・既存の `<img>` 警告1)/ `npx tsc --noEmit`(0)/ `npm test`(19件)/ `npm run build`(OG 1,971枚)すべて成功。出力HTMLの h2 がデータ中心の構成に入れ替わっていることも確認
+- [x] 7c89f66 を push。Deploy to Cloudflare 成功(2分9秒)、本番の記事2本が200
+- [x] 未コミットだった2件を分けてコミットし push: 2684f22(tsconfig に `.next-dev-preview/dev/types` を追加)、559388a(リダイレクト Worker を `custom_domain` から Workers Route へ)
+- [x] f798cb3: `.gitignore` に `infra/ec2/` の state・backup・tfvars・`.terraform/` を追加(`infra/github/` しか塞いでいなかった)。`git check-ignore` で4つとも確認
 - [x] `workers/rowing-api-redirect` で `wrangler deploy`。トリガーは `rowing-api.com/*` (zone name: rowing-api.com)、Version ID 823db74d-544e-4d44-8d04-06e039f886e4
 
 ### Review
@@ -738,3 +738,14 @@
 - wrangler の OAuth は保存済み認証(8/4)が失効していて、Bash からは非対話で弾かれた。ターミナルタブで実行して認可。認可コードの待ち受けは2分程度で閉じるので、ブラウザでの承認はその場で済ませる
 - デプロイ前後で同じ5URLを突き合わせ、301の挙動とパス・クエリの引き継ぎに差分がないことを確認した。`www.rowing-api.com` は前後とも名前解決せず(000)。Route のパターンに www は含まれないので、拾うなら DNS と Route の追加が要る
 - 未着手: `infra/ec2/` は `.tf` が1つもなく state と lock だけが残っている。削除するか管理下に戻すかは保留
+
+## 公開リポジトリの履歴から .wrangler/ を除去(2026-10-22)
+
+- [x] `workers/rowing-api-redirect/.wrangler/cache/cf.json`(接続元の所在地・ISP・TLS 指紋)が旧 bf93158(書き換え後は 72eb17f)から公開リポジトリに入っていたため、`git filter-repo --invert-paths --path workers/rowing-api-redirect/.wrangler/` で全履歴から除去し、`refs/heads/*` を force push(main 旧 438a977 → 3f4780e、automation/jara-results-2026 も書き換え)
+- [x] GitHub から取り直したクローンで、blob・`.wrangler/` に触れるコミット・中身の文字列がいずれも0件であることを確認。手元の main は `fetch` + `reset --hard origin/main` で同期
+- [x] このファイル内のコミット参照(25種35か所)を filter-repo の commit-map で新しい SHA に置き換え。件名が新旧で一致することを1件ずつ確認
+
+### Review
+- `refs/pull/1/head`(マージ済み PR #1)は GitHub 管理で書き換えられず、旧 SHA を直接指定すると今も読める。完全な削除は GitHub Support への purge 依頼が必要(ユーザーが実施)
+- force push では deploy-cloudflare.yml の paths フィルタが効かず全量デプロイが走った(内容は同一で成功)
+- 書き換え前のバックアップは `~/rowing-api-backup.git`。GitHub Support の対応後に削除する
