@@ -224,7 +224,7 @@ export default async function CompetitionResultsPage(props: { params: Promise<Pa
           <figcaption>
             <span className={`block ${rc.figureTitle}`}>優勝クルーと2位との差</span>
             <span className={`block ${rc.figureSub}`}>
-              Final A 1位。差が小さいほど接戦で、青は1秒未満
+              Final A 1位。差が小さいほど接戦
               {prevWinners ? "。前年の優勝団体も添えた" : ""}
             </span>
           </figcaption>
