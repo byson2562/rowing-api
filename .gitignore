@@ -18,6 +18,10 @@ infra/github/.terraform/
 infra/github/terraform.tfstate
 infra/github/terraform.tfstate.backup
 infra/github/terraform.tfvars
+infra/ec2/.terraform/
+infra/ec2/terraform.tfstate
+infra/ec2/terraform.tfstate.backup
+infra/ec2/terraform.tfvars
 
 # Claude Code local/personal (共有しない)
 .claude/settings.local.json
