@@ -47,6 +47,8 @@ const ARTICLE_OG: Record<string, OgTarget> = {
     title: "全日本新人ローイング選手権とは",
     subtitle: "2026年の日程・種目・歴代優勝クルー"
   }
+,
+  "first-regatta": { title: "はじめてのボート大会", subtitle: "当日の流れと結果の見方" }
 };
 
 export function articleOg(article: Pick<ArticleMeta, "slug" | "title">): OgTarget {

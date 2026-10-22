@@ -26,6 +26,13 @@ export const articles: ArticleMeta[] = [
     publishedAt: "2026-10-15"
   },
   {
+    slug: "first-regatta",
+    title: "はじめてのボート大会 | 当日の流れとレースの組み方、タイムの見方",
+    description:
+      "初めてレースに出る人向けに、ボート大会の当日の流れをまとめました。エントリーは誰がするのか、コースでの動き方、予選から決勝への勝ち上がり、そして自分のタイムをどう見るか。収録データから種目別のタイムの幅も載せています。",
+    publishedAt: "2026-10-22"
+  },
+  {
     slug: "rowing-glossary",
     title: "ローイング用語集 | 種目・大会・練習でよく出る言葉",
     description:
