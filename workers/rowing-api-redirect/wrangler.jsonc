@@ -3,8 +3,11 @@
   "name": "rowing-api-redirect",
   "main": "src/index.ts",
   "compatibility_date": "2025-09-23",
+  // custom_domain ではなく Workers Route を使う。custom_domain は既存の A/CNAME と
+  // 衝突してデプロイが失敗する(code 100117)が、Route ならプロキシ済みレコードの
+  // 手前で Worker が応答するため、DNS レコードを消さずに済む。
   "routes": [
-    { "pattern": "rowing-api.com", "custom_domain": true }
+    { "pattern": "rowing-api.com/*", "zone_name": "rowing-api.com" }
   ],
   "observability": {
     "enabled": true
