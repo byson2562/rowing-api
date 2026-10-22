@@ -7,6 +7,9 @@ import { siteUrl } from "../../../lib/site-url";
 import { ogImages } from "../../../lib/og-image";
 import { articleOg } from "../../../lib/og-targets";
 import {
+  articleEraCard,
+  articleEraCardTitle,
+  articleEraGrid,
   articleMeta,
   articleNote,
   articleNoteList,
@@ -122,10 +125,36 @@ export default async function UniversityChampionship2026Results() {
   const defended = champions.filter((c) => c.prev && c.prev.organization === c.winner.organization);
   const closest = [...champions].sort((a, b) => a.gap - b.gap)[0];
 
-  // 学校別の金メダル数(多い順、同数は五十音ではなく種目順の初出で安定させる)
-  const goldCounts = new Map<string, number>();
-  champions.forEach((c) => goldCounts.set(c.winner.organization, (goldCounts.get(c.winner.organization) ?? 0) + 1));
-  const goldRanking = [...goldCounts.entries()].sort((a, b) => b[1] - a[1]);
+  const winningSchools = new Set(champions.map((c) => c.winner.organization)).size;
+
+  // 学校別の金メダル数。学校同士の比較は男女で分けて数える(男子と女子は種目も勝つ学校も違う)。
+  // 多い順で、同数は五十音ではなく種目順の初出で安定させる(Map の挿入順が種目順なので、安定ソートでそのまま残る)
+  const goldsBySex = (["男子", "女子"] as const).map((sex) => {
+    const list = champions.filter((c) => c.event.startsWith(sex));
+    const bySchool = new Map<string, string[]>();
+    list.forEach((c) =>
+      bySchool.set(c.winner.organization, [...(bySchool.get(c.winner.organization) ?? []), c.event.replace(sex, "")])
+    );
+    const ranking = [...bySchool.entries()]
+      .map(([org, events]) => ({ org, events }))
+      .sort((a, b) => b.events.length - a.events.length);
+    const top = ranking[0]?.events.length ?? 0;
+    // 前年の最多校と、その学校の今年の金
+    const prevBySchool = new Map<string, number>();
+    prevYear
+      .filter((r) => r.rank === 1 && r.event_name.startsWith(sex))
+      .forEach((r) => prevBySchool.set(r.organization, (prevBySchool.get(r.organization) ?? 0) + 1));
+    const prevTop = Math.max(0, ...prevBySchool.values());
+    return {
+      sex,
+      events: list.length,
+      ranking,
+      leaders: ranking.filter((school) => school.events.length === top),
+      prevLeaders: [...prevBySchool.entries()]
+        .filter(([, count]) => count === prevTop)
+        .map(([org, count]) => ({ org, count, now: bySchool.get(org) ?? [] }))
+    };
+  });
 
   const menEight = thisYear.filter((r) => r.event_name === "男子エイト").sort((a, b) => a.rank - b.rank);
   const womenEight = thisYear.filter((r) => r.event_name === "女子エイト").sort((a, b) => a.rank - b.rank);
@@ -182,7 +211,7 @@ export default async function UniversityChampionship2026Results() {
 
         <h2>13種目の優勝校とタイム</h2>
         <p>
-          優勝はFinal Aの1位。13種目を{goldRanking.length}校で分け合いました。前年と同じ大学が勝ったのは
+          優勝はFinal Aの1位。13種目を{winningSchools}校で分け合いました。前年と同じ大学が勝ったのは
           {defended.length}種目({defended.map((c) => `${c.event}の${c.winner.organization}`).join("、")})で、残る
           {champions.length - defended.length}種目は優勝校が入れ替わっています。
         </p>
@@ -236,34 +265,75 @@ export default async function UniversityChampionship2026Results() {
 
         <h2>学校別の金メダル数</h2>
         <p>
-          最多は<OrgLink name="立命館大学" />の3つ(男子クォドルプル、男子ダブルスカル、女子舵手つきフォア)。女子舵手つきフォアは、収録データにある2018年から9大会連続の優勝です。前年に3つ取った仙台大は0、2つだった日大は男子ペアの1つだけでした。
-        </p>
-        <div className={articleTableWrap}>
-          <table className={articleTable}>
-            <thead className={articleThead}>
-              <tr>
-                <th scope="col" className={articleTh}>大学</th>
-                <th scope="col" className={articleTh}>金</th>
-                <th scope="col" className={articleTh}>種目</th>
-              </tr>
-            </thead>
-            <tbody className={articleTbody}>
-              {goldRanking.map(([org, count]) => (
-                <tr key={org} className={articleTr}>
-                  <td data-label="大学" className={`${articleTd} ${articleTdYear}`}>
-                    <OrgLink name={org} />
-                  </td>
-                  <td data-label="金" className={articleTd}>{count}</td>
-                  <td data-label="種目" className={articleTd}>
-                    {champions
-                      .filter((c) => c.winner.organization === org)
-                      .map((c) => c.event)
-                      .join("、")}
-                  </td>
-                </tr>
+          男子と女子では種目も勝つ学校も違うので、分けて数えます。
+          {goldsBySex.map((g, gi) => (
+            <span key={g.sex}>
+              {gi > 0 ? "、" : ""}
+              {g.sex}の{g.events}種目は{g.ranking.length}校
+            </span>
+          ))}
+          で分け合いました。
+          {goldsBySex.map((g) => (
+            <span key={g.sex}>
+              {g.sex}の最多は
+              {g.leaders.map((school, i) => (
+                <span key={school.org}>
+                  {i > 0 ? "と" : ""}
+                  <OrgLink name={school.org} />
+                </span>
               ))}
-            </tbody>
-          </table>
+              {g.leaders.length > 1
+                ? `の${g.leaders[0].events.length}つずつ。`
+                : `の${g.leaders[0].events.length}つ(${g.leaders[0].events.join("、")})。`}
+            </span>
+          ))}
+          女子舵手つきフォアの<OrgLink name="立命館大学" />は、収録データにある2018年から9大会連続の優勝です。
+        </p>
+        <p>
+          前年の最多は
+          {goldsBySex
+            .map((g) => `${g.sex}が${g.prevLeaders.map((s) => s.org).join("と")}の${g.prevLeaders[0]?.count ?? 0}つ`)
+            .join("、")}
+          。{YEAR}年の金は、
+          {goldsBySex
+            .flatMap((g) =>
+              g.prevLeaders.map((s) =>
+                s.now.length === 0 ? `${s.org}が0` : `${s.org}が${g.sex}${s.now.join("・")}の${s.now.length}つ`
+              )
+            )
+            .join("、")}
+          でした。
+        </p>
+        <div className={articleEraGrid}>
+          {goldsBySex.map((g) => (
+            <div className={articleEraCard} key={g.sex}>
+              <h3 className={articleEraCardTitle}>
+                {g.sex}({g.events}種目・{g.ranking.length}校)
+              </h3>
+              <div className={articleTableWrap}>
+                <table className={articleTable}>
+                  <thead className={articleThead}>
+                    <tr>
+                      <th scope="col" className={articleTh}>大学</th>
+                      <th scope="col" className={articleTh}>金</th>
+                      <th scope="col" className={articleTh}>種目</th>
+                    </tr>
+                  </thead>
+                  <tbody className={articleTbody}>
+                    {g.ranking.map((school) => (
+                      <tr key={school.org} className={articleTr}>
+                        <td data-label="大学" className={`${articleTd} ${articleTdYear}`}>
+                          <OrgLink name={school.org} />
+                        </td>
+                        <td data-label="金" className={articleTd}>{school.events.length}</td>
+                        <td data-label="種目" className={articleTd}>{school.events.join("、")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
         </div>
 
         <h2>シングルスカルの優勝者</h2>
