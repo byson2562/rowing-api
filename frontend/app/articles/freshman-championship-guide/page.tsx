@@ -216,7 +216,6 @@ export default async function FreshmanChampionshipGuide() {
       defended: !!prev && prev.organization === winner.organization
     };
   });
-  const closeFinalsLatest = latestRows.filter((r) => r.close).length;
   const menEvents = latestEvents.filter((e) => e.startsWith("男子"));
   const womenEvents = latestEvents.filter((e) => e.startsWith("女子"));
 
@@ -260,20 +259,11 @@ export default async function FreshmanChampionshipGuide() {
   });
   const bestStreak = [...eventPower].sort((a, b) => b.streak.count - a.streak.count)[0];
 
-  // ---- 所属別の優勝(年ごと) ----
+  // ---- 所属別の優勝 ----
   const kindCounts: Record<Kind, number> = { 大学: 0, 高校: 0, 社会人など: 0 };
   golds.forEach((r) => {
     kindCounts[affiliationKind(r.organization)] += 1;
   });
-  const kindByYear = years.map((year) => {
-    const list = golds.filter((r) => r.year === year);
-    const counts: Record<Kind, number> = { 大学: 0, 高校: 0, 社会人など: 0 };
-    list.forEach((r) => {
-      counts[affiliationKind(r.organization)] += 1;
-    });
-    return { year, counts, total: list.length };
-  });
-  const allUnivYears = kindByYear.filter((y) => y.counts["大学"] === y.total).map((y) => y.year);
   const nonUnivWins = golds.filter((r) => affiliationKind(r.organization) !== "大学").sort((a, b) => a.year - b.year || eventIndex(a.event_name) - eventIndex(b.event_name));
   const nonUnivEvents = new Map<string, number>();
   nonUnivWins.forEach((r) => nonUnivEvents.set(r.event_name, (nonUnivEvents.get(r.event_name) ?? 0) + 1));
@@ -358,7 +348,7 @@ export default async function FreshmanChampionshipGuide() {
           </p>
           <h1>全日本新人ローイング選手権とは</h1>
           <p className="lp-lead">
-            全日本新人ローイング選手権は、例年10月から11月にかけて埼玉・戸田で3日間開かれる大会です。2026年の第67回大会は10月23日(金)から25日(日)まで。大学・高校・社会人のクルーが同じ水面で競います。この記事は、収録している{firstYear}〜{latestYear}年の{years.length}大会のデータから、直近の優勝クルーと歴代の強い団体を見ていきます。大会中の速報は
+            全日本新人ローイング選手権は、例年10月から11月にかけて埼玉・戸田で3日間開かれる大会です。2026年の第67回大会は10月23日(金)から25日(日)まで。大学のほか、高校や社会人のクルーも出場します。この記事は、収録している{firstYear}〜{latestYear}年の{years.length}大会のデータから、直近の優勝クルーと歴代の強い団体を見ていきます。大会中の速報は
             <a href={JARA_RESULTS_URL} target="_blank" rel="noopener noreferrer">
               日本ローイング協会のレース結果
             </a>
@@ -407,9 +397,7 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>{latestYear}年の種目別優勝クルー</h2>
         <p>
-          直近の{latestCompetition}から、種目ごとの優勝クルーと2位との差を並べます。
-          {closeFinalsLatest > 0 ? `${latestYear}年は${latestEvents.length}種目のうち${closeFinalsLatest}種目が1秒未満の差でした。` : `${latestYear}年は1秒未満の差になった種目がありませんでした。`}
-          前年と同じ団体が勝った種目には「連覇」を付けています。全着順は<Link href={latestResultsHref}>{latestYear}年大会の結果ページ</Link>にあります。
+          直近の{latestCompetition}から、種目ごとの優勝クルーと2位との差を並べます。前年と同じ団体が勝った種目には「連覇」を付けています。全着順は<Link href={latestResultsHref}>{latestYear}年大会の結果ページ</Link>にあります。
           {resultsArticles[0] && resultsArticles[0].year === latestYear ? (
             <>
               種目別の詳しい振り返りは<Link href={`/articles/${resultsArticles[0].article.slug}`}>{latestYear}年大会の結果記事</Link>に。
@@ -456,7 +444,7 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>男子エイトの歴代優勝({firstYear}〜{latestYear}年)</h2>
         <p>
-          漕手8人と舵手が乗る男子エイトの優勝クルーを並べます。収録している{menEight.list.length}大会で、回数が多い順に
+          男子エイトの優勝クルーを並べます。収録している{menEight.list.length}大会で、回数が多い順に
           <WinnerCounts leaders={menEight.leaders} />
           です。
         </p>
@@ -464,7 +452,7 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>女子舵手つきクォドルプルの歴代優勝({firstYear}〜{latestYear}年)</h2>
         <p>
-          漕手4人がそれぞれ2本のオールを持ち、舵手が乗る種目です。収録データの新人選手権に女子エイトはなく、女子ではこれがいちばん大きな艇です。収録している{womenQuad.list.length}大会で、回数が多い順に
+          女子はエイトの記録がないため、舵手つきクォドルプルの優勝クルーを並べます。収録している{womenQuad.list.length}大会で、回数が多い順に
           <WinnerCounts leaders={womenQuad.leaders} />
           です。
         </p>
@@ -483,7 +471,7 @@ export default async function FreshmanChampionshipGuide() {
 
         <h2>優勝回数の多い団体({firstYear}〜{latestYear}年)</h2>
         <p>
-          全種目のFinal A優勝{golds.length}件を団体別に数えます。男子と女子では種目も勝つ団体も違うので、分けて並べました。混成クルーは別の団体として数えています。
+          全種目のFinal A優勝{golds.length}件を団体別に数えます。混成クルーは別の団体として数えています。
         </p>
         <div className={articleEraGrid}>
           {orgRankings.map((g) => (
@@ -579,8 +567,7 @@ export default async function FreshmanChampionshipGuide() {
               {event}が{n}件
             </span>
           ))}
-          {univOnlyEvents.length > 0 ? `に集中していて、${univOnlyEvents.join("と")}では大学以外の優勝がありません。` : "です。"}全{events.length}種目を大学が独占した年は
-          {allUnivYears.length > 0 ? `${allUnivYears.map((y) => `${y}年`).join("・")}の${allUnivYears.length}回` : "ありません"}。
+          {univOnlyEvents.length > 0 ? `に集中していて、${univOnlyEvents.join("と")}では大学以外の優勝がありません。` : "です。"}
         </p>
         <div className={articleTableWrap}>
           <table className={articleTable}>
