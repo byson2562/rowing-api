@@ -30,6 +30,10 @@ export const FIXED_OG = {
 
 // 記事は見出しを OG 用に手で短くしている。ここに無い記事は「主題 | 補足」の分割で代用する
 const ARTICLE_OG: Record<string, OgTarget> = {
+  "freshman-championship-2026-results": {
+    title: "全日本新人ローイング選手権2026の結果",
+    subtitle: "第67回 種目別の優勝クルーとタイム"
+  },
   "university-championship-2026-results": {
     title: "インカレ(ボート)2026の結果",
     subtitle: "全日本大学ローイング選手権 種目別の優勝校とタイム"

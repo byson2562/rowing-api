@@ -11,6 +11,13 @@ export type ArticleMeta = {
 
 export const articles: ArticleMeta[] = [
   {
+    slug: "freshman-championship-2026-results",
+    title: "全日本新人ローイング選手権(ボート)2026の結果 | 第67回 種目別の優勝クルーとタイム",
+    description:
+      "2026年10月23日〜25日に戸田で開かれた第67回全日本新人ローイング選手権の結果。男子エイトは日本大学、女子舵手つきクォドルプルは同志社大学が優勝し、日本大学は男子舵手つきフォアとダブルスカルも制しました。7種目のFinal A優勝クルーとタイム、2位との差、前年の優勝との比較を収録データからまとめました。",
+    publishedAt: "2026-10-25"
+  },
+  {
     slug: "freshman-championship-guide",
     title: "全日本新人ローイング選手権(ボート)とは | 2026年の日程・種目・歴代優勝クルー",
     description:
