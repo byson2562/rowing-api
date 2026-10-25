@@ -174,8 +174,19 @@ function longestStreak(wins: { year: number; organization: string }[]): { organi
   return best;
 }
 
+// 大会当日は結果が種目ごとに少しずつ取り込まれる。今年の分は、前回と同じ種目すべてに
+// Final A の優勝が揃うまで集計に入れない(途中の年が「最新年」として表や本文に出ないように)
+function withCompleteEdition(rows: ResultRecord[]): ResultRecord[] {
+  const winnersIn = (year: number) =>
+    new Set(rows.filter((r) => r.year === year && r.final_group === "Final A" && r.rank === 1).map((r) => r.event_name));
+  const prevYear = Math.max(...rows.filter((r) => r.year < EDITION_YEAR).map((r) => r.year));
+  const done = winnersIn(EDITION_YEAR);
+  const complete = done.size > 0 && [...winnersIn(prevYear)].every((event) => done.has(event));
+  return complete ? rows : rows.filter((r) => r.year !== EDITION_YEAR);
+}
+
 export default async function FreshmanChampionshipGuide() {
-  const rows = (await allResults()).filter((r) => isFreshmanChampionship(r.competition_name));
+  const rows = withCompleteEdition((await allResults()).filter((r) => isFreshmanChampionship(r.competition_name)));
   const finalA = rows.filter((r) => r.final_group === "Final A");
   const golds = finalA.filter((r) => r.rank === 1);
 
