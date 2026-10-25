@@ -24,6 +24,8 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  # 大会期間中の直接コミットのあとに deploy-cloudflare を workflow_dispatch で起動するため
+  actions: write
 
 jobs:
   update-results:
@@ -189,7 +191,24 @@ jobs:
           # 他のpushと競合したら取り込んでから送る
           git pull --rebase origin main
           git push origin HEAD:main
-          echo "main へ直接コミットしました。deploy-cloudflare が本番へ反映します。"
+          echo "main へ直接コミットしました。"
+
+      # GITHUB_TOKEN による push は他のワークフローを起動しない(GitHub の仕様)ので、
+      # 上の直接コミットでは deploy-cloudflare の push トリガーが動かない。
+      # workflow_dispatch はこの制限の例外なので、ここで明示的に起動する。
+      # (期間外の PR はマージした人の push でデプロイが走るので不要)
+      - name: Deploy the direct commit
+        if: |
+          steps.gate.outputs.run == 'true' &&
+          steps.changes.outputs.changed == 'true' &&
+          steps.gate.outputs.in_window == 'true' &&
+          steps.delta.outputs.decreased == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run deploy-cloudflare.yml --ref main
+          echo "deploy-cloudflare を起動しました。"
 
       - name: Create or update results pull request
         if: |
