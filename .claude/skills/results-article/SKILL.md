@@ -31,15 +31,22 @@ description: 収録している全日本級4大会(大学・新人・社会人�
 1. `git fetch origin main && git checkout -B main origin/main` で最新にする。作業ツリーに追跡中ファイルの変更があれば触らずに終了し、状況を報告する。
 2. 今日の日付(`TZ=Asia/Tokyo date +%F`)が、`schedule.json` のどれかの大会の `end` の日から `end` の2日後までに入っているかを見る。入っていなければ「対象の大会なし」で終了する。入っていれば、その大会を対象にする(年は `end` の年)。
 3. その大会の slug の記事 `frontend/app/articles/<slug>/page.tsx` が origin/main にあれば、公開済みなので終了する。
-4. ロック: origin に `claude/results-article-<slug>` ブランチがあり、その先頭コミットが3時間以内なら、別の実行が作業中なので終了する。無いか古ければ、`git commit --allow-empty -m "lock: results-article <slug> <ISO時刻>"` を積んだブランチを push してロックにする(`git push -f origin HEAD:refs/heads/claude/results-article-<slug>`)。作業は main の上で行い、最後にこのブランチを消す。
+4. ロックを取る(下の「ロックの取り方と解除」)。取れなければ、別の実行が作業中なので終了する。作業はロック用ブランチではなく main の上で行う。
+
+### ロックの取り方と解除
+
+クラウドの routine からはブランチを削除できない(2026-10-26 の試験で 403)。強制 push も使わない。そのため、ロック用ブランチ `claude/results-article-<slug>` は消さずに残し、空コミットを早送りで積み足して状態を表す。
+- 取る: `git fetch origin`。ブランチがあり、先頭コミットの件名が `lock:` で始まり、そのコミットが3時間以内なら、作業中の実行があるので取れない。それ以外(ブランチが無い、先頭が `unlock:`、3時間より古い `lock:`)なら、ブランチの先頭(無ければ origin/main)に `git commit --allow-empty -m "lock: results-article <slug> <ISO時刻>"` を積み、`git push origin HEAD:refs/heads/claude/results-article-<slug>` する。push が早送りでないとして拒否されたら、別の実行が先に取ったので取れない。
+- 解除する: ロック用ブランチの先頭に `git commit --allow-empty -m "unlock: results-article <slug> <ISO時刻>"` を積んで push する。終了するときは、理由にかかわらず必ず解除する。
+- 作業を残す: 記事の変更はロック用ブランチに積まない(先頭が `lock:` でなくなり、判定が崩れる)。push できない変更を残すときは、`claude/results-article-<slug>-<YYYYMMDDHHMM>` という新しいブランチに push する。
 
 ## 2. 結果がそろったか確認する
 
 1. `frontend/data/results/<年>.json` から、`competition_name` が対象大会に当たり(`COMPETITION_CATEGORY_RULES` のキーワード)、`final_group` が `Final A` の行を取り出す。
 2. 今年行われた Final A の種目を、JARA の大会ページ(`schedule.json` の `url`)からたどれる競漕日程・結果ページで確かめる。種目は年ごとに入れ替わるので、前年の種目一覧を正にしない。
 3. 今年行われた Final A の全種目に、データ上で rank 1 と rank 2 があればそろっている。そろっていなければ、JARA の結果ページに出ているかを見る。
-   - JARA に出ているのにリポジトリに無いときは、取り込みの次の回を待つ(大会期間中は毎時)。ロックを消して終了する。
-   - JARA にも無いときは、ロックを消して終了する(次の取り込みで起動される)。
+   - JARA に出ているのにリポジトリに無いときは、取り込みの次の回を待つ(大会期間中は毎時)。ロックを解除して終了する。
+   - JARA にも無いときは、ロックを解除して終了する(次の取り込みで起動される)。
    - `end` の2日後になってもそろわないときは、何がそろわないかを報告して終了する。
 4. JARA に届かないとき(ネットワークの制限など)は、前年の同じ大会の Final A 種目のうち、今年のデータに Final B 以上の行がある種目を「今年行われた種目」とみなす。この代わりの判定を使ったことを報告に書く。
 
@@ -70,14 +77,14 @@ description: 収録している全日本級4大会(大学・新人・社会人�
 - 記事の OG 画像が `frontend/out/og/` にある(HTML が参照する png が存在する)。
 - ガイドのある大会では、ガイドの HTML が今年の結果に切り替わり、記事へリンクしている。
 - 出力 HTML の本文に「。 」(句点の後の空白)が無い。
-- 直せない失敗があれば push しない。変更をロック用ブランチにコミットして push し、何が失敗したかを報告して終了する。
+- 直せない失敗があれば main に push しない。変更をコミットして `claude/results-article-<slug>-<YYYYMMDDHHMM>` に push し、ロックを解除して、何が失敗したかを報告して終了する。
 
 ## 5. 公開する
 
 1. `tasks/todo.md` に「<大会名>の結果記事を公開(日付)」の節を足す(作った内容、レビューの各回の判定、検証結果、見送った点)。
 2. 記事・`frontend/lib/articles.ts`・`frontend/lib/og-targets.ts`・`tasks/todo.md` だけをパス指定で `git add` し、1つのコミットにする。メッセージは英語の Conventional Commits(例: `feat(articles): publish the 2027 全日本社会人選手権 results`)で、最後に空行をはさんで `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` を付ける。
 3. `git pull --rebase origin main`(取り込みの bot のコミットと競合しないように)してから `git push origin HEAD:main`。
-   - main への push が権限などで拒否されたら、同じコミットをロック用ブランチに push し、`gh` が使えれば PR を作る。拒否されたことと PR の URL を報告する。
+   - main への push が権限などで拒否されたら、同じコミットを `claude/results-article-<slug>-<YYYYMMDDHHMM>` に push し、`gh` が使えれば PR を作る。拒否されたことと、ブランチ名(または PR の URL)を報告する。
 4. main に入ったら deploy-cloudflare が走る(`frontend/**` の変更)。`gh` が使えれば run の完了を待ち、使えなければ `curl -s -o /dev/null -w '%{http_code}' https://regattanavi.jp/articles/<slug>` が 200 になるまで1分おきに最大20分確かめる。ガイドのある大会では、本番のガイドから記事へリンクされていることも確かめる。`gh` も regattanavi.jp への接続も使えないときは、本番を確かめられなかったことを報告に書く(push までできていれば失敗扱いにしない)。
 
 ## クラウドの routine で動くときの注意
@@ -85,9 +92,10 @@ description: 収録している全日本級4大会(大学・新人・社会人�
 2026-10-26 の試験で分かった、クラウドの実行環境の性質。
 - node 22・npm・Python 3.11・git・gh・Docker があり、`npm ci`(約30秒)からビルド(OG 画像込みで約1分)まで通る。
 - 外部への接続はプロキシの許可リストに限られる。`www.jara.or.jp` と `regattanavi.jp` が許可されていなければ 403 になるので、2-4 の代わりの判定を使い、本番の確認は上の4のとおり報告に回す。
-- `gh` のトークンは無効なことがある。PR を作れないときは、ロック用ブランチに push したことだけを報告する。
+- `gh` のトークンは無効なことがある。PR を作れないときは、ブランチに push したことだけを報告する。
+- ブランチの作成と早送りの push はできるが、ブランチの削除(`git push --delete`)は 403 で拒否される。強制 push も同じく拒否されると考えて使わない(試してはいない)。ロックは上の「ロックの取り方と解除」の方式で扱う。
 - 終了時のフックが「未追跡のファイルをコミットして push せよ」と求めることがある。記事に関係ないファイル(ビルドの生成物、Python のキャッシュ、作業用のテキスト)はコミットせず、消してから終える。`git checkout --` などで追跡中のファイルを巻き込まないようにする。
 
 ## 6. 終える
 
-`git push origin --delete claude/results-article-<slug>` でロックを消す。公開した URL、記事の構成、レビューの判定、検証の結果、代わりの判定を使ったか、見送った点や気になる点を日本語で短く報告する。
+ロックを解除する(`unlock:` の空コミットを積んで push)。公開した URL、記事の構成、レビューの判定、検証の結果、代わりの判定を使ったか、見送った点や気になる点を日本語で短く報告する。
