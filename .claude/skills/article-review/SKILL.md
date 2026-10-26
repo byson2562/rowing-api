@@ -72,8 +72,8 @@ description: サイト掲載のメディア記事(frontend/app/articles 配下)�
 2. 記事から**日本語の地の文だけ**を取り出す: リード文、見出し、段落、注記、表のキャプション、`articles.ts` の title/description。JSX の構造、`{}` 内の式、数値、固有名詞(大学名・大会名・種目名・選手名)、リンク先、`<Link>` のアンカーテキストに含まれる固有名詞は対象外。yomiyasu の「意味の保持」「情報の不増補」はそのまま適用し、数字や集計条件の説明は一字も変えない。
 3. 取り出した地の文をスクラッチディレクトリにテキストで保存し、同梱スクリプトで静的検査と差分検査を回す:
    ```bash
-   python3 ~/.claude/skills/yomiyasu/scripts/yomiyasu_lint.py <元の文.txt>
-   python3 ~/.claude/skills/yomiyasu/scripts/yomiyasu_diff.py <元の文.txt> <書き直した文.txt> --stance=説明
+   python3 .claude/skills/yomiyasu/scripts/yomiyasu_lint.py <元の文.txt>
+   python3 .claude/skills/yomiyasu/scripts/yomiyasu_diff.py <元の文.txt> <書き直した文.txt> --stance=説明
    ```
    検出結果は候補として扱い、専門用語や評価を担う語は無理に言い換えない。修正は1回のみで、スクリプトを回し直す往復はしない。
 4. yomiyasu の出力フォーマットのうち「変えたところ」「残したAIっぽいところ」「書き手に確かめたい点」をユーザーに提示する。「書き手に確かめたい点」がある箇所は、ユーザーの回答を待ってから本文に反映する。
