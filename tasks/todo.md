@@ -783,3 +783,20 @@
 ### Review
 - 削った文: 新人のシングルスカルの節(選手リンクは表のセルへ)、タイムの但し書き、団体数の言い直し、2位3クルーの列挙、区分列。インカレの「1秒未満の決着は2つ」、金メダル数の表の言い直し、シングルスカル女子の2位との差
 - push は未実施(指示待ち)
+
+## 結果記事の作成をクラウドの routine で動かす(2026-10-26)
+
+10/25 の新人選手権では、Mac がスリープしていてローカルのスケジュールタスクが4時間半遅れた。次の大会からは、Mac に頼らずクラウドで記事を作る。対象は収録している4大会すべて、起動は結果の取り込み、公開は main へ push まで自動、モデルは Opus 5.5(いずれもユーザーの選択)。
+
+- [x] 記事レビューが使う `humanizer-ja`(手元で編集した版)と `yomiyasu` 1.1.2 を `.claude/skills/` に入れた(どちらも MIT、LICENSE 同梱)。`article-review` と校正エージェントの `~/.claude` 参照をリポジトリ内のパスに直した
+- [x] 手順書 `.claude/skills/results-article/SKILL.md` を新設: 対象の大会と slug(大学・新人・社会人 `shakaijin-championship`・全日本 `japan-championship`)、実行の判定(schedule.json の最終日〜2日後)、そろったかの判定(今年の Final A 種目を JARA で確認。種目は年で入れ替わる)、ロック、記事の構成、検証、公開と失敗時の扱い
+- [x] `in_race_window.py` が `frontend/data/schedule.json` も読むようにした(各大会の初日〜最終日の翌日)。race-windows.json への追記漏れで取り込みが1日1回になる問題の根本対応。`--finals` で最終日〜2日後だけを判定
+- [x] routine「rowing-api: 大会の結果記事を作って公開」(`trig_01LWyBVwgxu83kkJ3nmsMoyM`、Opus 5.5、コネクタなし、年1回の予備の時刻のみ)を作成。routine を起動できる GitHub イベントは PR・リリース・Issue だけで push は不可だったため、API トリガーにした。`update-jara-results.yml` が大会の最終日〜2日後の直接コミットのあとに `.github/scripts/fire_results_routine.sh` で呼ぶ(Secret `CLAUDE_ROUTINE_TOKEN`、失敗しても警告のみ)。手動の再実行は Actions の「Fire results-article routine」
+- [x] ユーザー側の設定: Claude GitHub App を rowing-api にインストール、環境「Default」を Custom にして `www.jara.or.jp` と `regattanavi.jp` を許可、API トークンの発行と Secret 登録、不要な GitHub イベントの削除
+
+### Review
+- 試験用 routine(`trig_01PkMfHqU7pj7ZL9H8zHUzAm`、1回限り)を2回動かした。1回目は push と外部接続が 403。設定後の2回目は、ビルド(OG 2,006枚)・JARA と本番への接続・ブランチの push・main への dry-run が通り、ブランチの削除だけが 403。`gh` はトークンが無効のまま
+- ブランチを消せないので、ロックは消さずに `lock:` / `unlock:` の空コミットを積み足す方式にした。push できない変更や拒否された公開は、日時付きの新しいブランチに残す
+- 手動ワークフローから本番 routine を API 経由で起動し、新人選手権の記事が公開済みと判定して14秒で終わることを確かめた。main への実際の push は、次の大会の本番で初めて通る(dry-run のみ確認済み)
+- 次の大会は 2027年5月の社会人選手権の見込み。`frontend/data/schedule.json` に2027年の日程を転記しないと、取り込みも routine も動かない
+- 気になる点: `race-windows.json` の第104回全日本選手権(9/10〜15)は schedule.json(6/4〜7)と食い違っている。どちらが正しいかは未確認
