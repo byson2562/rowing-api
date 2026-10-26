@@ -6,6 +6,7 @@ import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
 import { ogImages } from "../../../lib/og-image";
 import { articleOg } from "../../../lib/og-targets";
+import { formatMargin, formatRaceTime, shortOrgName } from "../../../lib/race-format";
 import {
   articleEraCard,
   articleEraCardTitle,
@@ -70,10 +71,6 @@ function OrgLink({ name }: { name: string }) {
 
 function AthleteLink({ name }: { name: string }) {
   return <Link href={`/athletes/${encodeURIComponent(name)}`}>{name}</Link>;
-}
-
-function formatGap(seconds: number): string {
-  return `${seconds.toFixed(2)}秒`;
 }
 
 function FinalTable({ rows }: { rows: ResultRecord[] }) {
@@ -156,10 +153,41 @@ export default async function UniversityChampionship2026Results() {
     };
   });
 
+  // 同じ大学がその種目を何年続けて勝っているか(year から1年ずつさかのぼる)
+  const golds = univ.filter((r) => r.final_group === "Final A" && r.rank === 1 && !isOpenEvent(r.event_name));
+  const streakEnding = (event: string, org: string, year: number) => {
+    let n = 0;
+    while (golds.some((r) => r.year === year - n && r.event_name === event && r.organization === org)) n += 1;
+    return n;
+  };
+  const menEightChamp = champions.find((c) => c.event === "男子エイト")!;
+  const womenEightChamp = champions.find((c) => c.event === "女子エイト")!;
+  const womenEightFirstWin = !golds.some(
+    (r) => r.year < YEAR && r.event_name === "女子エイト" && r.organization === womenEightChamp.winner.organization
+  );
+  const dethroned = womenEightChamp.prev!;
+  const dethronedStreak = streakEnding("女子エイト", dethroned.organization, PREV_YEAR);
+  // 今年の優勝で、続けて勝っている年数がいちばん長いもの
+  const longestRun = champions
+    .map((c) => ({ c, n: streakEnding(c.event, c.winner.organization, YEAR) }))
+    .sort((a, b) => b.n - a.n)[0];
+  const namedInLead = new Set([
+    menEightChamp.winner.organization,
+    womenEightChamp.winner.organization,
+    dethroned.organization
+  ]);
+  const nameOf = (org: string) => (namedInLead.has(org) ? shortOrgName(org) : org);
+
   const menEight = thisYear.filter((r) => r.event_name === "男子エイト").sort((a, b) => a.rank - b.rank);
   const womenEight = thisYear.filter((r) => r.event_name === "女子エイト").sort((a, b) => a.rank - b.rank);
   const menSingle = champions.find((c) => c.event === "男子シングルスカル")!;
   const womenSingle = champions.find((c) => c.event === "女子シングルスカル")!;
+  const prevLeaders = goldsBySex.flatMap((g) => g.prevLeaders.map((leader) => ({ ...leader, sex: g.sex })));
+  const prevLeadersWithGolds = prevLeaders
+    .filter((leader) => leader.now.length > 0)
+    .map((leader) => `${nameOf(leader.org)}が${leader.sex}${leader.now.join("・")}の${leader.now.length}つ`);
+  const prevLeadersWithoutGolds = prevLeaders.filter((leader) => leader.now.length === 0).map((leader) => nameOf(leader.org));
+  const dethronedRank = womenEight.find((r) => r.organization === dethroned.organization)?.rank;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -202,18 +230,28 @@ export default async function UniversityChampionship2026Results() {
           </p>
           <h1>インカレ2026(第53回全日本大学ローイング選手権)の結果</h1>
           <p className="lp-lead">
-            2026年8月26日から30日、埼玉・戸田ボートコースで開かれた第53回全日本大学ローイング選手権。男子エイトは
-            <OrgLink name="早稲田大学" />が連覇し、女子エイトは<OrgLink name="立教大学" />が
-            <OrgLink name="仙台大学" />の4連覇を止めました。13種目のFinal A優勝校とタイム、2位との差、前年からの入れ替わりを、当サイトの収録データからまとめます。大会の成り立ちや種目構成は
+            第53回全日本大学ローイング選手権(インカレ)は2026年8月26日から30日まで埼玉・戸田ボートコースで開かれ、男子エイトは
+            <OrgLink name={menEightChamp.winner.organization} />が{formatRaceTime(menEightChamp.winner.time_seconds)}で
+            {menEightChamp.prev?.organization === menEightChamp.winner.organization ? "連覇した" : "優勝した"}。女子エイトは
+            <OrgLink name={womenEightChamp.winner.organization} />が{formatRaceTime(womenEightChamp.winner.time_seconds)}で制し、
+            {dethronedStreak}連覇中だった<OrgLink name={dethroned.organization} />を破った。{champions.length}
+            種目のFinal A優勝校とタイム、2位との差、前年からの入れ替わりを当サイトの収録データからまとめた。大会の成り立ちや種目構成は
             <Link href="/articles/university-championship-guide">インカレの解説記事</Link>へ。
           </p>
         </header>
 
-        <h2>13種目の優勝校とタイム</h2>
+        <h2>{champions.length}種目の優勝校とタイム</h2>
         <p>
-          優勝はFinal Aの1位。13種目を{winningSchools}校で分け合いました。前年と同じ大学が勝ったのは
-          {defended.length}種目({defended.map((c) => `${c.event}の${c.winner.organization}`).join("、")})で、残る
-          {champions.length - defended.length}種目は優勝校が入れ替わっています。
+          優勝は<Link href="/articles/rowing-glossary">Final A</Link>の1位(JO種目を除く)。{champions.length}種目を{winningSchools}
+          校が分け合った。前年と同じ大学が勝ったのは
+          {defended.length}種目({defended.map((c) => `${c.event}の${nameOf(c.winner.organization)}`).join("、")})で、残る
+          {champions.length - defended.length}種目は優勝校が入れ替わった。
+          {longestRun.n >= 3 ? (
+            <>
+              {longestRun.c.event}の<OrgLink name={longestRun.c.winner.organization} />は{YEAR - longestRun.n + 1}
+              年から{longestRun.n}連覇。
+            </>
+          ) : null}
         </p>
         <div className={articleTableWrap}>
           <table className={articleTable}>
@@ -235,7 +273,7 @@ export default async function UniversityChampionship2026Results() {
                   </td>
                   <td data-label="タイム" className={articleTd}>{c.winner.time_display}</td>
                   <td data-label="2位との差" className={articleTd}>
-                    {formatGap(c.gap)}({c.second.organization})
+                    {formatMargin(c.gap)}({c.second.organization})
                   </td>
                   <td data-label="前年優勝" className={articleTd}>{c.prev ? c.prev.organization : "-"}</td>
                 </tr>
@@ -244,64 +282,43 @@ export default async function UniversityChampionship2026Results() {
           </table>
         </div>
         <p>
-          いちばん競ったのは{closest.event}。<OrgLink name={closest.winner.organization} />が
-          <OrgLink name={closest.second.organization} />を{formatGap(closest.gap)}
-          差でかわしました。女子シングルスカルの0.56秒差も含め、1秒未満の決着はこの大会で2つです。
+          最も競ったのは{closest.event}で、<OrgLink name={closest.winner.organization} />が
+          <OrgLink name={closest.second.organization} />を{formatMargin(closest.gap)}差でかわした。Final Bを含む全着順は
+          <Link href={competitionPath}>{YEAR}年大会の結果ページ</Link>にある。
         </p>
 
-        <h2>男子エイト: 早稲田大学が連覇</h2>
+        <h2>
+          男子エイトは{menEightChamp.winner.organization}
+          {menEightChamp.prev?.organization === menEightChamp.winner.organization ? "が連覇" : "が優勝"}
+        </h2>
         <p>
-          早稲田が6分01秒26で<OrgLink name="仙台大学" />を1.70秒抑え、2025年に続く優勝。
-          <OrgLink name="日本大学" />は3位でした。日大が男子エイトで2年続けて優勝を逃すのは、2019年から2021年以来です(2021年は全日本選手権との合併開催で、優勝は社会人のNTT東日本。日大は大学勢で最上位の4位でした)。
+          <OrgLink name={menEight[2].organization} />は3位だった。日本大が男子エイトで2年続けて優勝を逃すのは、2019年から2021年以来となる(2021年は全日本選手権との合併開催で、優勝は社会人のNTT東日本。日本大は大学勢で最上位の4位だった)。
         </p>
         <FinalTable rows={menEight} />
 
-        <h2>女子エイト: 立教大学が仙台大の4連覇を止める</h2>
+        <h2>
+          女子エイトは{womenEightChamp.winner.organization}、{dethroned.organization}の連覇を止める
+        </h2>
         <p>
-          立教が6分59秒36で<OrgLink name="明治大学" />に4.58秒差をつけました。収録範囲で立教が女子エイトを制したのは初めてです。2023年から3連覇中だった
-          <OrgLink name="仙台大学" />は4位でした。
+          {womenEightFirstWin
+            ? `収録範囲で${nameOf(womenEightChamp.winner.organization)}が女子エイトを制したのは初めて。`
+            : null}
+          {PREV_YEAR - dethronedStreak + 1}年から{dethronedStreak}連覇中だった{nameOf(dethroned.organization)}は
+          {dethronedRank}位だった。
         </p>
         <FinalTable rows={womenEight} />
 
         <h2>学校別の金メダル数</h2>
         <p>
-          {goldsBySex.map((g, gi) => (
-            <span key={g.sex}>
-              {gi > 0 ? "、" : ""}
-              {g.sex}の{g.events}種目は{g.ranking.length}校
-            </span>
-          ))}
-          で分け合いました。
-          {goldsBySex.map((g) => (
-            <span key={g.sex}>
-              {g.sex}の最多は
-              {g.leaders.map((school, i) => (
-                <span key={school.org}>
-                  {i > 0 ? "と" : ""}
-                  <OrgLink name={school.org} />
-                </span>
-              ))}
-              {g.leaders.length > 1
-                ? `の${g.leaders[0].events.length}つずつ。`
-                : `の${g.leaders[0].events.length}つ(${g.leaders[0].events.join("、")})。`}
-            </span>
-          ))}
-          女子舵手つきフォアの<OrgLink name="立命館大学" />は、収録データにある2018年から9大会連続の優勝です。
-        </p>
-        <p>
           前年の最多は
           {goldsBySex
-            .map((g) => `${g.sex}が${g.prevLeaders.map((s) => s.org).join("と")}の${g.prevLeaders[0]?.count ?? 0}つ`)
+            .map((g) => `${g.sex}が${g.prevLeaders.map((s) => nameOf(s.org)).join("と")}(${g.prevLeaders[0]?.count ?? 0}つ)`)
             .join("、")}
-          。{YEAR}年の金は、
-          {goldsBySex
-            .flatMap((g) =>
-              g.prevLeaders.map((s) =>
-                s.now.length === 0 ? `${s.org}が0` : `${s.org}が${g.sex}${s.now.join("・")}の${s.now.length}つ`
-              )
-            )
-            .join("、")}
-          でした。
+          。{YEAR}年は{prevLeadersWithGolds.join("、")}
+          {prevLeadersWithoutGolds.length > 0
+            ? `${prevLeadersWithGolds.length > 0 ? "で、" : ""}${prevLeadersWithoutGolds.join("と")}は金メダルがなかった`
+            : ""}
+          。
         </p>
         <div className={articleEraGrid}>
           {goldsBySex.map((g) => (
@@ -338,28 +355,25 @@ export default async function UniversityChampionship2026Results() {
         <h2>シングルスカルの優勝者</h2>
         <p>
           男子は<OrgLink name={menSingle.winner.organization} />の<AthleteLink name={menSingle.winner.crew_name} />
-          、女子は<OrgLink name={womenSingle.winner.organization} />の
-          <AthleteLink name={womenSingle.winner.crew_name} />が勝ちました。女子は2位の
-          <OrgLink name={womenSingle.second.organization} />・<AthleteLink name={womenSingle.second.crew_name} />
-          との差が{formatGap(womenSingle.gap)}でした。選手名のリンク先で、他の大会も含めた成績を追えます。
+          が{formatRaceTime(menSingle.winner.time_seconds)}、女子は<OrgLink name={womenSingle.winner.organization} />の
+          <AthleteLink name={womenSingle.winner.crew_name} />が{formatRaceTime(womenSingle.winner.time_seconds)}で勝った。選手名のリンク先で、他の大会も含めた成績を追える。
         </p>
 
-        <h2>全種目の結果を見る</h2>
+        <h2>ほかの年と団体別の推移</h2>
         <p>
-          Final Bを含む全着順は<Link href={competitionPath}>{YEAR}年大会の結果ページ</Link>
-          に種目別で載せています。学校ごとの推移は<Link href="/organizations">団体別ページ</Link>
+          学校ごとの推移は<Link href="/organizations">団体別ページ</Link>
           、2009〜2025年の17年分の優勝校の流れは
-          <Link href="/articles/university-power-map-2009-2025">勢力図の分析記事</Link>で追えます。
+          <Link href="/articles/university-power-map-2009-2025">勢力図の分析記事</Link>で追える。
         </p>
 
         <aside className={articleNote}>
           <h3 className={articleNoteTitle}>データについての注記</h3>
           <ul className={articleNoteList}>
-            <li>タイムは日本ローイング協会の公式結果から収録したFinal A・Bの記録です。予選や準決勝は含みません。</li>
+            <li>タイムは日本ローイング協会の公式結果から収録したFinal A・Bの記録で、予選や準決勝は含まない。</li>
             <li>
-              JO(ジャパンオープン)種目は社会人も出場するオープン枠のため、13種目の集計から除いています。2026年はJO男子エイトをNTT東日本、JO女子エイトをデンソーオルカリスが制しました。
+              JO(ジャパンオープン)種目は社会人も出場するオープン枠のため、{champions.length}種目の集計から除いた。2026年はJO男子エイトをNTT東日本、JO女子エイトをデンソーオルカリスが制した。
             </li>
-            <li>女子エイトは収録データにFinal Aの記録がある年が2021年と2023年以降に限られます。「初めて」はその範囲での判定です。</li>
+            <li>女子エイトは収録データにFinal Aの記録がある年が2021年と2023年以降に限られる。「初めて」と連覇の数はその範囲での判定。</li>
           </ul>
         </aside>
       </article>

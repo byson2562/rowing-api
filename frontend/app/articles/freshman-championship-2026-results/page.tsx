@@ -6,6 +6,7 @@ import { getArticle } from "../../../lib/articles";
 import { siteUrl } from "../../../lib/site-url";
 import { ogImages } from "../../../lib/og-image";
 import { articleOg } from "../../../lib/og-targets";
+import { formatMargin, formatRaceTime, shortOrgName } from "../../../lib/race-format";
 import {
   articleMeta,
   articleNote,
@@ -75,15 +76,12 @@ function AthleteLink({ name }: { name: string }) {
 function CrewCell({ row }: { row: ResultRecord }) {
   return row.crew_name !== row.organization ? (
     <span>
-      {row.crew_name}(<OrgLink name={row.organization} />)
+      {row.event_name.endsWith("シングルスカル") ? <AthleteLink name={row.crew_name} /> : row.crew_name}(
+      <OrgLink name={row.organization} />)
     </span>
   ) : (
     <OrgLink name={row.organization} />
   );
-}
-
-function formatGap(seconds: number): string {
-  return `${seconds.toFixed(2)}秒`;
 }
 
 function FinalTable({ rows }: { rows: ResultRecord[] }) {
@@ -107,7 +105,7 @@ function FinalTable({ rows }: { rows: ResultRecord[] }) {
               </td>
               <td data-label="タイム" className={articleTd}>{r.time_display}</td>
               <td data-label="1位との差" className={articleTd}>
-                {r.rank === 1 ? "—" : formatGap(r.time_seconds - rows[0].time_seconds)}
+                {r.rank === 1 ? "—" : formatMargin(r.time_seconds - rows[0].time_seconds)}
               </td>
             </tr>
           ))}
@@ -179,7 +177,7 @@ export default async function FreshmanChampionship2026Results() {
   const kindOf = (r: ResultRecord) => affiliationKind(r.organization);
   const nonUnivWins = champions.filter((c) => kindOf(c.winner) !== "大学");
   const nonUnivFinalists = eventOrder.flatMap((event) => finalists(event).filter((r) => kindOf(r) !== "大学"));
-  const nonUnivSeconds = nonUnivFinalists.filter((r) => r.rank === 2);
+  const nonUnivBest = Math.min(...nonUnivFinalists.map((r) => r.rank));
   const prevNonUnivWins = golds
     .filter((r) => r.year === PREV_YEAR && kindOf(r) !== "大学")
     .sort((a, b) => eventOrder.indexOf(a.event_name) - eventOrder.indexOf(b.event_name));
@@ -191,6 +189,10 @@ export default async function FreshmanChampionship2026Results() {
   const menEightRows = finalists("男子エイト");
   const womenQuadRows = finalists("女子舵手つきクォドルプル");
   const quadTop4Span = womenQuadRows[3].time_seconds - womenQuadRows[0].time_seconds;
+  // リードで名前を出した団体は、2回目以降を略称にする
+  const namedInLead = new Set([menEight.winner.organization, womenQuad.winner.organization, womenQuad.second.organization]);
+  const nameOf = (org: string) => (namedInLead.has(org) ? shortOrgName(org) : org);
+  const menLeaderOthers = menLeader.events.filter((e) => e !== "エイト");
   const eightSecondThirdGap = menEightRows[2].time_seconds - menEightRows[1].time_seconds;
 
   const jsonLd = {
@@ -234,25 +236,26 @@ export default async function FreshmanChampionship2026Results() {
           </p>
           <h1>全日本新人ローイング選手権2026(第67回)の結果</h1>
           <p className="lp-lead">
-            2026年10月23日から25日、埼玉・戸田ボートコースで開かれた{competitionName.replace("大会", "")}
-            。男子エイトは<OrgLink name={menEight.winner.organization} />、女子舵手つきクォドルプルは
-            <OrgLink name={womenQuad.winner.organization} />が制しました。
-            {menLeader.events.length >= 2
-              ? `${menLeader.org}は男子${menGolds.events}種目のうち${menLeader.events.length}種目で勝ちました。`
+            {competitionName.replace("大会", "")}は最終日の25日、埼玉・戸田ボートコースで各種目の決勝を行い、男子エイトは
+            <OrgLink name={menEight.winner.organization} />が{formatRaceTime(menEight.winner.time_seconds)}で優勝した。
+            {menLeader.org === menEight.winner.organization && menLeaderOthers.length > 0
+              ? `${shortOrgName(menLeader.org)}は${menLeaderOthers.join("と")}も制し、男子${menGolds.events}種目のうち${menLeader.events.length}種目を取った。`
               : null}
-            {champions.length}種目のFinal A優勝クルーとタイム、2位との差、前年との比較を、当サイトの収録データからまとめます。大会の成り立ちや歴代の優勝は
+            女子<Link href="/articles/rowing-glossary">舵手つきクォドルプル</Link>は<OrgLink name={womenQuad.winner.organization} />が
+            <OrgLink name={womenQuad.second.organization} />を{formatMargin(womenQuad.gap)}差で抑えた。{champions.length}
+            種目の優勝クルーとタイム、2位との差、前年の優勝を当サイトの収録データからまとめた。大会の成り立ちや歴代の優勝は
             <Link href="/articles/freshman-championship-guide">新人選手権の解説記事</Link>へ。
           </p>
         </header>
 
         <h2>{champions.length}種目の優勝クルーとタイム</h2>
         <p>
-          優勝は<Link href="/articles/rowing-glossary">Final A</Link>(決勝の最上位グループ)の1位です。{YEAR}年のFinal Aは各種目
-          {finalACrews}クルーで行われました。
+          優勝は<Link href="/articles/rowing-glossary">Final A</Link>(決勝の最上位グループ)の1位。{YEAR}年のFinal Aは各種目
+          {finalACrews}クルーで争った。女子エイトは行われなかった。
           {defended.length > 0
-            ? `前年と同じ団体が勝ったのは${defended.length}種目(${defended.map((c) => `${c.event}の${c.winner.organization}`).join("、")})で、残る${champions.length - defended.length}種目は優勝団体が入れ替わりました。`
-            : `${champions.length}種目すべてで、前年とは違う団体が優勝しました。`}
-          2位との差がいちばん小さかったのは{closest.event}の{formatGap(closest.gap)}です。
+            ? `前年と同じ団体が勝ったのは${defended.length}種目(${defended.map((c) => `${c.event}の${c.winner.organization}`).join("、")})で、残る${champions.length - defended.length}種目は優勝団体が入れ替わった。`
+            : `${champions.length}種目とも前年と違う団体が優勝した。`}
+          2位との差が最も小さかったのは{closest.event}の{formatMargin(closest.gap)}差。
         </p>
         <div className={articleTableWrap}>
           <table className={articleTable}>
@@ -279,7 +282,7 @@ export default async function FreshmanChampionship2026Results() {
                   </td>
                   <td data-label="2位(優勝との差)" className={articleTd}>
                     <span>
-                      <CrewCell row={c.second} />({formatGap(c.gap)})
+                      <CrewCell row={c.second} />({formatMargin(c.gap)})
                     </span>
                   </td>
                   <td data-label="前年の優勝" className={articleTd}>
@@ -297,81 +300,53 @@ export default async function FreshmanChampionship2026Results() {
         </div>
         <p>
           3位以下とFinal Bを含む全着順は<Link href={competitionPath}>{YEAR}年大会の結果ページ</Link>
-          にあり、種目名のリンクから種目別に開けます。この記事では、男子エイトと女子舵手つきクォドルプルのFinal A全着順を下に載せています。
+          にあり、種目名のリンクから種目別に開ける。男子エイトと女子舵手つきクォドルプルはFinal Aの全着順を下に載せた。
         </p>
-        <p>
-          {goldsBySex.map((g, gi) => (
-            <span key={g.sex}>
-              {gi > 0 ? "、" : ""}
-              {g.sex}の{g.events}種目を{g.ranking.length}団体
-            </span>
-          ))}
-          が分け合いました。
-          {menLeader.events.length >= 2 ? (
-            <>
-              <OrgLink name={menLeader.org} />は男子{menLeader.events.join("・")}の{menLeader.events.length}種目で優勝しました。
-              {menLeader.events.length > menGolds.pastMax
-                ? `収録範囲で、1つの団体が1大会で男子${menLeader.events.length}種目を制したのは初めてです(これまでの最多は${menGolds.pastMax}種目)。`
-                : null}
-            </>
-          ) : null}
-        </p>
+        {menLeader.events.length >= 2 && menLeader.events.length > menGolds.pastMax ? (
+          <p>
+            1大会で男子{menLeader.events.length}種目を制した団体は、収録範囲では{nameOf(menLeader.org)}が初めて。これまでの最多は
+            {menGolds.pastMax}種目だった。
+          </p>
+        ) : null}
         {fastestEver.length > 0 ? (
           <p>
-            {fastestEver.map((c) => `${c.event}の${c.winner.time_display}`).join("、")}は、収録している{firstYear}
-            年以降の優勝タイムでいちばん速い記録です。タイムは水面や風で大きく変わるので、年をまたいだ比較は参考程度に見てください。
+            {fastestEver.map((c) => `${c.event}の${formatRaceTime(c.winner.time_seconds)}`).join("、")}は、収録している
+            {firstYear}年以降の優勝タイムで最も速い。
           </p>
         ) : null}
 
-        <h2>男子エイト: {menEight.winner.organization}が優勝</h2>
+        <h2>男子エイトは{menEight.winner.organization}</h2>
         <p>
-          <OrgLink name={menEight.winner.organization} />が{menEight.winner.time_display}で、2位の
-          <CrewCell row={menEight.second} />に{formatGap(menEight.gap)}差をつけました。
           {menEight.pastWins.length === 0
-            ? `収録している${firstYear}年以降で、${menEight.winner.organization}が新人選手権の男子エイトを制したのは初めてです。`
-            : `${menEight.winner.organization}の男子エイト優勝は収録範囲で${menEight.pastWins.length + 1}回目です。`}
-          2位と3位の差は{formatGap(eightSecondThirdGap)}でした。
+            ? `${firstYear}年以降の収録データで、${nameOf(menEight.winner.organization)}が新人選手権の男子エイトを制したのは初めて。`
+            : `${nameOf(menEight.winner.organization)}の男子エイト優勝は収録範囲で${menEight.pastWins.length + 1}回目。`}
+          2位争いは<CrewCell row={menEightRows[1]} />が<CrewCell row={menEightRows[2]} />を
+          {formatMargin(eightSecondThirdGap)}差で制した。
         </p>
         <FinalTable rows={menEightRows} />
 
-        <h2>女子舵手つきクォドルプル: {womenQuad.winner.organization}が優勝</h2>
+        <h2>女子舵手つきクォドルプルは{womenQuad.winner.organization}</h2>
         <p>
-          <OrgLink name={womenQuad.winner.organization} />が{womenQuad.winner.time_display}で、2位の
-          <CrewCell row={womenQuad.second} />を{formatGap(womenQuad.gap)}差で抑えました。
           {womenQuad.pastWins.length === 0
-            ? `収録範囲で${womenQuad.winner.organization}がこの種目を制したのは初めてです。`
-            : `${womenQuad.winner.organization}のこの種目の優勝は収録範囲で${womenQuad.pastWins.length + 1}回目です。`}
-          1位から4位までが{formatGap(quadTop4Span)}の間に入りました。第67回大会では女子エイトは行われていません。
+            ? `収録範囲で${nameOf(womenQuad.winner.organization)}がこの種目を制したのは初めて。`
+            : `${nameOf(womenQuad.winner.organization)}のこの種目の優勝は収録範囲で${womenQuad.pastWins.length + 1}回目。`}
+          1位から4位までが{formatMargin(quadTop4Span)}の間に入った。
         </p>
         <FinalTable rows={womenQuadRows} />
-
-        <h2>シングルスカルの優勝者</h2>
-        <p>
-          男子は<OrgLink name={menSingle.winner.organization} />の<AthleteLink name={menSingle.winner.crew_name} />
-          が{menSingle.winner.time_display}で、2位の<OrgLink name={menSingle.second.organization} />・
-          <AthleteLink name={menSingle.second.crew_name} />に{formatGap(menSingle.gap)}差をつけました。女子は
-          <OrgLink name={womenSingle.winner.organization} />の<AthleteLink name={womenSingle.winner.crew_name} />が
-          {womenSingle.winner.time_display}で、2位の<OrgLink name={womenSingle.second.organization} />・
-          <AthleteLink name={womenSingle.second.crew_name} />に{formatGap(womenSingle.gap)}差で勝ちました。選手名のリンク先で、他の大会も含めた成績を見られます。
-        </p>
 
         <h2>高校・混成・社会人などのクルー(Final A)</h2>
         <p>
           {nonUnivWins.length === 0 ? (
             <>
-              {YEAR}年は{champions.length}種目すべてを大学が制しました。前年は{prevNonUnivWins.length}種目で大学以外が優勝していました(
+              {YEAR}年は{champions.length}種目すべてを大学が制した。前年は{prevNonUnivWins.length}種目で大学以外が優勝していた(
               {prevNonUnivWins.map((r) => `${r.event_name}の${r.organization}`).join("、")})。
             </>
           ) : (
             <>
-              大学以外の優勝は{nonUnivWins.length}種目({nonUnivWins.map((c) => `${c.event}の${c.winner.organization}`).join("、")})でした。
+              大学以外の優勝は{nonUnivWins.length}種目({nonUnivWins.map((c) => `${c.event}の${c.winner.organization}`).join("、")})だった。
             </>
           )}
-          高校・混成・社会人などのクルーは、Final Aに{nonUnivFinalists.length}クルーが進み、最高位は2位でした。2位は
-          {nonUnivSeconds
-            .map((r) => `${r.event_name}の${r.crew_name}${r.crew_name !== r.organization ? `(${r.organization})` : ""}`)
-            .join("、")}
-          の{nonUnivSeconds.length}クルーです。区分は団体名の表記から機械的に分けています。
+          高校・混成・社会人などのクルーはFinal Aに{nonUnivFinalists.length}クルーが進み、最高位は{nonUnivBest}位だった。
         </p>
         <div className={articleTableWrap}>
           <table className={articleTable}>
@@ -380,7 +355,6 @@ export default async function FreshmanChampionship2026Results() {
                 <th scope="col" className={articleTh}>種目</th>
                 <th scope="col" className={articleTh}>順位</th>
                 <th scope="col" className={articleTh}>クルー</th>
-                <th scope="col" className={articleTh}>区分</th>
                 <th scope="col" className={articleTh}>タイム</th>
               </tr>
             </thead>
@@ -392,7 +366,6 @@ export default async function FreshmanChampionship2026Results() {
                   <td data-label="クルー" className={articleTd}>
                     <CrewCell row={r} />
                   </td>
-                  <td data-label="区分" className={articleTd}>{kindOf(r)}</td>
                   <td data-label="タイム" className={articleTd}>{r.time_display}</td>
                 </tr>
               ))}
@@ -400,29 +373,28 @@ export default async function FreshmanChampionship2026Results() {
           </table>
         </div>
 
-        <h2>全種目の結果を見る</h2>
+        <h2>歴代の優勝と公式結果</h2>
         <p>
-          Final Bを含む全着順は<Link href={competitionPath}>{YEAR}年大会の結果ページ</Link>
-          に種目別で載せています。{firstYear}年以降の歴代優勝や団体別の優勝回数は
+          {firstYear}年以降の歴代優勝や団体別の優勝回数は
           <Link href="/articles/freshman-championship-guide">新人選手権の解説記事</Link>
           に、公式の結果は
           <a href={JARA_RESULTS_URL} target="_blank" rel="noopener noreferrer">
             日本ローイング協会のレース結果
           </a>
-          にあります。
+          にある。
         </p>
 
         <aside className={articleNote}>
           <h3 className={articleNoteTitle}>データについての注記</h3>
           <ul className={articleNoteList}>
-            <li>タイムは日本ローイング協会の公式結果から収録したFinal A・Bの記録です。予選や準決勝は含みません。</li>
+            <li>タイムは日本ローイング協会の公式結果から収録したFinal A・Bの記録で、予選や準決勝は含まない。</li>
             <li>
-              {PREV_YEAR}年のFinal Aは各種目{prevFinalACrews}クルーでした。{YEAR}年({finalACrews}クルー)とは決勝に残るクルーの数が違います。
+              {PREV_YEAR}年のFinal Aは各種目{prevFinalACrews}クルーで、{YEAR}年({finalACrews}クルー)とは決勝に残るクルーの数が違う。
             </li>
             <li>
-              「○○混成」は複数の団体で組んだクルーで、所属は収録データの表記のままです。団体別の優勝では別の団体として数えています。「大学以外」の区分は団体名の表記から機械的に分けたもので、大学と高校の混成も「混成」に入ります。
+              「○○混成」は複数の団体で組んだクルーで、所属は収録データの表記のまま。団体別の優勝では別の団体として数えた。「大学以外」の区分は団体名の表記から機械的に分けたもので、大学と高校の混成も「混成」に入る。
             </li>
-            <li>「初めて」は、収録している{firstYear}年以降の大会での判定です。収録していない年があります(解説記事の注記を参照)。</li>
+            <li>「初めて」は、収録している{firstYear}年以降の大会での判定。収録していない年がある(解説記事の注記を参照)。</li>
           </ul>
         </aside>
       </article>
