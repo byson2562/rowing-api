@@ -1,14 +1,46 @@
 #!/usr/bin/env python3
 """引数の日付(JST, YYYY-MM-DD)が大会期間内なら true を出力する。
 
+大会期間は2か所から集める。
+- frontend/data/schedule.json の各大会: 初日から最終日の翌日まで(結果の公開が翌日にずれ込む分)
+- .github/race-windows.json: 日程表と違う期間を足したいときの上書き用
+
+日程表だけに大会を書けば取り込みが高頻度になるので、2026-10 の新人選手権のように
+race-windows.json への追記漏れで取り込みが1日1回になることはもう起きない。
+
 ワークフローの run: にヒアドキュメントで埋め込むとYAMLのインデントと
 終端記号が噛み合わず壊れるため、独立したスクリプトにしている。
 """
+import datetime
 import json
 import pathlib
 import sys
 
-CONFIG = pathlib.Path(__file__).resolve().parents[1] / "race-windows.json"
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+RACE_WINDOWS = ROOT / ".github" / "race-windows.json"
+SCHEDULE = ROOT / "frontend" / "data" / "schedule.json"
+
+
+def load(path: pathlib.Path, key: str) -> list:
+    """設定が無い・壊れているときは空として扱う(毎時走り続けるのは避けたいので false 側に倒す)"""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))[key]
+    except FileNotFoundError:
+        return []
+    except (json.JSONDecodeError, KeyError) as err:
+        print(f"{path.name} を読めません: {err}", file=sys.stderr)
+        return []
+
+
+def windows() -> list:
+    found = [(w["start"], w["end"]) for w in load(RACE_WINDOWS, "windows")]
+    for c in load(SCHEDULE, "competitions"):
+        try:
+            end = datetime.date.fromisoformat(c["end"]) + datetime.timedelta(days=1)
+            found.append((c["start"], end.isoformat()))
+        except (KeyError, ValueError) as err:
+            print(f"schedule.json の大会を読めません: {err}", file=sys.stderr)
+    return found
 
 
 def main() -> int:
@@ -16,17 +48,7 @@ def main() -> int:
         print("usage: in_race_window.py YYYY-MM-DD", file=sys.stderr)
         return 2
     today = sys.argv[1]
-    try:
-        windows = json.loads(CONFIG.read_text(encoding="utf-8"))["windows"]
-    except FileNotFoundError:
-        print("false")
-        return 0
-    except (json.JSONDecodeError, KeyError) as err:
-        # 設定が壊れているときに毎時走り続けるのは避けたいので false 側に倒す
-        print(f"race-windows.json を読めません: {err}", file=sys.stderr)
-        print("false")
-        return 0
-    hit = any(w["start"] <= today <= w["end"] for w in windows)
+    hit = any(start <= today <= end for start, end in windows())
     print("true" if hit else "false")
     return 0
 

@@ -2,7 +2,7 @@ name: Update JARA Results
 
 on:
   schedule:
-    # 毎時実行するが、大会期間(.github/race-windows.json)の外では
+    # 毎時実行するが、大会期間(frontend/data/schedule.json の会期+翌日と .github/race-windows.json)の外では
     # 12:00 UTC(21:00 JST)の回以外はすぐ終了する
     - cron: "0 * * * *"
   workflow_dispatch:
