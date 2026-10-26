@@ -30,3 +30,7 @@ infra/ec2/terraform.tfvars
 # Cloudflare Worker のローカル実行用一時設定
 workers/**/wrangler.local.jsonc
 workers/**/.wrangler/
+
+# Python のキャッシュ(.claude/skills の検査スクリプトを動かすとできる)
+__pycache__/
+*.pyc
