@@ -183,10 +183,6 @@ export default async function FreshmanChampionship2026Results() {
   const prevNonUnivWins = golds
     .filter((r) => r.year === PREV_YEAR && kindOf(r) !== "大学")
     .sort((a, b) => eventOrder.indexOf(a.event_name) - eventOrder.indexOf(b.event_name));
-  // 大学が全種目を制した、今年より前で最も近い年
-  const allUnivYears = [...new Set(golds.map((r) => r.year))]
-    .filter((y) => y < YEAR && golds.filter((r) => r.year === y).every((r) => kindOf(r) === "大学"))
-    .sort((a, b) => b - a);
 
   const menEight = champions.find((c) => c.event === "男子エイト")!;
   const womenQuad = champions.find((c) => c.event === "女子舵手つきクォドルプル")!;
@@ -301,10 +297,9 @@ export default async function FreshmanChampionship2026Results() {
         </div>
         <p>
           3位以下とFinal Bを含む全着順は<Link href={competitionPath}>{YEAR}年大会の結果ページ</Link>
-          にあり、種目名のリンクから種目別に開けます。この記事では、男女それぞれで乗員がいちばん多い男子エイトと女子舵手つきクォドルプルのFinal A全着順を下に載せています。
+          にあり、種目名のリンクから種目別に開けます。この記事では、男子エイトと女子舵手つきクォドルプルのFinal A全着順を下に載せています。
         </p>
         <p>
-          団体別の優勝は、男子と女子で種目も勝つ団体も違うので分けて数えます。
           {goldsBySex.map((g, gi) => (
             <span key={g.sex}>
               {gi > 0 ? "、" : ""}
@@ -346,7 +341,7 @@ export default async function FreshmanChampionship2026Results() {
           {womenQuad.pastWins.length === 0
             ? `収録範囲で${womenQuad.winner.organization}がこの種目を制したのは初めてです。`
             : `${womenQuad.winner.organization}のこの種目の優勝は収録範囲で${womenQuad.pastWins.length + 1}回目です。`}
-          1位から4位までが{formatGap(quadTop4Span)}の間に入りました。新人選手権に女子エイトはありません。
+          1位から4位までが{formatGap(quadTop4Span)}の間に入りました。第67回大会では女子エイトは行われていません。
         </p>
         <FinalTable rows={womenQuadRows} />
 
@@ -364,9 +359,7 @@ export default async function FreshmanChampionship2026Results() {
         <p>
           {nonUnivWins.length === 0 ? (
             <>
-              {YEAR}年は{champions.length}種目すべてを大学が制しました。
-              {allUnivYears.length > 0 ? `収録範囲で大学が全種目を制したのは${allUnivYears[0]}年以来です。` : null}
-              前年は{prevNonUnivWins.length}種目で大学以外が優勝していました(
+              {YEAR}年は{champions.length}種目すべてを大学が制しました。前年は{prevNonUnivWins.length}種目で大学以外が優勝していました(
               {prevNonUnivWins.map((r) => `${r.event_name}の${r.organization}`).join("、")})。
             </>
           ) : (
@@ -429,7 +422,7 @@ export default async function FreshmanChampionship2026Results() {
             <li>
               「○○混成」は複数の団体で組んだクルーで、所属は収録データの表記のままです。団体別の優勝では別の団体として数えています。「大学以外」の区分は団体名の表記から機械的に分けたもので、大学と高校の混成も「混成」に入ります。
             </li>
-            <li>「初めて」「以来」は、収録している{firstYear}年以降の大会での判定です。収録していない年があります(解説記事の注記を参照)。</li>
+            <li>「初めて」は、収録している{firstYear}年以降の大会での判定です。収録していない年があります(解説記事の注記を参照)。</li>
           </ul>
         </aside>
       </article>

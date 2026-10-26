@@ -265,7 +265,6 @@ export default async function UniversityChampionship2026Results() {
 
         <h2>学校別の金メダル数</h2>
         <p>
-          男子と女子では種目も勝つ学校も違うので、分けて数えます。
           {goldsBySex.map((g, gi) => (
             <span key={g.sex}>
               {gi > 0 ? "、" : ""}
