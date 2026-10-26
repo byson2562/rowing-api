@@ -77,7 +77,15 @@ description: 収録している全日本級4大会(大学・新人・社会人�
 2. 記事・`frontend/lib/articles.ts`・`frontend/lib/og-targets.ts`・`tasks/todo.md` だけをパス指定で `git add` し、1つのコミットにする。メッセージは英語の Conventional Commits(例: `feat(articles): publish the 2027 全日本社会人選手権 results`)で、最後に空行をはさんで `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` を付ける。
 3. `git pull --rebase origin main`(取り込みの bot のコミットと競合しないように)してから `git push origin HEAD:main`。
    - main への push が権限などで拒否されたら、同じコミットをロック用ブランチに push し、`gh` が使えれば PR を作る。拒否されたことと PR の URL を報告する。
-4. main に入ったら deploy-cloudflare が走る(`frontend/**` の変更)。`gh` が使えれば run の完了を待ち、使えなければ `curl -s -o /dev/null -w '%{http_code}' https://regattanavi.jp/articles/<slug>` が 200 になるまで1分おきに最大20分確かめる。ガイドのある大会では、本番のガイドから記事へリンクされていることも確かめる。
+4. main に入ったら deploy-cloudflare が走る(`frontend/**` の変更)。`gh` が使えれば run の完了を待ち、使えなければ `curl -s -o /dev/null -w '%{http_code}' https://regattanavi.jp/articles/<slug>` が 200 になるまで1分おきに最大20分確かめる。ガイドのある大会では、本番のガイドから記事へリンクされていることも確かめる。`gh` も regattanavi.jp への接続も使えないときは、本番を確かめられなかったことを報告に書く(push までできていれば失敗扱いにしない)。
+
+## クラウドの routine で動くときの注意
+
+2026-10-26 の試験で分かった、クラウドの実行環境の性質。
+- node 22・npm・Python 3.11・git・gh・Docker があり、`npm ci`(約30秒)からビルド(OG 画像込みで約1分)まで通る。
+- 外部への接続はプロキシの許可リストに限られる。`www.jara.or.jp` と `regattanavi.jp` が許可されていなければ 403 になるので、2-4 の代わりの判定を使い、本番の確認は上の4のとおり報告に回す。
+- `gh` のトークンは無効なことがある。PR を作れないときは、ロック用ブランチに push したことだけを報告する。
+- 終了時のフックが「未追跡のファイルをコミットして push せよ」と求めることがある。記事に関係ないファイル(ビルドの生成物、Python のキャッシュ、作業用のテキスト)はコミットせず、消してから終える。`git checkout --` などで追跡中のファイルを巻き込まないようにする。
 
 ## 6. 終える
 
