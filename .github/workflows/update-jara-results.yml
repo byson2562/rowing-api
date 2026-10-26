@@ -210,6 +210,31 @@ jobs:
           gh workflow run deploy-cloudflare.yml --ref main
           echo "deploy-cloudflare を起動しました。"
 
+      # 大会の最終日から2日後までは、結果記事を作るクラウドの routine を起動する
+      # (.claude/skills/results-article)。結果がそろったか・記事が公開済みかは routine が
+      # 判定するので、取り込みのたびに呼んでよい。呼べなくても取り込みは済んでいるので、
+      # このステップの失敗ではジョブを落とさない(手動の再実行は fire-results-routine.yml)。
+      - name: Fire the results-article routine
+        if: |
+          steps.gate.outputs.run == 'true' &&
+          steps.changes.outputs.changed == 'true' &&
+          steps.gate.outputs.in_window == 'true' &&
+          steps.delta.outputs.decreased == 'false'
+        continue-on-error: true
+        env:
+          CLAUDE_ROUTINE_TOKEN: ${{ secrets.CLAUDE_ROUTINE_TOKEN }}
+          YEAR: ${{ steps.year.outputs.value }}
+          BEFORE: ${{ steps.delta.outputs.before }}
+          AFTER: ${{ steps.delta.outputs.after }}
+        run: |
+          set -euo pipefail
+          today="$(TZ=Asia/Tokyo date +%F)"
+          if [[ "$(python3 .github/scripts/in_race_window.py --finals "${today}")" != "true" ]]; then
+            echo "${today} は大会の最終日〜2日後ではないので routine は起動しません。"
+            exit 0
+          fi
+          .github/scripts/fire_results_routine.sh "${YEAR}年の結果を取り込みました(${BEFORE} -> ${AFTER})"
+
       - name: Create or update results pull request
         if: |
           steps.gate.outputs.run == 'true' &&

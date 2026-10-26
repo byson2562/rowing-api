@@ -9,6 +9,7 @@ description: 収録している全日本級4大会(大学・新人・社会人�
 
 前提:
 - 結果データは GitHub Actions「Update JARA Results」が取り込む。大会期間中(`.github/scripts/in_race_window.py` が true を返す日)は毎時取り込み、main に直接コミットしてから deploy-cloudflare を起動する。
+- 大会の最終日から2日後まで(`in_race_window.py --finals`)は、取り込みのコミットのあとに `.github/scripts/fire_results_routine.sh` がクラウドの routine「rowing-api: 大会の結果記事を作って公開」(`trig_01LWyBVwgxu83kkJ3nmsMoyM`)を API トリガーで起動する。トークンは GitHub の Secret `CLAUDE_ROUTINE_TOKEN`。手で起動し直すときは Actions の「Fire results-article routine」を実行する。routine を起動できる GitHub イベントは PR・リリース・Issue だけで、push では起動できない(2026-10-26 に確認)。
 - 大会の日程は `frontend/data/schedule.json`(JARA の大会日程から手で転記)。ここに無い大会は扱わない。
 - 作業の前に `AGENTS.md` と `tasks/lessons.md` を読む。記事の書き方は `.claude/skills/article-review/SKILL.md` の「記事の方針」がすべての前提。
 

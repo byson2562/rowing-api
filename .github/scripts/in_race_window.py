@@ -8,6 +8,9 @@
 日程表だけに大会を書けば取り込みが高頻度になるので、2026-10 の新人選手権のように
 race-windows.json への追記漏れで取り込みが1日1回になることはもう起きない。
 
+`--finals` を付けると、日程表の大会の最終日から2日後までだけを true にする
+(結果記事の routine を呼ぶ期間。results-article スキルの判定と同じ幅)。
+
 ワークフローの run: にヒアドキュメントで埋め込むとYAMLのインデントと
 終端記号が噛み合わず壊れるため、独立したスクリプトにしている。
 """
@@ -43,12 +46,25 @@ def windows() -> list:
     return found
 
 
+def finals() -> list:
+    found = []
+    for c in load(SCHEDULE, "competitions"):
+        try:
+            end = datetime.date.fromisoformat(c["end"])
+            found.append((end.isoformat(), (end + datetime.timedelta(days=2)).isoformat()))
+        except (KeyError, ValueError) as err:
+            print(f"schedule.json の大会を読めません: {err}", file=sys.stderr)
+    return found
+
+
 def main() -> int:
-    if len(sys.argv) < 2:
-        print("usage: in_race_window.py YYYY-MM-DD", file=sys.stderr)
+    args = [a for a in sys.argv[1:] if a != "--finals"]
+    if len(args) != 1:
+        print("usage: in_race_window.py [--finals] YYYY-MM-DD", file=sys.stderr)
         return 2
-    today = sys.argv[1]
-    hit = any(start <= today <= end for start, end in windows())
+    today = args[0]
+    ranges = finals() if "--finals" in sys.argv[1:] else windows()
+    hit = any(start <= today <= end for start, end in ranges)
     print("true" if hit else "false")
     return 0
 

@@ -1,0 +1,27 @@
+name: Fire results-article routine
+
+# 結果記事を作るクラウドの routine を手で起動する。動作確認や、取り込み後の
+# 自動起動が失敗したときの再実行に使う。ふだんは update-jara-results.yml が
+# 大会の最終日以降の取り込みのあとに同じスクリプトを呼ぶ。
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "routine に添えるメモ(省略可)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  fire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fire the routine
+        env:
+          CLAUDE_ROUTINE_TOKEN: ${{ secrets.CLAUDE_ROUTINE_TOKEN }}
+          NOTE: ${{ inputs.note }}
+        run: .github/scripts/fire_results_routine.sh "${NOTE:-手動実行}"
