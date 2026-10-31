@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { buttonClass } from "../components/ui/button-classes";
 import LegacySearchRedirect from "../components/home/legacy-search-redirect";
-import { articles, getArticle, type ArticleMeta } from "../lib/articles";
+import { articles } from "../lib/articles";
 import {
   allResults,
   availableYears,
@@ -112,15 +112,8 @@ export default async function HomePage() {
     { href: "/athletes", name: "選手別", meta: `シングルスカルの${athleteCount}名` }
   ];
 
-  // 「はじめての人へ」はサイトを初めて訪れた人向け。サイトの説明(/about)の下に、用語集を添える
-  const starterSlugs = ["rowing-glossary"];
-  const starters = starterSlugs
-    .map((slug) => getArticle(slug))
-    .filter((article): article is ArticleMeta => Boolean(article));
-
-  // 記事は更新日(無ければ公開日)の新しい順に4本。「はじめての人へ」に出す記事は除く
-  const latestArticles = articles
-    .filter((article) => !starterSlugs.includes(article.slug))
+  // 記事は更新日(無ければ公開日)の新しい順に4本
+  const latestArticles = [...articles]
     .sort((a, b) => {
       const da = a.updatedAt ?? a.publishedAt;
       const db = b.updatedAt ?? b.publishedAt;
@@ -276,6 +269,7 @@ export default async function HomePage() {
           </section>
         ) : null}
         <section>
+          {/* サイトを初めて訪れた人向け。競技の入門記事ではなくサイトの説明に送る */}
           <h2 className={listHeading}>はじめての人へ</h2>
           <ul className={list}>
             <li className={listItem}>
@@ -283,14 +277,6 @@ export default async function HomePage() {
                 レガッタナビとは<span className="text-rn-muted">　収録しているデータと使い方</span>
               </Link>
             </li>
-            {starters.map((article) => (
-              <li key={article.slug} className={listItem}>
-                <Link href={`/articles/${article.slug}`} className={listLink}>
-                  {articleHeadline(article.title)}
-                  <span className="text-rn-muted">　{article.title.split("|")[1]?.trim()}</span>
-                </Link>
-              </li>
-            ))}
           </ul>
         </section>
       </div>
