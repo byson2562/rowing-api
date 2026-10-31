@@ -50,15 +50,15 @@ export default async function OrganizationsIndexPage() {
     }
   });
 
-  // 高校(高校・高等学校を含む名称) / 大学(その他の学生団体・高専・混成含む) / 社会人・クラブ に分ける
+  // 混成クルー(名称に「混成」) / 高校(高校・高等学校を含む名称) / 大学(その他の学生団体・高専) /
+  // 社会人・クラブ に分ける。混成は1〜数件の記録しかないものが多く、各区分に混ざると探しにくいので最後にまとめる
+  const isMixed = (name: string) => name.includes("混成");
   const isHighSchool = (name: string) => /高校|高等学校/.test(name);
-  const highSchools = organizations.filter((name) => isHighSchool(name));
-  const universities = organizations.filter(
-    (name) => !isHighSchool(name) && isStudentOrganization(name)
-  );
-  const socials = organizations.filter(
-    (name) => !isHighSchool(name) && !isStudentOrganization(name)
-  );
+  const mixed = organizations.filter((name) => isMixed(name));
+  const singles = organizations.filter((name) => !isMixed(name));
+  const highSchools = singles.filter((name) => isHighSchool(name));
+  const universities = singles.filter((name) => !isHighSchool(name) && isStudentOrganization(name));
+  const socials = singles.filter((name) => !isHighSchool(name) && !isStudentOrganization(name));
 
   const toEntries = (names: string[]) =>
     names.map((name) => ({
@@ -69,9 +69,10 @@ export default async function OrganizationsIndexPage() {
     }));
 
   const groups: OrganizationGroup[] = [
-    { title: "大学", items: toEntries(universities) },
-    { title: "高校", items: toEntries(highSchools) },
-    { title: "社会人・クラブ", items: toEntries(socials) }
+    { id: "universities", title: "大学", items: toEntries(universities) },
+    { id: "high-schools", title: "高校", items: toEntries(highSchools) },
+    { id: "clubs", title: "社会人・クラブ", items: toEntries(socials) },
+    { id: "mixed", title: "混成クルー", items: toEntries(mixed) }
   ].filter((group) => group.items.length > 0);
 
   const jsonLd = {
