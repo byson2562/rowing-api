@@ -557,6 +557,88 @@ thead th {
   }
 }
 
+/* /results の年×大会の表。行見出し(年)は墨の太字、各セルは回次のリンク */
+.results-matrix tbody th {
+  border-top: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.results-matrix td {
+  font-size: 14px;
+}
+
+.results-matrix a {
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.results-matrix a:hover {
+  text-decoration: underline;
+}
+
+.results-matrix-count,
+.results-matrix-note {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--meta);
+}
+
+.results-matrix-cell {
+  display: block;
+}
+
+.results-matrix td.is-empty {
+  color: var(--meta);
+}
+
+@media (max-width: 640px) {
+  /* 積みのときは年を各ブロックの見出しにし、開催のない大会の行は出さない。
+     共通の積み(1行=1枠)は使わず、罫線だけで区切る(§3 箱を作らない) */
+  .static-table.results-matrix tbody tr,
+  .static-table.results-matrix tbody tr:hover {
+    margin-bottom: 24px;
+    padding: 0;
+    border: 0;
+  }
+
+  .results-matrix tbody th {
+    display: block;
+    padding: 0 0 4px;
+    border-bottom: 1px solid var(--border-strong);
+    font-size: 16px;
+  }
+
+  .static-table.results-matrix td,
+  .static-table.results-matrix td:last-child {
+    align-items: center;
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .results-matrix td.is-empty {
+    display: none;
+  }
+
+  /* 指で押せる高さ(40px)を確保する */
+  .results-matrix a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
+  .results-matrix-cell {
+    display: inline;
+  }
+
+  .results-matrix-cell + .results-matrix-cell {
+    margin-left: 12px;
+  }
+}
+
 .static-more {
   margin: 12px 0 0;
   font-size: 14px;
