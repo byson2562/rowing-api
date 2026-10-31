@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import ButtonLink from "../components/ui/ButtonLink";
-import { MiniBars, YearCells, type MiniBarRow, type YearCell } from "../components/home/home-figures";
+import { buttonClass } from "../components/ui/button-classes";
 import LegacySearchRedirect from "../components/home/legacy-search-redirect";
 import { articles, getArticle, type ArticleMeta } from "../lib/articles";
 import {
@@ -10,9 +9,11 @@ import {
   availableYears,
   competitionsByRecency,
   getDatasetSummary,
-  getFilteredResults
+  getFilteredResults,
+  listAthleteResults,
+  listOrganizations,
+  listRecordEventNames
 } from "../lib/results-data";
-import { championGaps, goldCounts, winnersByYear } from "../lib/univ-championship";
 import { featuredCompetition, formatDateRange } from "../lib/schedule";
 import { siteUrl } from "../lib/site-url";
 import { ogImages } from "../lib/og-image";
@@ -35,10 +36,19 @@ export const metadata: Metadata = {
 };
 
 // ---- ホームのクラス(docs/design-rules.md §6: ホームの値はこのファイル冒頭に置く) ----
-// 日経ビジュアルデータ寄り: 箱を作らず、記事は3列の「見出し+本文+小さな図+日付」、区切りは下罫線。
-const topRow = "flex flex-wrap items-end justify-between gap-x-6 gap-y-4";
+// データベースが主役: 見出しの直下に検索窓、その下にデータの入口。記事は下の一覧に題名と日付だけ並べる。
+// 箱を作らず、区切りは罫線(日経ビジュアルデータ寄り)。
 const pageTitle = "m-0 text-[24px] font-bold leading-[1.4] text-rn-text [text-wrap:balance] max-[640px]:text-[22px]";
 const datasetMeta = "mt-2 mb-0 text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
+const searchForm = "mt-6";
+const searchLabel = "mb-2 block text-[14px] font-medium leading-[1.5] text-rn-text";
+const searchRow = "flex max-w-[640px] gap-2";
+// 入力は design-rules §6(高さ40 / radius 4 / focus-visible リング)
+const searchInput =
+  "h-10 min-w-0 flex-1 rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[16px] " +
+  "text-rn-text focus-visible:border-rn-primary focus-visible:outline-2 focus-visible:outline-rn-primary";
+const searchHint = "mb-0 mt-2 text-[13px] leading-[1.6] text-rn-meta";
+const searchHintLink = "text-rn-text underline hover:no-underline";
 // 「次の大会」の帯。箱にせず、上下のヘアラインで区切る1行(docs/design-rules.md §6「次の大会」)
 const nextStrip =
   "mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1.5 border-t border-rn-border-strong py-3.5 text-[14px] leading-[1.6]";
@@ -46,21 +56,19 @@ const nextLabel = "shrink-0 font-bold text-rn-text";
 const nextName = "font-medium text-rn-text";
 const nextMeta = "text-rn-meta [font-variant-numeric:tabular-nums]";
 const nextLink = "text-rn-text underline hover:no-underline";
-const articleGrid =
-  "grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-12 border-t border-rn-border-strong pt-10";
-const articleCard = "flex min-w-0 flex-col gap-4 border-b border-rn-border pb-5";
-const articleTitle = "m-0 text-[24px] font-bold leading-[1.45] text-rn-text [text-wrap:balance]";
-const articleTitleLink = "text-rn-text no-underline hover:underline";
-const articleDesc = "m-0 line-clamp-3 text-[14px] leading-[1.85] text-rn-muted";
-const articleDate = "mt-auto self-end text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
-const twoCol = "mt-16 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-10";
+// データの入口。PC 4列・タブレット 2列・スマホ 1列。各項目は下罫線で区切る
+const dataIndex =
+  "m-0 grid list-none grid-cols-1 gap-x-10 border-t border-rn-border-strong p-0 sm:grid-cols-2 lg:grid-cols-4";
+const dataItem = "border-b border-rn-border";
+const dataLink = "flex min-h-10 flex-col gap-1 py-4 text-rn-text no-underline hover:underline";
+const dataName = "text-[18px] font-bold leading-[1.5]";
+const dataMeta = "text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
+const listColumns = "mt-14 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-x-10 gap-y-10";
 const listHeading = "m-0 mb-1 text-[18px] font-bold leading-[1.5] text-rn-text";
 const list = "m-0 list-none p-0";
 const listItem = "flex items-baseline justify-between gap-4 border-b border-rn-border py-3.5";
 const listLink = "text-[15px] leading-[1.6] text-rn-text no-underline hover:underline";
 const listMeta = "shrink-0 text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
-
-const resultsArticlePattern = /^university-championship-(\d{4})-results$/;
 
 function formatDate(iso: string): string {
   const [y, m, d] = iso.split("-").map(Number);
@@ -70,88 +78,6 @@ function formatDate(iso: string): string {
 // 記事タイトル「主題 | 補足」の主題だけをカードの見出しにする
 function articleHeadline(title: string): string {
   return title.split("|")[0].trim();
-}
-
-// バーの物差し: 85パーセンタイルを1秒刻みで切り上げ(最低3秒)。大差の種目に引きずられないようにする
-function barScale(values: number[], min = 3): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  if (sorted.length === 0) return min;
-  const idx = Math.min(sorted.length - 1, Math.max(0, Math.ceil(sorted.length * 0.85) - 1));
-  return Math.max(min, Math.ceil(sorted[idx]));
-}
-
-// 記事ごとの小さな図。対応する集計が無い記事は図なしで並ぶ
-async function articleFigure(article: ArticleMeta) {
-  const resultsYear = Number(article.slug.match(resultsArticlePattern)?.[1] ?? 0);
-  if (resultsYear > 0) {
-    const gaps = await championGaps(resultsYear);
-    if (gaps.length === 0) return null;
-    // 接戦だった順に 8 種目まで。全種目は記事と大会ページにある
-    const shown = [...gaps].sort((a, b) => a.gap - b.gap).slice(0, 8);
-    const rows: MiniBarRow[] = shown.map((g) => ({
-      label: g.event,
-      value: g.gap,
-      display: g.gap.toFixed(2),
-      hot: g.gap < 1
-    }));
-    const close = rows.filter((r) => r.hot).length;
-    return (
-      <MiniBars
-        rows={rows}
-        scale={barScale(rows.map((r) => r.value))}
-        caption={`2位との差(秒)。接戦だった${rows.length}種目${close > 0 ? "、青は1秒未満" : ""}`}
-        summary={`${resultsYear}年インカレで2位との差が小さかった${rows.length}種目。${rows.map((r) => `${r.label}${r.display}秒`).join("、")}`}
-      />
-    );
-  }
-
-  if (article.slug === "university-championship-guide") {
-    const winners = await winnersByYear("男子エイト");
-    if (winners.length < 2) return null;
-    const counts = new Map<string, number>();
-    winners.forEach((w) => counts.set(w.organization, (counts.get(w.organization) ?? 0) + 1));
-    const ranked = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-    const [top, second] = ranked;
-    const others = winners.length - (top?.[1] ?? 0) - (second?.[1] ?? 0);
-    const tone = (organization: string): YearCell["tone"] =>
-      organization === top?.[0] ? "primary" : organization === second?.[0] ? "ink" : "soft";
-    const cells: YearCell[] = winners.map((w) => ({ year: w.year, label: `${w.year}年 ${w.organization}`, tone: tone(w.organization) }));
-    const legend = [
-      ...(top ? [{ tone: "primary" as const, label: `${top[0]} ${top[1]}` }] : []),
-      ...(second ? [{ tone: "ink" as const, label: `${second[0]} ${second[1]}` }] : []),
-      ...(others > 0 ? [{ tone: "soft" as const, label: `その他 ${others}` }] : [])
-    ];
-    return (
-      <YearCells
-        cells={cells}
-        legend={legend}
-        summary={`${winners[0].year}年から${winners[winners.length - 1].year}年の男子エイト優勝校。${legend.map((l) => l.label.replace(/ (\d+)$/, "$1回")).join("、")}`}
-      />
-    );
-  }
-
-  if (article.slug === "university-power-map-2009-2025") {
-    const golds = (await goldCounts(2009, 2025)).slice(0, 6);
-    if (golds.length === 0) return null;
-    const rows: MiniBarRow[] = golds.map((g, index) => ({
-      label: g.organization,
-      value: g.count,
-      display: String(g.count),
-      hot: index === 0
-    }));
-    return (
-      <MiniBars
-        rows={rows}
-        scale={rows[0].value}
-        labelWidth={84}
-        barHeight={12}
-        caption="Final A 1位の回数(2009〜2025年、JO種目を除く)"
-        summary={`インカレFinal A 1位の回数。${rows.map((r) => `${r.label}${r.display}`).join("、")}`}
-      />
-    );
-  }
-
-  return null;
 }
 
 // 最近収録した大会(新しい順に3件)と、その収録件数
@@ -172,22 +98,35 @@ export default async function HomePage() {
   const featured = await featuredCompetition();
   const competitionCount = new Set((await allResults()).map((row) => `${row.year}|${row.competition_name}`)).size;
   const recent = await buildRecentCompetitions();
+  const [recordEvents, organizations, athleteRows] = await Promise.all([
+    listRecordEventNames(),
+    listOrganizations(),
+    listAthleteResults()
+  ]);
+  const athleteCount = new Set(athleteRows.map((row) => row.crew_name)).size;
 
-  // 記事は更新日(無ければ公開日)の新しい順に3本。図は記事ごとに付く
-  const latestArticles = [...articles]
+  const dataEntries = [
+    { href: "/results", name: "大会結果", meta: `${summary.minYear}〜${summary.maxYear}年・${competitionCount}大会` },
+    { href: "/records", name: "歴代記録", meta: `${recordEvents.length}種目の最速タイム` },
+    { href: "/organizations", name: "団体別", meta: `${organizations.length}団体の成績` },
+    { href: "/athletes", name: "選手別", meta: `シングルスカルの${athleteCount}名` }
+  ];
+
+  const starterSlugs = ["rowing-glossary", "university-championship-guide"];
+  const starters = starterSlugs
+    .map((slug) => getArticle(slug))
+    .filter((article): article is ArticleMeta => Boolean(article));
+
+  // 記事は更新日(無ければ公開日)の新しい順に4本。「はじめての人へ」に出す記事は除く
+  const latestArticles = articles
+    .filter((article) => !starterSlugs.includes(article.slug))
     .sort((a, b) => {
       const da = a.updatedAt ?? a.publishedAt;
       const db = b.updatedAt ?? b.publishedAt;
       if (da !== db) return da < db ? 1 : -1;
       return a.publishedAt < b.publishedAt ? 1 : -1;
     })
-    .slice(0, 3);
-  const figures = await Promise.all(latestArticles.map((article) => articleFigure(article)));
-
-  const starters = [
-    getArticle("rowing-glossary"),
-    getArticle("university-championship-guide")
-  ].filter((article): article is ArticleMeta => Boolean(article));
+    .slice(0, 4);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -229,20 +168,35 @@ export default async function HomePage() {
       <LegacySearchRedirect />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <div className={topRow}>
-        <div>
-          <h1 className={pageTitle}>ローイング(ボート)の大会結果と記録のデータベース</h1>
-          <p className={datasetMeta}>
-            {summary.minYear}〜{summary.maxYear}年 · {competitionCount}大会 · {summary.totalCount.toLocaleString()}件のFinal A・B
-          </p>
+      <h1 className={pageTitle}>ローイング(ボート)の大会結果と記録のデータベース</h1>
+      <p className={datasetMeta}>
+        {summary.minYear}〜{summary.maxYear}年 · {competitionCount}大会 · {summary.totalCount.toLocaleString()}件のFinal A・B ·{" "}
+        <Link href="/about" className={`${searchHintLink} whitespace-nowrap`}>
+          収録データについて
+        </Link>
+      </p>
+
+      <form action="/search" method="get" role="search" className={searchForm}>
+        <label htmlFor="home-search" className={searchLabel}>
+          選手名・団体名・大会名で探す
+        </label>
+        <div className={searchRow}>
+          <input
+            id="home-search"
+            name="q"
+            type="search"
+            required
+            className={searchInput}
+            placeholder="例: 早稲田大学、石塚慎之助"
+          />
+          <button type="submit" className={buttonClass()}>
+            検索
+          </button>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <ButtonLink href="/search">記録を検索する</ButtonLink>
-          <ButtonLink href="/about" variant="secondary">
-            収録データについて
-          </ButtonLink>
-        </div>
-      </div>
+        <p className={searchHint}>
+          年・大会・種目・順位で絞り込むときは<Link href="/search" className={searchHintLink}>記録検索</Link>へ
+        </p>
+      </form>
 
       {featured ? (
         <aside className={nextStrip} aria-label="次の大会">
@@ -267,33 +221,21 @@ export default async function HomePage() {
         </aside>
       ) : null}
 
-      {latestArticles.length > 0 && (
-        <section aria-label="記事" className={`${featured ? "mt-0" : "mt-8"} ${articleGrid}`}>
-          {latestArticles.map((article, index) => (
-            <article key={article.slug} className={articleCard}>
-              <h2 className={articleTitle}>
-                <Link href={`/articles/${article.slug}`} className={articleTitleLink}>
-                  {articleHeadline(article.title)}
-                </Link>
-              </h2>
-              <p className={articleDesc}>{article.description}</p>
-              {figures[index]}
-              <p className={articleDate}>
-                {article.updatedAt ? (
-                  <>
-                    <time dateTime={article.updatedAt}>{formatDate(article.updatedAt)}</time> 更新
-                  </>
-                ) : (
-                  <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
-                )}
-              </p>
-            </article>
+      <nav aria-label="データの一覧" className={featured ? "mt-0" : "mt-8"}>
+        <ul className={dataIndex}>
+          {dataEntries.map((entry) => (
+            <li key={entry.href} className={dataItem}>
+              <Link href={entry.href} className={dataLink}>
+                <span className={dataName}>{entry.name}</span>
+                <span className={dataMeta}>{entry.meta}</span>
+              </Link>
+            </li>
           ))}
-        </section>
-      )}
+        </ul>
+      </nav>
 
-      <section className={twoCol}>
-        <div>
+      <div className={listColumns}>
+        <section>
           <h2 className={listHeading}>最近収録した大会</h2>
           <ul className={list}>
             {recent.map(({ year, competition, count }) => (
@@ -306,17 +248,33 @@ export default async function HomePage() {
                 </span>
               </li>
             ))}
-            <li className={listItem}>
-              <Link href="/results" className={listLink}>
-                年別の大会一覧
-              </Link>
-              <span className={listMeta}>
-                {summary.minYear}〜{summary.maxYear}
-              </span>
-            </li>
           </ul>
-        </div>
-        <div>
+        </section>
+        {latestArticles.length > 0 ? (
+          <section>
+            <h2 className={listHeading}>新しい記事</h2>
+            <ul className={list}>
+              {latestArticles.map((article) => (
+                <li key={article.slug} className={listItem}>
+                  <Link href={`/articles/${article.slug}`} className={listLink}>
+                    {articleHeadline(article.title)}
+                  </Link>
+                  <span className={listMeta}>
+                    <time dateTime={article.updatedAt ?? article.publishedAt}>
+                      {formatDate(article.updatedAt ?? article.publishedAt)}
+                    </time>
+                  </span>
+                </li>
+              ))}
+              <li className={listItem}>
+                <Link href="/articles" className={listLink}>
+                  記事の一覧
+                </Link>
+              </li>
+            </ul>
+          </section>
+        ) : null}
+        <section>
           <h2 className={listHeading}>はじめての人へ</h2>
           <ul className={list}>
             {starters.map((article) => (
@@ -327,19 +285,9 @@ export default async function HomePage() {
                 </Link>
               </li>
             ))}
-            <li className={listItem}>
-              <Link href="/search" className={listLink}>
-                記録を検索する<span className="text-rn-muted">　年・大会・種目・団体で絞り込み</span>
-              </Link>
-            </li>
-            <li className={listItem}>
-              <Link href="/records" className={listLink}>
-                歴代記録<span className="text-rn-muted">　種目ごとの最速タイム</span>
-              </Link>
-            </li>
           </ul>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

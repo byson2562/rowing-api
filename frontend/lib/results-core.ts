@@ -218,7 +218,9 @@ export function filterResults(source: ResultRecord[], filters: QueryFilters): Re
   const timeFrom = toFiniteNumber(filters.time_from);
   const timeTo = toFiniteNumber(filters.time_to);
   const rankEq = toFiniteNumber(filters.rank);
-  const query = (filters.q ?? "").trim().toLowerCase();
+  // 選手名は「石塚 慎之助」と姓名の間に空白があるので、空白を除いて照合する。
+  // 空白で区切った語はすべて含むものに絞る(「早稲田 男子エイト」)
+  const queryWords = (filters.q ?? "").trim().toLowerCase().split(/\s+/).filter(Boolean);
 
   return source.filter((row) => {
     if (filters.year && row.year !== Number(filters.year)) return false;
@@ -234,9 +236,12 @@ export function filterResults(source: ResultRecord[], filters: QueryFilters): Re
     if (rankTo != null && row.rank > rankTo) return false;
     if (timeFrom != null && row.time_seconds < timeFrom) return false;
     if (timeTo != null && row.time_seconds > timeTo) return false;
-    if (query) {
-      const haystack = `${row.competition_name} ${row.event_name} ${row.crew_name} ${row.organization}`.toLowerCase();
-      if (!haystack.includes(query)) return false;
+    if (queryWords.length > 0) {
+      const haystack = [row.competition_name, row.event_name, row.crew_name, row.organization]
+        .join("|")
+        .toLowerCase()
+        .replace(/\s+/g, "");
+      if (!queryWords.every((word) => haystack.includes(word))) return false;
     }
     return true;
   });

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { ResultRecord } from "./results-data";
 import {
   competitionsByRecency,
+  filterResults,
   formatTimeDisplay,
   normalizeEventName,
   organizationSlug,
@@ -88,5 +89,37 @@ describe("competitionsByRecency", () => {
       "第104回全日本ローイング選手権大会",
       "第103回全日本ローイング選手権大会"
     ]);
+  });
+});
+
+describe("filterResults の q", () => {
+  const row = (overrides: Partial<ResultRecord>): ResultRecord => ({
+    id: 1,
+    year: 2026,
+    competition_name: "第104回全日本ローイング選手権大会",
+    event_name: "男子シングルスカル",
+    final_group: "Final A",
+    crew_name: "石塚 慎之助",
+    organization: "日本宅配システム",
+    rank: 1,
+    time_seconds: 452.37,
+    time_display: "7:32.37",
+    ...overrides
+  });
+  const rows = [row({}), row({ id: 2, event_name: "男子エイト", crew_name: "早稲田大学", organization: "早稲田大学" })];
+  const names = (q: string) => filterResults(rows, { q }).map((r) => r.crew_name);
+
+  it("姓名の間の空白を問わず選手名で引ける", () => {
+    expect(names("石塚慎之助")).toEqual(["石塚 慎之助"]);
+    expect(names("石塚 慎之助")).toEqual(["石塚 慎之助"]);
+  });
+
+  it("空白で区切った語をすべて含むものに絞る", () => {
+    expect(names("早稲田 エイト")).toEqual(["早稲田大学"]);
+    expect(names("早稲田 シングル")).toEqual([]);
+  });
+
+  it("項目をまたいだ文字列には当たらない", () => {
+    expect(names("スカル石塚")).toEqual([]);
   });
 });
