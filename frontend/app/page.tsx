@@ -112,7 +112,8 @@ export default async function HomePage() {
     { href: "/athletes", name: "選手別", meta: `シングルスカルの${athleteCount}名` }
   ];
 
-  const starterSlugs = ["rowing-glossary", "university-championship-guide"];
+  // 「はじめての人へ」はサイトを初めて訪れた人向け。サイトの説明(/about)の下に、用語集を添える
+  const starterSlugs = ["rowing-glossary"];
   const starters = starterSlugs
     .map((slug) => getArticle(slug))
     .filter((article): article is ArticleMeta => Boolean(article));
@@ -277,6 +278,11 @@ export default async function HomePage() {
         <section>
           <h2 className={listHeading}>はじめての人へ</h2>
           <ul className={list}>
+            <li className={listItem}>
+              <Link href="/about" className={listLink}>
+                レガッタナビとは<span className="text-rn-muted">　収録しているデータと使い方</span>
+              </Link>
+            </li>
             {starters.map((article) => (
               <li key={article.slug} className={listItem}>
                 <Link href={`/articles/${article.slug}`} className={listLink}>
