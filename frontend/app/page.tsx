@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { buttonClass } from "../components/ui/button-classes";
 import LegacySearchRedirect from "../components/home/legacy-search-redirect";
 import { articles } from "../lib/articles";
 import {
@@ -36,19 +35,14 @@ export const metadata: Metadata = {
 };
 
 // ---- ホームのクラス(docs/design-rules.md §6: ホームの値はこのファイル冒頭に置く) ----
-// データベースが主役: 見出しの直下に検索窓、その下にデータの入口。記事は下の一覧に題名と日付だけ並べる。
+// データベースが主役: 見出しの直下にデータの入口。記事は下の一覧に題名と日付だけ並べる。
 // 箱を作らず、区切りは罫線(日経ビジュアルデータ寄り)。
 const pageTitle = "m-0 text-[24px] font-bold leading-[1.4] text-rn-text [text-wrap:balance] max-[640px]:text-[22px]";
 const datasetMeta = "mt-2 mb-0 text-[13px] leading-[1.6] text-rn-meta [font-variant-numeric:tabular-nums]";
-const searchForm = "mt-6";
-const searchLabel = "mb-2 block text-[14px] font-medium leading-[1.5] text-rn-text";
-const searchRow = "flex max-w-[640px] gap-2";
-// 入力は design-rules §6(高さ40 / radius 4 / focus-visible リング)
-const searchInput =
-  "h-10 min-w-0 flex-1 rounded-rn-control border border-rn-border bg-white px-[11px] py-2 text-[16px] " +
-  "text-rn-text focus-visible:border-rn-primary focus-visible:outline-2 focus-visible:outline-rn-primary";
-const searchHint = "mb-0 mt-2 text-[13px] leading-[1.6] text-rn-meta";
-const searchHintLink = "text-rn-text underline hover:no-underline";
+const textLink = "text-rn-text underline hover:no-underline";
+// スマホでも押せる高さ(40px)を確保した1行リンク
+const searchHint = "mb-0 mt-2 text-[14px] leading-[1.6] text-rn-meta";
+const searchHintLink = `${textLink} inline-flex min-h-10 items-center`;
 // 「次の大会」の帯。箱にせず、上下のヘアラインで区切る1行(docs/design-rules.md §6「次の大会」)
 const nextStrip =
   "mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1.5 border-t border-rn-border-strong py-3.5 text-[14px] leading-[1.6]";
@@ -165,32 +159,30 @@ export default async function HomePage() {
       <h1 className={pageTitle}>ローイング(ボート)の大会結果と記録のデータベース</h1>
       <p className={datasetMeta}>
         {summary.minYear}〜{summary.maxYear}年 · {competitionCount}大会 · {summary.totalCount.toLocaleString()}件のFinal A・B ·{" "}
-        <Link href="/about" className={`${searchHintLink} whitespace-nowrap`}>
+        <Link href="/about" className={`${textLink} whitespace-nowrap`}>
           収録データについて
         </Link>
       </p>
 
-      <form action="/search" method="get" role="search" className={searchForm}>
-        <label htmlFor="home-search" className={searchLabel}>
-          選手名・団体名・大会名で探す
-        </label>
-        <div className={searchRow}>
-          <input
-            id="home-search"
-            name="q"
-            type="search"
-            required
-            className={searchInput}
-            placeholder="例: 早稲田大学、石塚慎之助"
-          />
-          <button type="submit" className={buttonClass()}>
-            検索
-          </button>
-        </div>
-        <p className={searchHint}>
-          年・大会・種目・順位で絞り込むときは<Link href="/search" className={searchHintLink}>記録検索</Link>へ
-        </p>
-      </form>
+      <nav aria-label="データの一覧" className="mt-8">
+        <ul className={dataIndex}>
+          {dataEntries.map((entry) => (
+            <li key={entry.href} className={dataItem}>
+              <Link href={entry.href} className={dataLink}>
+                <span className={dataName}>{entry.name}</span>
+                <span className={dataMeta}>{entry.meta}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <p className={searchHint}>
+        条件を組み合わせて探すときは
+        <Link href="/search" className={searchHintLink}>
+          記録検索
+        </Link>
+        へ
+      </p>
 
       {featured ? (
         <aside className={nextStrip} aria-label="次の大会">
@@ -214,19 +206,6 @@ export default async function HomePage() {
           )}
         </aside>
       ) : null}
-
-      <nav aria-label="データの一覧" className={featured ? "mt-0" : "mt-8"}>
-        <ul className={dataIndex}>
-          {dataEntries.map((entry) => (
-            <li key={entry.href} className={dataItem}>
-              <Link href={entry.href} className={dataLink}>
-                <span className={dataName}>{entry.name}</span>
-                <span className={dataMeta}>{entry.meta}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
 
       <div className={listColumns}>
         <section>
