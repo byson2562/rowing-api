@@ -11,6 +11,13 @@ export type ArticleMeta = {
 
 export const articles: ArticleMeta[] = [
   {
+    slug: "what-is-rowing",
+    title: "ローイング(ボート競技)とは | 種目・レースの距離・日本の主な大会",
+    description:
+      "ローイングはオールで艇を進めて着順を競う水上の競技で、日本では「ボート」「漕艇」とも呼びます。ジムのローイングマシンは練習器具です。1・2・4・8人乗りの種目、全国大会は2000mという距離、社会人・全日本・インカレ・新人と続く1年の大会日程、当サイトで結果を見るページをまとめました。",
+    publishedAt: "2026-11-07"
+  },
+  {
     slug: "freshman-championship-2026-results",
     title: "全日本新人ローイング選手権(ボート)2026の結果 | 第67回 種目別の優勝クルーとタイム",
     description:
