@@ -9,7 +9,7 @@
 
 import type { QueryFilters, ResultRecord } from "./results-core";
 
-export const SEARCH_DEFAULT_TITLE = "ローイング・ボート記録検索";
+export const SEARCH_DEFAULT_TITLE = "ローイング（ボート）記録検索";
 export const SEARCH_DEFAULT_DESCRIPTION =
   "全日本選手権・全日本大学選手権など日本の主要ローイング（ボート）大会の記録を、年度・大会・種目・団体で横断検索できます。";
 

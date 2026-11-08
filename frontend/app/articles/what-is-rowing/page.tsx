@@ -150,14 +150,14 @@ export default async function WhatIsRowing() {
         <span aria-hidden="true">›</span>
         <Link href="/articles">記事</Link>
         <span aria-hidden="true">›</span>
-        <span>ローイング(ボート競技)とは</span>
+        <span>ローイング（ボート）とは</span>
       </nav>
       <article className="article-body">
         <header className="article-header">
           <p className={articleMeta}>
             <time dateTime={meta.publishedAt}>{formatDate(meta.publishedAt)}</time> · レガッタナビ編集
           </p>
-          <h1>ローイング(ボート競技)とは</h1>
+          <h1>ローイング（ボート）とは</h1>
           <p className="lp-lead">
             ローイングは、オールで艇を進めて着順を競う水上の競技です。日本では「ボート」や「漕艇(そうてい)」とも呼ばれ、全国規模の大会は2000mの直線コースで行われます。ジムにあるローイングマシン(エルゴ)はこの競技の陸上練習に使う器具で、この記事で扱うのは水上のレースです。種目、レースの距離と進み方、日本の主な大会と1年の流れ、出場している団体、結果を見るページを、当サイトの収録データ({minYear}〜{maxYear}年・{competitionCount}大会・{summary.totalCount.toLocaleString("ja-JP")}件)とともにまとめました。
           </p>

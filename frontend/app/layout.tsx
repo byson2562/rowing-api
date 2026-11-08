@@ -26,7 +26,7 @@ const footerLinkClass = "text-[13px] font-medium leading-[1.6] text-rn-text no-u
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "ローイング・ボート記録検索 | レガッタナビ",
+    default: "ローイング（ボート）記録検索 | レガッタナビ",
     template: "%s | レガッタナビ",
   },
   description:
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
     locale: "ja_JP",
     url: "/",
     siteName: "レガッタナビ",
-    title: "ローイング・ボート記録検索 | レガッタナビ",
+    title: "ローイング（ボート）記録検索 | レガッタナビ",
     description:
       "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるレガッタナビ。",
     images: [
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ローイング・ボート記録検索 | レガッタナビ",
+    title: "ローイング（ボート）記録検索 | レガッタナビ",
     description:
       "ローイング（ボート）記録とローイング大会結果を年度・大会・種目・団体で検索できるレガッタナビ。",
     images: [ogImageUrl()],

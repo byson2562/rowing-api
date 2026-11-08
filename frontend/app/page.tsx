@@ -156,7 +156,7 @@ export default async function HomePage() {
       <LegacySearchRedirect />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <h1 className={pageTitle}>ローイング(ボート)の大会結果と記録のデータベース</h1>
+      <h1 className={pageTitle}>ローイング（ボート）の大会結果と記録のデータベース</h1>
       <p className={datasetMeta}>
         {summary.minYear}〜{summary.maxYear}年 · {competitionCount}大会 · {summary.totalCount.toLocaleString()}件のFinal A・B ·{" "}
         <Link href="/about" className={`${textLink} whitespace-nowrap`}>

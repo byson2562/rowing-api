@@ -9,14 +9,14 @@ import { FIXED_OG } from "../../lib/og-targets";
 export const metadata: Metadata = {
   title: "記事・データ分析",
   description:
-    "レガッタナビ収録の大会記録データをもとにした、ローイング(ボート)の分析記事・コラムの一覧です。",
+    "レガッタナビ収録の大会記録データをもとにした、ローイング（ボート）の分析記事・コラムの一覧です。",
   alternates: {
     canonical: "/articles"
   },
   openGraph: {
     title: "記事・データ分析 | レガッタナビ",
     description:
-      "レガッタナビ収録の大会記録データをもとにした、ローイング(ボート)の分析記事・コラムの一覧です。",
+      "レガッタナビ収録の大会記録データをもとにした、ローイング（ボート）の分析記事・コラムの一覧です。",
     url: "/articles",
     images: ogImages(FIXED_OG.articles)
   }

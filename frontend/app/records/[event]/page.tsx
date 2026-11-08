@@ -43,7 +43,7 @@ export async function generateMetadata(props: { params: Promise<Params> }): Prom
   const rows = await getFilteredResults({ event });
   const best = [...rows].sort((a, b) => a.time_seconds - b.time_seconds)[0];
   const path = `/records/${encodeURIComponent(event)}`;
-  const title = `${event}の歴代最速タイム｜ローイング・ボート記録`;
+  const title = `${event}の歴代最速タイム｜ローイング（ボート）記録`;
   const description = `ローイング（ボート）${event}の歴代最速タイムランキング。現在の最速記録は${best ? `${best.organization}の${best.time_display}（${best.year}年）` : "未収録"}。全日本規模の大会結果からTop${RANKING_SIZE}を掲載しています。`;
   const ogImage = ogImageUrl(recordOg(event, best));
 

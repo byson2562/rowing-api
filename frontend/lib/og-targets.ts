@@ -34,13 +34,13 @@ const ARTICLE_OG: Record<string, OgTarget> = {
     title: "全日本ローイング選手権とは",
     subtitle: "日程・種目・歴代優勝クルー"
   },
-  "what-is-rowing": { title: "ローイング(ボート競技)とは", subtitle: "種目・距離・日本の主な大会" },
+  "what-is-rowing": { title: "ローイング（ボート）とは", subtitle: "競技の種目・距離・日本の主な大会" },
   "freshman-championship-2026-results": {
     title: "全日本新人ローイング選手権2026の結果",
     subtitle: "第67回 種目別の優勝クルーとタイム"
   },
   "university-championship-2026-results": {
-    title: "インカレ(ボート)2026の結果",
+    title: "インカレ2026の結果",
     subtitle: "全日本大学ローイング選手権 種目別の優勝校とタイム"
   },
   "rowing-glossary": { title: "ローイング用語集", subtitle: "種目・大会・練習でよく出る言葉" },

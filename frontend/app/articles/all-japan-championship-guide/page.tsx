@@ -368,7 +368,7 @@ export default async function AllJapanChampionshipGuide() {
           </p>
           <h1>全日本ローイング選手権とは</h1>
           <p className="lp-lead">
-            全日本ローイング選手権は、日本ローイング協会が主催するローイング(ボート競技)の日本一決定戦です。大学や高校のクルーと、社会人の企業チームやクラブが同じ種目で競います。{EDITION_YEAR}年の{edition.name.replace(/全日本.*$/, "大会")}は{formatDateRange(edition.start, edition.end)}に{edition.venue}で{awaitingResults ? "開かれます" : "開かれました"}。
+            全日本ローイング選手権は、日本ローイング協会が主催するローイング（ボート）の日本一決定戦です。大学や高校のクルーと、社会人の企業チームやクラブが同じ種目で競います。{EDITION_YEAR}年の{edition.name.replace(/全日本.*$/, "大会")}は{formatDateRange(edition.start, edition.end)}に{edition.venue}で{awaitingResults ? "開かれます" : "開かれました"}。
             {awaitingResults ? null : (
               <>
                 次の{EDITION_YEAR + 1}年大会の日程は未発表で、決まり次第、

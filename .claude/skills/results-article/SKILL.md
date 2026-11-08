@@ -66,7 +66,7 @@ description: 収録している全日本級4大会(大学・新人・社会人�
 - 日本語は `.claude/skills/humanizer-ja/SKILL.md` のルールを当てる。ただし「声を入れる」(体験・意見)と「体温のある結論」は使わない。
 - UI は `docs/design-rules.md` に従い、スタイルは `frontend/components/article/article-classes.ts` の既存クラスだけを使う。JSX で文と文を改行でまたぐと文中に空白が入るので、1段落の地の文は式をはさんでも同じ行に続ける。
 - 登録:
-  - `frontend/lib/articles.ts` にエントリを足す(title は既存の結果記事に合わせて「<大会名の通称>(ボート)YYYYの結果 | 第N回 …」の形、description は本文で確かめた事実だけ、`publishedAt` は今日の日付)。
+  - `frontend/lib/articles.ts` にエントリを足す(title は既存の結果記事に合わせて「<大会名>YYYYの結果 | 第N回 ローイング（ボート）種目別の優勝クルーとタイム」の形。「ボート」は大会名の中に挟まず、必ず全角カッコの「ローイング（ボート）＋名詞」で書く、description は本文で確かめた事実だけ、`publishedAt` は今日の日付)。
   - OG 画像: `.claude/skills/article-thumbnails/SKILL.md` を読み、`frontend/lib/og-targets.ts` の `ARTICLE_OG` に title/subtitle を足す。ページは `ogImages(articleOg(meta))` で参照する。
 - 書いたら `.claude/skills/article-review/SKILL.md` の3段階(読者体験 → yomiyasu → 校正。1と3は合格まで最大3回)を必ず回す。無人の実行では、yomiyasu の「書き手に確かめたい点」はデータに忠実で控えめな方を選び、何を選んだかを報告に書く。
 
