@@ -11,6 +11,13 @@ export type ArticleMeta = {
 
 export const articles: ArticleMeta[] = [
   {
+    slug: "all-japan-championship-guide",
+    title: "全日本ローイング選手権(ボート)とは | 日程・種目・歴代優勝クルー",
+    description:
+      "全日本ローイング選手権は大学や高校のクルーと社会人の企業やクラブが同じ種目で日本一を争う大会で、2026年の第104回は6月4日(木)から7日(日)まで海の森で開かれました。2009年以降の収録データから、2026年の種目別優勝クルー、男子エイトと女子エイトの歴代優勝、優勝回数の多い団体、優勝タイムの幅を載せています。",
+    publishedAt: "2026-11-08"
+  },
+  {
     slug: "what-is-rowing",
     title: "ローイング(ボート競技)とは | 種目・レースの距離・日本の主な大会",
     description:

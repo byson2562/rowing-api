@@ -271,7 +271,7 @@ export default async function WhatIsRowing() {
 
         <h2>出場している団体</h2>
         <p>
-          全日本級の大会には、大学、高校、社会人のクラブや企業のチーム、複数の所属からなる混成クルーが出場します。インカレは大学、社会人選手権は社会人に出場が限られますが、全日本選手権と新人選手権では大学・高校・社会人が同じ種目に出ます。団体ごとの通算成績と年度別の戦績は
+          全日本級の大会には、大学、高校、社会人のクラブや企業のチーム、複数の所属からなる混成クルーが出場します。インカレは大学、社会人選手権は社会人に出場が限られますが、<Link href="/articles/all-japan-championship-guide">全日本選手権</Link>と<Link href="/articles/freshman-championship-guide">新人選手権</Link>では大学・高校・社会人が同じ種目に出ます。団体ごとの通算成績と年度別の戦績は
           <Link href="/organizations">団体一覧</Link>
           にあります。
         </p>
